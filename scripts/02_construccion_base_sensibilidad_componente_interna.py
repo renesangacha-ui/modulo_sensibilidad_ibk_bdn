@@ -111,7 +111,7 @@ validacion_duplicidad.query('flg_exito_4==1 and cod_instit_financiera==1')
 
 #~~~~ 5.2) Completitud: Tasas y Monto ----
 
-#--- Leads: Oferta Relevante con Gestión ----
+#--- 5.2.1) Leads: Oferta Relevante con Gestión ----
 
 datos.tasa_min.isna().mean() 
 datos.tasa_min.describe()
@@ -119,7 +119,7 @@ datos.tasa_min.describe()
 datos.monto_min.isna().mean()
 datos.monto_min.describe()
 
-#--- Desembolsos ----
+#--- 5.2.2) Desembolsos ----
 
 datos.query("flg_exito_4=='exito_desembolso_ibk_ct'").tasa_2022.isna().mean() 
 datos.query("flg_exito_4=='exito_desembolso_ibk_ct'").tasa_2022.describe()
@@ -218,8 +218,6 @@ columnas_sensibilidad_interna = [
 
 datos_oferta_relevante=datos_oferta_relevante[columnas_sensibilidad_interna].copy()
 
-datos_oferta_relevante.to_csv(dir_b+r'/processed/base_sensibilidad_componente_interna.csv', index=False)
-
 #____________________ 7) EDA ----
 
 #~~~~ 7.1) Construcción: Data Panel ----
@@ -302,7 +300,7 @@ aux_tasa_efectividad_global = (
 
 aux_tasa_efectividad_global['bloque_cluster']=aux_tasa_efectividad_global['cluster_comercial'].isin(['Emprendedor Izipay','Nuevo en Expansión','Próximo Recurrente']).map({True:'Sin Deuda', False:'Con Deuda'})
 
-#---- VS: Tasa Desembolsada ----
+#---- 7.2.1) VS: Tasa Desembolsada ----
 
 graficos.plot_efectividad_y_tasa_por_bloques(
     df=aux_tasa_efectividad_global,
@@ -310,10 +308,10 @@ graficos.plot_efectividad_y_tasa_por_bloques(
     columna_bloque='bloque_cluster',
     metrica_efectividad='efectividad',
     columna_tasa='tasa_desembolsada',
-    titulo='Efectividad y Tasa por Clúster Comercial',
+    titulo="Efectividad y Tasa por Clúster Comercial\nHorizonte: Mar' 25 - May' 26",
 )
 
-#---- VS: Materialidad ----
+#---- 7.2.2) VS: Materialidad ----
 
 graficos.plot_efectividad_por_bloques_y_materialidad(
     df=aux_tasa_efectividad_global,
@@ -321,12 +319,12 @@ graficos.plot_efectividad_por_bloques_y_materialidad(
     columna_bloque='bloque_cluster',
     metrica_efectividad='efectividad',
     columna_materialidad='desembolsos',
-    titulo='Efectividad por Clúster Comercial\nBarras de fondo: materialidad del clúster (Desembolsos)',
+    titulo="Efectividad por Clúster Comercial\nHorizonte: Mar' 25 - May' 26\nBarras de fondo: materialidad del clúster (Desembolsos)",
 )
 
 #~~~~ 7.3) Materilidad ----
 
-#---- Global ----
+#---- 7.3.1) Global ----
 
 aux_materialidad_global = (
     data_panel
@@ -350,31 +348,31 @@ graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
     col_segmento='cluster_comercial',
     col_participacion='participacion_leads',
-    titulo='Materialidad: Leads\nPor Segmento Comercial',
+    titulo="Materialidad: Leads\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
     col_segmento='cluster_comercial',
     col_participacion='participacion_monto_ofertado',
-    titulo='Materialidad: Monto Ofertado\nPor Segmento Comercial',
+    titulo="Materialidad: Monto Ofertado\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
     col_segmento='cluster_comercial',
     col_participacion='participacion_desembolsos',
-    titulo='Materialidad: Desembolsos\nPor Segmento Comercial',
+    titulo="Materialidad: Desembolsos\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
     col_segmento='cluster_comercial',
     col_participacion='participacion_monto_desembolsado',
-    titulo='Materialidad: Monto Desembolsado\nPor Segmento Comercial',
+    titulo="Materialidad: Monto Desembolsado\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
-#---- Mensual ----
+#---- 7.3.2) Mensual ----
 
 aux_materialidad_mensual = (
     data_panel.groupby(['periodo', 'cluster_comercial'], observed=True)
@@ -433,7 +431,7 @@ graficos.plot_participacion_segmento_mensual_grid(
     ylabel='Participación (%)',
 )
 
-#---- Promedio Mensual ----
+#---- 7.3.3) Promedio Mensual ----
 
 total_periodos = data_panel['periodo'].nunique()
 
@@ -473,7 +471,7 @@ graficos.plot_participacion_segmento(
     titulo='Materialidad Promedio Mensual: Monto Desembolsado\nPor Segmento Comercial',
     ylabel='Participación (%)')
 
-#---- Reporte: Cumplimiento Materialidad ----
+#---- 7.3.4) Reporte: Cumplimiento Materialidad ----
 
 UMBRAL_MATERIALIDAD=0.05
 
@@ -586,3 +584,7 @@ for periodo in sorted(data_panel['periodo'].unique()):
           f' Efectividad\nPeriodo: {periodo_label}'
       ),
   )
+
+#____________________ 8) Almacenamiento ----
+
+datos_oferta_relevante.to_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_interna.csv',sep='|', index=False)
