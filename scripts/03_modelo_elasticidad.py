@@ -185,18 +185,38 @@ df_seq["spread_within"] = df_seq["spread_dm"] - df_seq.groupby("cluster_modelar"
 
 #---- 7.2.3) Modelamiento ----
 
+#---- 7.2.3) Modelamiento (3 Modelos: Conjunto, Solo Tasa, Solo Spread) ----
 resultados_seq = []
 for grupo in df_seq["cluster_modelar"].unique():
     dg = df_seq[df_seq["cluster_modelar"] == grupo].copy()
-    m = ols("log_efectividad_within ~ log_tasa_within + spread_within - 1", data=dg).fit()
+    
+    # Modelo 1: Conjunto (Tasa + Spread)
+    m_conj = ols("log_efectividad_within ~ log_tasa_within + spread_within - 1", data=dg).fit()
+    
+    # Modelo 2: Solo Tasa
+    m_tasa = ols("log_efectividad_within ~ log_tasa_within - 1", data=dg).fit()
+    
+    # Modelo 3: Solo Spread
+    m_spread = ols("log_efectividad_within ~ spread_within - 1", data=dg).fit()
     
     resultados_seq.append({
         "grupo": grupo,
-        "elast_tasa": m.params["log_tasa_within"],
-        "pval_tasa": m.pvalues["log_tasa_within"],
-        "sens_spread": m.params["spread_within"],
-        "pval_spread": m.pvalues["spread_within"],
-        "r2": m.rsquared
+        # --- Modelo 1: Conjunto ---
+        "conj_elast_tasa": m_conj.params["log_tasa_within"],
+        "conj_pval_tasa": m_conj.pvalues["log_tasa_within"],
+        "conj_sens_spread": m_conj.params["spread_within"],
+        "conj_pval_spread": m_conj.pvalues["spread_within"],
+        "conj_r2": m_conj.rsquared,
+        
+        # --- Modelo 2: Solo Tasa ---
+        "tasa_elast": m_tasa.params["log_tasa_within"],
+        "tasa_pval": m_tasa.pvalues["log_tasa_within"],
+        "tasa_r2": m_tasa.rsquared,
+        
+        # --- Modelo 3: Solo Spread ---
+        "spread_sens": m_spread.params["spread_within"],
+        "spread_pval": m_spread.pvalues["spread_within"],
+        "spread_r2": m_spread.rsquared
     })
 
 df_res_seq = pd.DataFrame(resultados_seq)
@@ -225,15 +245,34 @@ df_sim["spread_dem"] = demeaning_simultaneo(df_sim, "spread")
 resultados_sim = []
 for grupo in df_sim["cluster_modelar"].unique():
     dg = df_sim[df_sim["cluster_modelar"] == grupo].copy()
-    m = ols("log_efectividad_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
+    
+    # Modelo 1: Conjunto (Tasa + Spread)
+    m_conj = ols("log_efectividad_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
+    
+    # Modelo 2: Solo Tasa
+    m_tasa = ols("log_efectividad_dem ~ log_tasa_dem - 1", data=dg).fit()
+    
+    # Modelo 3: Solo Spread
+    m_spread = ols("log_efectividad_dem ~ spread_dem - 1", data=dg).fit()
     
     resultados_sim.append({
         "grupo": grupo,
-        "elast_tasa": m.params["log_tasa_dem"],
-        "pval_tasa": m.pvalues["log_tasa_dem"],
-        "sens_spread": m.params["spread_dem"],
-        "pval_spread": m.pvalues["spread_dem"],
-        "r2": m.rsquared
+        # --- Modelo 1: Conjunto ---
+        "conj_elast_tasa": m_conj.params["log_tasa_dem"],
+        "conj_pval_tasa": m_conj.pvalues["log_tasa_dem"],
+        "conj_sens_spread": m_conj.params["spread_dem"],
+        "conj_pval_spread": m_conj.pvalues["spread_dem"],
+        "conj_r2": m_conj.rsquared,
+        
+        # --- Modelo 2: Solo Tasa ---
+        "tasa_elast": m_tasa.params["log_tasa_dem"],
+        "tasa_pval": m_tasa.pvalues["log_tasa_dem"],
+        "tasa_r2": m_tasa.rsquared,
+        
+        # --- Modelo 3: Solo Spread ---
+        "spread_sens": m_spread.params["spread_dem"],
+        "spread_pval": m_spread.pvalues["spread_dem"],
+        "spread_r2": m_spread.rsquared
     })
 
 df_res_sim = pd.DataFrame(resultados_sim)
