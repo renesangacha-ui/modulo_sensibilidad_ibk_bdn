@@ -60,6 +60,18 @@ funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_mo
 
 datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
 
+
+# Conservamos las entidades que concentran la mayor parte de las inferencias de tasa:
+# 1: BCP
+# 6: BBVA
+# 4: SCOTIA BANK
+# 123: MIBANCO
+# 2: IBK
+
+cod_entidades_inferencia=[1.0,2.0,6.0,4.0,123.0]
+
+datos=datos.query(f"cod_instit_financiera in @cod_entidades_inferencia")
+
 #____________________ 5) Validaciones ----
 
 # Columnas clave
