@@ -56,10 +56,9 @@ datos.flg_exito_4.value_counts()
 # Nos quedamos con los exitos y los fracasos de desembolso no IBK con monto similar con gestión,
 #  que son los que nos interesan para la construcción de la base de sensibilidad.
 
-funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion']
+funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion','fracaso_desembolso_no_ibk_monto_similar_sin_gestion']
 
 datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
-
 
 # Conservamos las entidades que concentran la mayor parte de las inferencias de tasa:
 # 1: BCP

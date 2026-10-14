@@ -54,11 +54,11 @@ datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_
 PERIODO_INICIO=202504
 PERIODO_FIN=202604
 CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Agrupados',
+     'cluster_1_sow_no_nulo': 'Cliente Ancla',
      'cluster_2_sow_no_nulo': 'Socio en Crecimiento',
-     'cluster_3_sow_no_nulo': 'Agrupados',
+     'cluster_3_sow_no_nulo': 'Cuenta Estratégica',
      'cluster_4_sow_no_nulo': 'Gran Cuenta por Conquistar',
-     'cluster_5_sow_no_nulo': 'Agrupados',
+     'cluster_5_sow_no_nulo': 'Maduro Multibanco',
      'cluster_6_sow_no_nulo': 'Cliente por Reactivar',     
      'cluster_1_nulo': 'Cliente Sin Deuda',
      'cluster_2_nulo': 'Cliente Sin Deuda',
