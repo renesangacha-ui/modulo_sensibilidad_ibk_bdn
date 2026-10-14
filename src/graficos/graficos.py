@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, Patch
+import matplotlib.colors as mcolors
 
 #____________________ Funciones ----
 
@@ -684,6 +685,13 @@ PALETA_15 = [
     '#27D75A', '#332288', '#117733', '#CC6677', '#AA4499'
 ]
 
+colores_extras = [
+    mcolors.to_hex(plt.get_cmap('turbo')(i)) for i in np.linspace(0, 1, 85)
+]
+
+PALETA_100 = PALETA_15 + colores_extras
+
+
 def _formatear_periodos_panel(df, columna_periodo):
     sub_df = df.copy()
     meses = {1:'Ene', 2:'Feb', 3:'Mar', 4:'Abr', 5:'May', 6:'Jun',
@@ -701,7 +709,7 @@ def plot_evolutivo_multiserie_panel(
     label_metrica='Efectividad (%)',
     titulo=None,
     multiplicar_100=True,
-    paleta=PALETA_15,
+    paleta=PALETA_100,
 ):
   if df.empty:
     print('El DataFrame no contiene registros para graficar')
@@ -818,7 +826,7 @@ def plot_participacion_panel(
     columna_grupo='cluster_comercial',
     metrica_materialidad='desembolsos',
     titulo=None,
-    paleta=PALETA_15
+    paleta=PALETA_100
 ):
     if df.empty:
         print('El DataFrame no contiene registros para graficar')
@@ -2345,12 +2353,6 @@ def plot_pareto_instituciones(
   plt.tight_layout()
   plt.show()
 
-PALETA_15 = [
-    '#E37222', '#329262', '#1D4290', '#8B0000', '#E69F00'
-    '#0072B2', '#D55E00', '#CC79A7', '#56B4E9', '#009E73',
-    '#27D75A', '#332288', '#117733', '#CC6677', '#AA4499'
-]
-
 def _formatear_periodos_panel(df, columna_periodo):
     sub_df = df.copy()
     meses = {1:'Ene', 2:'Feb', 3:'Mar', 4:'Abr', 5:'May', 6:'Jun',
@@ -2371,7 +2373,7 @@ def plot_evolutivo_multiserie_con_barras_apiladas(
     modo_materialidad='unidad_monetaria',  # 'porcentaje', 'unidad_registros', 'unidad_monetaria'
     titulo=None,
     multiplicar_100='auto',                # 'auto', True o False
-    paleta=PALETA_15,
+    paleta=PALETA_100,
 ):
     if df.empty:
         print('El DataFrame no contiene registros para graficar')

@@ -56,7 +56,7 @@ datos.flg_exito_4.value_counts()
 # Nos quedamos con los exitos y los fracasos de desembolso no IBK con monto similar con gestión,
 #  que son los que nos interesan para la construcción de la base de sensibilidad.
 
-funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion','fracaso_desembolso_no_ibk_monto_similar_sin_gestion']
+funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion']
 
 datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
 
@@ -67,7 +67,33 @@ datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
 # 123: MIBANCO
 # 2: IBK
 
-cod_entidades_inferencia=[1.0,2.0,6.0,4.0,123.0]
+cod_entidades_inferencia=[1.0,
+ 2.0,
+ 6.0,
+ 4.0,
+ 103.0,
+ 123.0,
+ 22.0,
+ 106.0,
+ 148.0,
+ 107.0,
+ 114.0,
+ 228.0,
+ 104.0,
+ 108.0,
+ 55.0,
+ 224.0,
+ 185.0,
+ 112.0,
+ 231.0,
+ 184.0,
+ 109.0,
+ 227.0,
+ 102.0,
+ 171.0,
+ 170.0,
+ 172.0,
+ 169.0]
 
 datos=datos.query(f"cod_instit_financiera in @cod_entidades_inferencia")
 
@@ -228,6 +254,8 @@ columnas_sensibilidad_interna = [
 ]   
 
 datos_oferta_relevante=datos_oferta_relevante[columnas_sensibilidad_interna].copy()
+
+datos_oferta_relevante.groupby(['periodo']).agg(ratio_exito=('indicador_exito','mean'),registros=('llave_interna','size'))
 
 #____________________ 7) EDA ----
 
@@ -520,9 +548,9 @@ for bucket in data_panel['cluster_comercial'].unique():
     graficos.plot_evolutivo_precio_demanda(
         df=df_filtrado,
         columna_demanda='efectividad',
-        columna_precio='tasa_desembolsada',
+        columna_precio='tasa_ofertada',
         columna_materialidad='desembolsos',
-        titulo=f"Evolución de Tasa Desembolsada y Efectividad\n{bucket}",
+        titulo=f"Evolución de Tasa Ofertada y Efectividad\n{bucket}",
         flg_materialidad=True
     )
 

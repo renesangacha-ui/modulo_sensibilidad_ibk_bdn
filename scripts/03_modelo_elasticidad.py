@@ -53,9 +53,10 @@ datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_
 
 PERIODO_INICIO=202504
 PERIODO_FIN=202604
+
 CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Preferencia',
-     'cluster_2_sow_no_nulo': 'Preferencia',
+     'cluster_1_sow_no_nulo': 'Preferentes',
+     'cluster_2_sow_no_nulo': 'Preferentes',
      'cluster_3_sow_no_nulo': 'Ticket Alto - No Preferentes',
      'cluster_4_sow_no_nulo': 'Ticket Alto - No Preferentes',
      'cluster_5_sow_no_nulo': 'Ticket Medio - No Preferentes',
@@ -276,6 +277,8 @@ for grupo in df_sim["cluster_modelar"].unique():
 
 df_res_sim = pd.DataFrame(resultados_sim)
 print(df_res_sim.to_string(index=False))
+
+#____________________ 8) Visualizaciones ----
 
 data_panel_largo = data_panel_sensibilidad[['cluster_modelar', 'periodo', 'tasa_ofertada', 'tasa_desembolsada', 'tasa_mercado']].melt(
     id_vars=['cluster_modelar', 'periodo'], 
