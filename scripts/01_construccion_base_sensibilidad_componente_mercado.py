@@ -404,11 +404,35 @@ cod_entidades_inferencia=[1.0,6.0,4.0,123.0]
 datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna()")
 datos_tasa_mercado=datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna() and cod_instit_financiera in @cod_entidades_inferencia")
 
-datos_tasa_mercado
+
+datos_tasa_mercado['tasa_ultima'].describe(percentiles=[0.01,0.05,0.10, 0.25, 0.50, 0.75, 0.90,0.95,0.99])
 
 #____________________ 8) Procesamiento ----
 
-#~~~~ 8.1) Data panel: Por Entidad ----
+#~~~~ 8.1) Winsorizacion: Inferencia de Tasa ----
+
+UMBRAL_WINSORIZACION=0.025
+
+limites_winsor = datos_tasa_mercado.groupby('cluster_comercial')['tasa_ultima'].agg(
+    limite_inferior=lambda x: x.quantile(UMBRAL_WINSORIZACION),
+    limite_superior=lambda x: x.quantile(1 - UMBRAL_WINSORIZACION)
+).reset_index()
+
+
+datos_tasa_mercado
+
+datos_tasa_mercado = datos_tasa_mercado.merge(limites_winsor, on='cluster_comercial', how='left')
+
+datos_tasa_mercado['tasa_mercado_winsorizada'] = datos_tasa_mercado['tasa_ultima'].clip(
+    lower=datos_tasa_mercado['limite_inferior'], 
+    upper=datos_tasa_mercado['limite_superior']
+)
+
+datos_tasa_mercado.query('tasa_mercado_winsorizada!=tasa_ultima')
+
+datos_tasa_mercado=datos_tasa_mercado.query('tasa_mercado_winsorizada==tasa_ultima')
+
+#~~~~ 8.2) Data panel: Por Entidad ----
 
 # Promedio ponderado seguro
 prom_pond = lambda v, w: (
@@ -420,7 +444,7 @@ prom_pond = lambda v, w: (
 data_panel_mercado_by_entidad = (
     datos_tasa_mercado
     .assign(
-        tasa_x_monto=lambda df: df['tasa_ultima'] * df['delta_deuda_final']
+        tasa_x_monto=lambda df: df['tasa_mercado_winsorizada'] * df['delta_deuda_final']
     )
     .groupby(['cluster','cluster_comercial', 'cod_instit_financiera', 'periodo'], observed=True)
     .agg(
@@ -428,7 +452,7 @@ data_panel_mercado_by_entidad = (
         monto_desembolsado=('delta_deuda_final', 'sum'),
         suma_tasa_x_monto=('tasa_x_monto', 'sum'),
         tasa_mercado=(
-            'tasa_ultima',
+            'tasa_mercado_winsorizada',
             lambda x: prom_pond(
                 x, 
                 datos_tasa_mercado.loc[x.index, 'delta_deuda_final']
