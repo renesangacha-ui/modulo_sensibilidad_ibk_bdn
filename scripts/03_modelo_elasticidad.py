@@ -54,12 +54,12 @@ datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_
 PERIODO_INICIO=202504
 PERIODO_FIN=202604
 CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Cliente Ancla',
-     'cluster_2_sow_no_nulo': 'Socio en Crecimiento',
-     'cluster_3_sow_no_nulo': 'Cuenta Estratégica',
-     'cluster_4_sow_no_nulo': 'Gran Cuenta por Conquistar',
-     'cluster_5_sow_no_nulo': 'Maduro Multibanco',
-     'cluster_6_sow_no_nulo': 'Cliente por Reactivar',     
+     'cluster_1_sow_no_nulo': 'Preferencia',
+     'cluster_2_sow_no_nulo': 'Preferencia',
+     'cluster_3_sow_no_nulo': 'Ticket Alto - No Preferentes',
+     'cluster_4_sow_no_nulo': 'Ticket Alto - No Preferentes',
+     'cluster_5_sow_no_nulo': 'Ticket Medio - No Preferentes',
+     'cluster_6_sow_no_nulo': 'Ticket Medio - No Preferentes',     
      'cluster_1_nulo': 'Cliente Sin Deuda',
      'cluster_2_nulo': 'Cliente Sin Deuda',
      'cluster_3_nulo': 'Cliente Sin Deuda'
@@ -151,7 +151,7 @@ data_panel_sensibilidad=pd.merge(data_panel_sensibilidad_mercado,
 
 #~~~~ 6.3) Creación de Indicadores ----
 
-data_panel_sensibilidad['spread']=data_panel_sensibilidad['tasa_desembolsada']-data_panel_sensibilidad['tasa_mercado']
+data_panel_sensibilidad['spread']=data_panel_sensibilidad['tasa_ofertada']-data_panel_sensibilidad['tasa_mercado']
 
 data_panel_sensibilidad.spread.describe()
 data_panel_sensibilidad.efectividad.describe()
@@ -160,10 +160,10 @@ data_panel_sensibilidad.efectividad.describe()
 
 #~~~~ 7.1) Creación: Variables Auxiliares ----
 
-data_panel_sensibilidad[['cluster_modelar','periodo','efectividad','tasa_desembolsada','spread']]
+data_panel_sensibilidad[['cluster_modelar','periodo','efectividad','tasa_ofertada','spread']]
 
 data_panel_sensibilidad["log_efectividad"] = np.log(data_panel_sensibilidad["efectividad"])
-data_panel_sensibilidad["log_tasa"] = np.log(data_panel_sensibilidad["tasa_desembolsada"])
+data_panel_sensibilidad["log_tasa"] = np.log(data_panel_sensibilidad["tasa_ofertada"])
 
 #~~~~ 7.2) Modelo: Demeaning Secuencial + OLS por bucket ----
 
@@ -185,7 +185,6 @@ df_seq["spread_within"] = df_seq["spread_dm"] - df_seq.groupby("cluster_modelar"
 
 #---- 7.2.3) Modelamiento ----
 
-#---- 7.2.3) Modelamiento (3 Modelos: Conjunto, Solo Tasa, Solo Spread) ----
 resultados_seq = []
 for grupo in df_seq["cluster_modelar"].unique():
     dg = df_seq[df_seq["cluster_modelar"] == grupo].copy()
@@ -277,3 +276,20 @@ for grupo in df_sim["cluster_modelar"].unique():
 
 df_res_sim = pd.DataFrame(resultados_sim)
 print(df_res_sim.to_string(index=False))
+
+data_panel_largo = data_panel_sensibilidad[['cluster_modelar', 'periodo', 'tasa_ofertada', 'tasa_desembolsada', 'tasa_mercado']].melt(
+    id_vars=['cluster_modelar', 'periodo'], 
+    var_name='tasa', 
+    value_name='valor'
+)
+
+for bucket in data_panel_largo.cluster_modelar.unique():
+
+    graficos.plot_evolutivo_multiserie_panel(
+        df=data_panel_largo.query(f"cluster_modelar=='{bucket}'"),
+        columna_periodo='periodo',
+        columna_grupo='tasa',
+        metrica='valor',
+        label_metrica='Tasa (%)',
+        titulo=f'Evolutivos de Tasa\n{bucket}'
+    )

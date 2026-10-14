@@ -404,7 +404,6 @@ cod_entidades_inferencia=[1.0,6.0,4.0,123.0]
 datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna()")
 datos_tasa_mercado=datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna() and cod_instit_financiera in @cod_entidades_inferencia")
 
-
 datos_tasa_mercado['tasa_ultima'].describe(percentiles=[0.01,0.05,0.10, 0.25, 0.50, 0.75, 0.90,0.95,0.99])
 
 #____________________ 8) Procesamiento ----
@@ -430,7 +429,7 @@ datos_tasa_mercado['tasa_mercado_winsorizada'] = datos_tasa_mercado['tasa_ultima
 
 datos_tasa_mercado.query('tasa_mercado_winsorizada!=tasa_ultima')
 
-datos_tasa_mercado=datos_tasa_mercado.query('tasa_mercado_winsorizada==tasa_ultima')
+# datos_tasa_mercado=datos_tasa_mercado.query('tasa_mercado_winsorizada==tasa_ultima')
 
 #~~~~ 8.2) Data panel: Por Entidad ----
 
