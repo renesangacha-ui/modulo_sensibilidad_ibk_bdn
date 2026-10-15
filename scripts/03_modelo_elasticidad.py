@@ -55,15 +55,15 @@ PERIODO_INICIO=202504
 PERIODO_FIN=202604
 
 CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Preferentes',
-     'cluster_2_sow_no_nulo': 'Preferentes',
-     'cluster_3_sow_no_nulo': 'Ticket Alto - No Preferentes',
-     'cluster_4_sow_no_nulo': 'Ticket Alto - No Preferentes',
-     'cluster_5_sow_no_nulo': 'Ticket Medio - No Preferentes',
-     'cluster_6_sow_no_nulo': 'Ticket Medio - No Preferentes',     
-     'cluster_1_nulo': 'Cliente Sin Deuda',
-     'cluster_2_nulo': 'Cliente Sin Deuda',
-     'cluster_3_nulo': 'Cliente Sin Deuda'
+     'cluster_1_sow_no_nulo': 'Fidelizados',
+     'cluster_2_sow_no_nulo': 'Fidelizados',
+     'cluster_3_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
+     'cluster_4_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
+     'cluster_5_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',
+     'cluster_6_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',     
+     'cluster_1_nulo': 'Sin Deuda',
+     'cluster_2_nulo': 'Sin Deuda',
+     'cluster_3_nulo': 'Sin Deuda'
 }
 
 #____________________ 5) Funnel ----
