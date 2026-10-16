@@ -79,6 +79,94 @@ mapeo_clusters = {
 datos['cluster_comercial'] = datos['cluster'].map(mapeo_clusters).fillna(datos['cluster'])
 datos[['cluster_comercial','cluster']].value_counts().reset_index()
 
+#~~~~ 5.2) Imputaciones ----
+
+datos.pasivosprom_u12m.isna().sum()
+datos.deuda_directa_vig_total_sf_u12m.isna().sum()
+
+# No se necesitan imputaciones a las variables clave
+
+#~~~~ 5.3) Categorizaciones ----
+
+#---- 5.3.1) Proximo Recurrente y Nuevo en Expansión ----
+
+bins_monto_min=[0, 170_000,250_000,np.inf]
+labels_monto_min=['Hasta S/170K', 'Hasta S/250K','Más de S/ 250K']
+
+pd.cut(datos['monto_min'],bins=bins_monto_min, labels=labels_monto_min)
+
+datos['subsegmento_monto_ofertado_sin_deuda']=np.where(datos['cluster_comercial'].isin(["Próximo Recurrente","Nuevo en Expansión"]),
+         pd.cut(datos['monto_min'],bins=bins_monto_min, labels=labels_monto_min, right=False),
+         np.nan)
+
+datos.query("subsegmento_monto_ofertado_sin_deuda.notna()").cluster_comercial.value_counts(dropna=False)
+datos.query("subsegmento_monto_ofertado_sin_deuda.isna()").cluster_comercial.value_counts(dropna=False)
+
+#---- 5.3.2) Emprendendor Izipay ----
+
+bins_pasivos=[0, 1_000,20_000,np.inf]
+labels_pasivos=['Hasta S/ 1K', 'Hasta S/ 20K','Más de S/ 20K']
+datos.query('pasivosprom_u12m==0')
+
+pd.cut(datos['pasivosprom_u12m'],bins=bins_pasivos, labels=labels_pasivos,right=False).value_counts(dropna=False)
+
+datos['subsegmento_pasivos_sin_deuda']=np.where(datos['cluster_comercial'].isin(["Emprendedor Izipay"]),
+        pd.cut(datos['pasivosprom_u12m'],bins=bins_pasivos, labels=labels_pasivos,right=False),
+         np.nan)
+
+datos.query("subsegmento_pasivos_sin_deuda.notna()").cluster_comercial.value_counts(dropna=False)
+datos.query("subsegmento_pasivos_sin_deuda.isna()").cluster_comercial.value_counts(dropna=False)
+
+#---- 5.3.3) Cliente Ancla & Cuenta Estrategica & Maduro Multibanco ----
+
+bins_monto_min=[0, 170_000, 250_000, 350_000,np.inf]
+labels_monto_min=['Hasta S/170K', 'Hasta S/250K','Hasta S/350K','Más de S/ 350K']
+
+pd.cut(datos['monto_min'],bins=bins_monto_min, labels=labels_monto_min)
+
+datos['subsegmento_monto_ofertado_con_deuda']=np.where(datos['cluster_comercial'].isin(["Cliente Ancla","Cuenta Estratégica","Maduro Multibanco"]),
+         pd.cut(datos['monto_min'],bins=bins_monto_min, labels=labels_monto_min, right=False),
+         np.nan)
+
+datos.query("subsegmento_monto_ofertado_con_deuda.notna()").cluster_comercial.value_counts(dropna=False)
+datos.query("subsegmento_monto_ofertado_con_deuda.isna()").cluster_comercial.value_counts(dropna=False)
+
+#---- 5.3.4) Socio en Crecimiento y Gran Cuenta por Conquistar ----
+
+bins_pasivos=[0, 1_000,5_000,np.inf]
+labels_pasivos=['Hasta S/ 1K', 'Hasta S/ 5K','Más de S/ 5K']
+
+datos['subsegmento_pasivos_con_deuda']=np.where(datos['cluster_comercial'].isin(["Socio en Crecimiento","Cliente por Reactivar"]),
+        pd.cut(datos['pasivosprom_u12m'],bins=bins_pasivos, labels=labels_pasivos,right=False),
+         np.nan)
+
+datos.query("subsegmento_pasivos_con_deuda.notna()").cluster_comercial.value_counts(dropna=False)
+datos.query("subsegmento_pasivos_con_deuda.isna()").cluster_comercial.value_counts(dropna=False)
+
+#---- 5.3.5) Gran Cuenta por Conquistar ----
+
+bins_deuda_sf=[0, 1_500_000,3_800_000,np.inf]
+labels_deuda_sf=['Hasta S/1.5 MM', 'Hasta S/3.8 MM','Más de S/3.8 MM']
+
+pd.cut(datos['deuda_directa_vig_ibk_sf_u12m'],bins=bins_deuda_sf, labels=labels_deuda_sf,right=False)
+
+datos['subsegmento_deuda_sf_con_deuda']=np.where(datos['cluster_comercial'].isin(["Gran Cuenta por Conquistar"]),
+        pd.cut(datos['deuda_directa_vig_ibk_sf_u12m'],bins=bins_deuda_sf, labels=labels_deuda_sf,right=False),
+        np.nan)
+
+datos.query("subsegmento_deuda_sf_con_deuda.notna()").cluster_comercial.value_counts(dropna=False)
+datos.query("subsegmento_deuda_sf_con_deuda.isna()").cluster_comercial.value_counts(dropna=False)
+
+#---- 5.3.6) Subsegmento ----
+
+columnas_subsegmentos=['subsegmento_monto_ofertado_sin_deuda','subsegmento_pasivos_sin_deuda','subsegmento_monto_ofertado_con_deuda','subsegmento_pasivos_con_deuda','subsegmento_deuda_sf_con_deuda']
+
+datos['subsegmento']=datos[columnas_subsegmentos].bfill(axis=1).iloc[:, 0]
+
+#---- 5.3.7) Recodificación del Segmento ----
+
+datos['cluster_comercial']=datos['cluster_comercial'].astype(str)+ ' & ' + datos['subsegmento'].astype(str)
+
 #____________________ 6) Validaciones ----
 
 # Columnas clave

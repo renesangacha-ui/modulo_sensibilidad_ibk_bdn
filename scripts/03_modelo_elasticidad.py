@@ -45,6 +45,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 datos_sensibilidad_mercado=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_mercado.csv',sep='|')
 datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_interna.csv',sep='|')
+validacion_materialidad=pd.read_csv(dir_r+r'/bases/V01/validacion_materialidad.csv',sep='|')
 
 #____________________ 4) Parametros ----
 
@@ -53,18 +54,6 @@ datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_
 
 PERIODO_INICIO=202504
 PERIODO_FIN=202604
-
-CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Fidelizados',
-     'cluster_2_sow_no_nulo': 'Fidelizados',
-     'cluster_3_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
-     'cluster_4_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
-     'cluster_5_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',
-     'cluster_6_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',     
-     'cluster_1_nulo': 'Sin Deuda',
-     'cluster_2_nulo': 'Sin Deuda',
-     'cluster_3_nulo': 'Sin Deuda'
-}
 
 #____________________ 5) Funnel ----
 
@@ -75,11 +64,8 @@ datos_sensibilidad_mercado=datos_sensibilidad_mercado.query(f'periodo>={PERIODO_
 
 #~~~~ 6.1) Identificación: Cluster de Modelamiento ----
 
-datos_sensibilidad_mercado['cluster_modelar']=datos_sensibilidad_mercado['cluster'].map(CLUSTER_MODELAMIENTO)
-datos_sensibilidad_interna['cluster_modelar']=datos_sensibilidad_interna['cluster'].map(CLUSTER_MODELAMIENTO)
-
-datos_sensibilidad_mercado.value_counts(['cluster_modelar','cluster']).reset_index()
-datos_sensibilidad_interna.value_counts(['cluster_modelar','cluster']).reset_index()
+datos_sensibilidad_interna['cluster_modelar']=datos_sensibilidad_interna['cluster_comercial']
+datos_sensibilidad_mercado['cluster_modelar']=datos_sensibilidad_mercado['cluster_comercial']
 
 #~~~~ 6.2) Construcción: Data Panel Sensibilidad ----
 
@@ -98,8 +84,6 @@ data_panel_sensibilidad_mercado = (
     )
     .reset_index()
 )
-
-data_panel_sensibilidad_mercado.value_counts('cluster_modelar')
 
 #---- 6.2.2) Construcción Data Panel: Sensibilidad Interna ----
 
@@ -149,6 +133,32 @@ data_panel_sensibilidad=pd.merge(data_panel_sensibilidad_mercado,
          data_panel_sensibilidad_interna,
          how='outer',
          on=['cluster_modelar','periodo'])
+
+#---- 6.2.4) Identificación: Cluster con Materialidad ----
+
+validacion_materialidad.head().T
+
+buckets_validos=(
+   validacion_materialidad
+   .query(f'desembolsos!=0 and desembolsos.notna() and periodo>={PERIODO_INICIO} and periodo<={PERIODO_FIN}')
+    .groupby('cluster_comercial')
+    .agg(conteo=('cluster_comercial','size'),
+         flg_cumplimiento_mat_des_n=('flg_cumplimiento_mat_des_n','sum'),
+         flg_cumplimiento_mat_des_monto=('flg_cumplimiento_mat_des_monto','sum'))
+    .reset_index()
+)
+
+buckets_validos=(
+   buckets_validos
+   .query('conteo==13 and flg_cumplimiento_mat_des_monto>=9 and flg_cumplimiento_mat_des_n>=9')   
+)
+
+listado_buckets_validos=buckets_validos.cluster_comercial.to_list()
+
+data_panel_sensibilidad.value_counts('cluster_modelar')
+
+# Filtro de clusters con materialidad
+data_panel_sensibilidad=data_panel_sensibilidad.query("cluster_modelar in @listado_buckets_validos")
 
 #~~~~ 6.3) Creación de Indicadores ----
 
