@@ -28,10 +28,13 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree, export_text
 from sklearn.inspection import permutation_importance
 from sklearn.calibration import calibration_curve
 
+from statsmodels.formula.api import ols
+
 import xgboost as xgb
 import shap
 from tqdm.auto import tqdm
 from joblib import Parallel, delayed
+import statsmodels.api as sm
 
 sys.path.append("..")
 import src.modelamiento.funcionesmodelamiento as mdl
@@ -63,6 +66,8 @@ PERIODO_INICIO=202504
 PERIODO_FIN=202604
 SEMILLA_ALEATORIZACION=5646
 PORC_PARTICION_DEV=0.3
+UMBRAL_CRITICO_COMPLETITUD=0.2
+ULTIMO_MES_DEV=202601
 
 #____________________ 5) Funnel ----
 
@@ -72,7 +77,7 @@ funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_mo
 
 datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
 
-#____________________ 6) Procesamiento ----
+#____________________ 6) Preprocesamiento ----
 
 #~~~~ 6.1) Reescalamiento ----
 
@@ -95,13 +100,33 @@ mapeo_clusters = {
 datos['cluster_comercial'] = datos['cluster'].map(mapeo_clusters).fillna(datos['cluster'])
 datos[['cluster_comercial','cluster']].value_counts().reset_index()
 
+CLUSTER_MACROPERFILES={
+     'cluster_1_sow_no_nulo': 'Fidelizados',
+     'cluster_2_sow_no_nulo': 'Fidelizados',
+     'cluster_3_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
+     'cluster_4_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
+     'cluster_5_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',
+     'cluster_6_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',     
+     'cluster_1_nulo': 'Sin Deuda',
+     'cluster_2_nulo': 'Sin Deuda',
+     'cluster_3_nulo': 'Sin Deuda'
+}
+
+datos['macroperfil'] = datos['cluster'].map(CLUSTER_MACROPERFILES).fillna(datos['cluster'])
+datos[['macroperfil','cluster']].value_counts().reset_index()
+
 datos['nombre_ifi']=datos['cod_instit_financiera'].map({1.0:'BCP', 6.0: 'BBVA', 4.0:'SCOTIA', 123.0:'MI BANCO'}).fillna('OTROS')
+
+#~~~~ 6.3) Nuevas Variables ----
+
+datos['tasa_cliente']=np.where(datos['tasa_desembolsada'].isna(),datos['tasa_min'],datos['tasa_desembolsada'])
+datos['monto_cliente']=np.where(datos['monto_desembolsado'].isna(),datos['monto_min'],datos['monto_desembolsado'])
 
 #____________________ 7) Segmentación: Árbol de decisión ----
 
-#~~~~ 7.1) Construcción: Base Propension ----
+#~~~~ 7.1) Construcción: Base de Propension ----
 
-datos_oferta_relevante = (
+base_propension = (
     datos
     .sort_values(
         by=['llave_interna', 'flg_exito_4'],
@@ -113,26 +138,364 @@ datos_oferta_relevante = (
     )
 )
 
-#~~~~ 7.2) Procesamiento ----
+#~~~~ 7.2) Procesamiento Inicial: Base de Propensión ----
 
 #---- 7.2.1) Tratamiento: Monto ofertado ----
 
-datos_oferta_relevante['monto_ofertado_ajustado'] = np.where(
-    datos_oferta_relevante['monto_desembolsado'].isna(),
-    datos_oferta_relevante['monto_min'],
+base_propension['monto_ofertado_ajustado'] = np.where(
+    base_propension['monto_desembolsado'].isna(),
+    base_propension['monto_min'],
     np.where(
-        datos_oferta_relevante['monto_desembolsado'] > datos_oferta_relevante['monto_min'],
-        datos_oferta_relevante['monto_desembolsado'],
-        datos_oferta_relevante['monto_min']
+        base_propension['monto_desembolsado'] > base_propension['monto_min'],
+        base_propension['monto_desembolsado'],
+        base_propension['monto_min']
     )
 )
 
-datos_oferta_relevante.periodo.value_counts().sort_index()
+base_propension.periodo.value_counts().sort_index()
 
-#~~~~ 7.3) Separación de Bases: Dev/OOT ----
+#---- 7.2.2) Identificación de Variables ----
 
-oot=datos_oferta_relevante.query(f'periodo>=202602')
-dev=datos_oferta_relevante.query(f'periodo<202602')
+var_dependiente='indicador_exito'
+var_ponderacion='monto_ofertado_ajustado'
+
+VARIABLES_BASE_BRUTA= base_propension.columns.to_list().copy()
+
+var_enteras = [
+    'plazo_min',
+    'plazo_max',
+    'antiguedad_empresa',
+    'nivel_ventas'
+]
+
+var_continuas = [
+    'tasa_min',
+    'tasa_max',
+    'monto_min',
+    'monto_max',
+    'tasa_cliente',
+    'monto_cliente',
+    'pasivosprom_u3m',
+    'pasivosprom_u6m',
+    'pasivosprom_u12m',
+    'salprom_creditos_u03m',
+    'salprom_creditos_u06m',
+    'salprom_creditos_u12m',
+    'vol_izipay_u03m',
+    'vol_izipay_u06m',
+    'suma_uai_u12m',
+    'promedio_uai_u12m',
+    'deuda_directa_vig_ibk_sf_u03m',
+    'deuda_directa_vig_ibk_sf_u06m',
+    'deuda_directa_vig_ibk_sf_u12m',
+    'deuda_directa_vig_total_sf_u03m',
+    'deuda_directa_vig_total_sf_u06m',
+    'deuda_directa_vig_total_sf_u12m',
+    'avg_deuda_directa_vig_ibk_sf_u03m',
+    'avg_deuda_directa_vig_ibk_sf_u06m',
+    'avg_deuda_directa_vig_ibk_sf_u12m',
+    'avg_deuda_directa_vig_total_sf_u03m',
+    'avg_deuda_directa_vig_total_sf_u06m',
+    'avg_deuda_directa_vig_total_sf_u12m',
+    'saldo_alta',
+    'sow_deuda_u12m',
+    'monto_desembolsado',
+    'tasa_2022',
+    'tasa_evol',
+    'delta_deuda_final',
+    'saldo_desembolso',
+    'tasa_ultima',
+    'tasa_desembolsada',
+    'monto_ofertado_ajustado'
+]
+
+var_binarios = [
+    'flag_izipay_u03m',
+    'flag_izipay_u06m',
+    'flag_izipay_u12m',
+    'flg_desembolso_ibk_all_products',
+    'indicador_exito'
+]
+
+var_categoricas = [
+    'conteo',
+    'segmento_abc',
+    'sei_mcdo',
+    'departamento',
+    'cod_instit_financiera',
+    'cluster',
+    'gestion_final',
+    'flg_gestion',
+    'producto',
+    'campana_vpc',
+    'flg_exito_4',
+    'cod_entidad',
+    'conteo_inferencia',
+    'cluster_comercial',
+    'macroperfil',
+    'nombre_ifi'
+    
+]
+var_fechas = [
+    'periodo',
+    'codmes',
+    'antiguedad_izipay',
+    'codmes_2',
+    'periodo_dt',
+    'fecha',
+    'anio',
+    'trimestre',
+    'periodo_q',
+    'fec_desembolso'
+]
+
+var_ids = [
+    'llave_interna',
+    'key_value'
+]
+
+var_numericas = var_enteras+var_continuas
+
+VARIABLES_CLAVE_FASE_I= list(dict.fromkeys(
+    [var_dependiente, var_ponderacion]
+
+))
+
+#---- 7.2.3) Imputacion by Negocio ----
+
+# Para las siguientes variables de comportamiento financiero IBK/RCC, la ausencia de
+# información se interpreta como ausencia de relación o producto financiero,
+# por lo que se asigna valor cero. Para variables donde la falta de información
+# no implica ausencia del comportamiento (ej. ingresos o datos personales), se
+# aplican otros tratamientos de imputación.
+
+base_propension.isnull().sum()
+
+reglas_imputacion_negocio={
+    v: 0
+    for v in [
+        'salprom_creditos_u03m',
+        'salprom_creditos_u06m',
+        'salprom_creditos_u12m',
+        'avg_deuda_directa_vig_ibk_sf_u12m',
+        'avg_deuda_directa_vig_ibk_sf_u06m',
+        'avg_deuda_directa_vig_total_sf_u12m',
+        'avg_deuda_directa_vig_total_sf_u06m',
+        'avg_deuda_directa_vig_ibk_sf_u03m',
+        'avg_deuda_directa_vig_total_sf_u03m'
+    ]
+}
+
+base_propension, resumen_imputacion_negocio = mdl.aplicar_reglas_negocio_na(
+    base_propension,
+    reglas_imputacion_negocio
+)
+
+resumen_imputacion_negocio
+
+#~~~~ 7.3) Identificación de Variables Aptas ----
+
+#---- 7.3.1) Completitud ----
+
+# Identificación de variables aptas respecto a completitud de información,
+# descartando aquellas con niveles de missing que puedan afectar el modelamiento.
+
+completitud_global=(
+    100*base_propension.isnull()
+    .mean()
+    .sort_values(ascending=False)
+    .to_frame('pct_faltantes')
+)
+
+completitud_global.query(f"pct_faltantes>=100*{UMBRAL_CRITICO_COMPLETITUD}")
+completitud_global
+
+VAR_BANNED_INCOMPLETITUD=completitud_global.query(f"pct_faltantes>=100*{UMBRAL_CRITICO_COMPLETITUD}").index.to_list()
+print("⚠️ Variables con problemas de completitud:")
+print("\n".join([f" - {v}" for v in VAR_BANNED_INCOMPLETITUD]))
+
+VAR_VALIDAS_COMPLETITUD=[var for var in VARIABLES_BASE_BRUTA if var not in VAR_BANNED_INCOMPLETITUD]
+
+if set(VARIABLES_CLAVE_FASE_I).issubset(VAR_VALIDAS_COMPLETITUD):
+    print("✅ Todas las variables clave superan la validación de completitud.")
+else:
+    vars_no_validas = sorted(set(VARIABLES_CLAVE_FASE_I) - set(VAR_VALIDAS_COMPLETITUD))
+    print(f"⚠️ Las siguientes variables clave presentan problemas de completitud:")
+    print("\n".join([f" - {v}" for v in vars_no_validas]))
+
+#---- 7.3.2) Variabilidad ----
+
+# Identificación de variables con suficiente variabilidad para aportar información
+# relevante al proceso de modelamiento.
+
+constantes_global=mdl.detectar_variables_constantes(base_propension[VAR_VALIDAS_COMPLETITUD],     
+                              umbral_categoria=0.98,
+                              umbral_unico=0.98,
+                              tolerancia_std=1e-8)
+
+constantes_global.query('estado=="OK"').shape[0]/len(VAR_VALIDAS_COMPLETITUD)
+
+constantes_global.query('tipo=="Categorica" and estado=="OK"')
+constantes_global.query('tipo!="Categorica" and estado=="OK"')
+
+constantes_global.query('tipo=="Categorica" and estado!="OK"')
+constantes_global.query('tipo!="Categorica" and estado!="OK"')
+
+constantes_global.query(f"variable in {[var_dependiente, var_ponderacion]}")
+
+VAR_BANNED_CONSTANTES=constantes_global.query('estado!="OK"').variable.to_list()
+print("⚠️ Variables con problemas de poca variabilidad:")
+print("\n".join([f" - {v}" for v in VAR_BANNED_CONSTANTES]))
+
+VAR_VALIDAS_VARIABILIDAD=[var for var in VAR_VALIDAS_COMPLETITUD if var not in VAR_BANNED_CONSTANTES]
+
+if set(VARIABLES_CLAVE_FASE_I).issubset(VAR_VALIDAS_VARIABILIDAD):
+    print("✅ Todas las variables clave superan la validación de variabilidad.")
+else:
+    vars_no_validas = sorted(set(VARIABLES_CLAVE_FASE_I) - set(VAR_VALIDAS_VARIABILIDAD))
+    print(f"⚠️ Las siguientes variables clave presentan problemas de variabilidad:")
+    print("\n".join([f" - {v}" for v in vars_no_validas]))
+
+#---- 7.3.3) Estabilidad ----
+
+# Identificación de variables con baja estabilidad temporal, que podrían afectar
+# la robustez y capacidad de generalización del modelo.
+
+# Omitimos variables, principalmente de identificación, para los analisis de estabilidad
+VAR_OMITIDAS_ESTABILIDAD=var_ids+var_fechas
+
+psi_detalle, psi_resumen, psi_omitidas = mdl.calcular_psi_temporal(
+    df=base_propension,
+    variables=VAR_VALIDAS_VARIABILIDAD,
+    columna_periodo="periodo",
+    periodo_referencia=ULTIMO_MES_DEV,
+    n_bins=5,
+    top_n_categorias=5,
+    variables_omitir=VAR_OMITIDAS_ESTABILIDAD
+)
+
+psi_detalle
+psi_resumen
+psi_omitidas
+
+VAR_BANNED_ESTABILIDAD=(psi_resumen.query('estado not in ["Estable","Cambio moderado"]').variable.to_list() 
+                        + psi_omitidas.query('motivo not in ["Excluida por el usuario"]').variable.to_list())
+
+print("⚠️ Variables con problemas de estabilidad:")
+print("\n".join([f" - {v}" for v in VAR_BANNED_ESTABILIDAD]))
+
+VAR_VALIDAS_ESTABILIDAD=[var for var in VAR_VALIDAS_VARIABILIDAD if var not in VAR_BANNED_ESTABILIDAD]
+
+if set(VARIABLES_CLAVE_FASE_I).issubset(VAR_VALIDAS_ESTABILIDAD):
+    print("✅ Todas las variables clave superan la validación de estabilidad temporal.")
+else:
+    vars_no_validas = sorted(set(VARIABLES_CLAVE_FASE_I) - set(VAR_VALIDAS_ESTABILIDAD))
+    print(f"⚠️ Las siguientes variables clave presentan problemas de estabilidad temporal:")
+    print("\n".join([f" - {v}" for v in vars_no_validas]))
+
+#---- 7.3.4) Validacion de consistencia ----
+
+# Se evalúa la consistencia y razonabilidad de la información, verificando que las
+# variables presenten comportamientos coherentes con el contexto del negocio.
+# Asimismo, se revisan posibles inconsistencias, relaciones inesperadas entre
+# variables y valores no esperados que puedan afectar la calidad del modelamiento.
+
+#____ Razonabilidad informacion (univariada) ----
+
+VAR_ANALISIS_CONSISTENCIA=[var for var in VAR_VALIDAS_ESTABILIDAD if var not in (VAR_OMITIDAS_ESTABILIDAD)]
+
+#____ Estadísticos ----
+
+descriptivos_num, descriptivos_cat =mdl.descriptivos_variables(base_propension, VAR_ANALISIS_CONSISTENCIA)
+
+descriptivos_num
+
+#____ Plots----
+
+i=1
+for var in VAR_ANALISIS_CONSISTENCIA:
+    print(f"\t\t\t{var} - {i} de {len(VAR_ANALISIS_CONSISTENCIA)}")
+    mdl.graficar_distribucion(
+        base_propension,
+        var,
+        max_categorias=5
+    )
+    i=i+1
+
+# Análisis:
+# Se observa que las variables presentan comportamientos consistentes y acordes con
+# lo esperado según el contexto del negocio.
+
+#____ Caracterización de Variables: Númericas ----
+
+mdl.evaluar_distribucion_numericas(
+    base_propension,
+    [var for var in VAR_ANALISIS_CONSISTENCIA if var in var_numericas],
+    umbral_cv=1,
+    umbral_cardinalidad=10,
+    umbral_outlier=0.01
+)
+
+#____ Caracterización de Variables: Categoricas y Binarias ----
+
+diagnostico_categoricas, variables_one_hot, variables_revision = (
+    mdl.evaluar_cardinalidad_categoricas(
+        base_propension,
+        [var for var in VAR_ANALISIS_CONSISTENCIA if var in (var_categoricas+var_binarios)],
+        umbral_categorias=5,
+        umbral_dominancia=0.95,
+        umbral_frecuencia_minima=0.01
+    )
+)
+
+diagnostico_categoricas
+
+#____ Exclusion por inconsistencia univariada ----
+
+VAR_BANNED_CONSISTENCIA_UNIVARIADA=[]
+
+print("⚠️ Variables con problemas de consistencia univariada:")
+print("\n".join([f" - {v}" for v in VAR_BANNED_CONSISTENCIA_UNIVARIADA]))
+
+VAR_VALIDAS_CONSISTENCIA_UNIVARIADA=[var for var in VAR_VALIDAS_ESTABILIDAD if var not in VAR_BANNED_CONSISTENCIA_UNIVARIADA]
+
+if set(VARIABLES_CLAVE_FASE_I).issubset(VAR_VALIDAS_CONSISTENCIA_UNIVARIADA):
+    print("✅ Todas las variables clave superan la validación de consistencia univariada.")
+else:
+    vars_no_validas = sorted(set(VARIABLES_CLAVE_FASE_I) - set(VAR_VALIDAS_CONSISTENCIA_UNIVARIADA))
+    print(f"⚠️ Las siguientes variables clave presentan problemas de consistencia univariada:")
+    print("\n".join([f" - {v}" for v in vars_no_validas]))
+
+#---- 7.3.5) Consistencia entre variables ----
+
+#____ Exclusion por inconsistencia multivariada ----
+
+VAR_BANNED_CONSISTENCIA_MULTIVARIADA=[]
+
+print("⚠️ Variables con problemas de consistencia multivariada:")
+print("\n".join([f" - {v}" for v in VAR_BANNED_CONSISTENCIA_MULTIVARIADA]))
+
+VAR_VALIDAS_CONSISTENCIA_MULTIVARIADA=[var for var in VAR_VALIDAS_CONSISTENCIA_UNIVARIADA if var not in VAR_BANNED_CONSISTENCIA_MULTIVARIADA]
+
+if set(VARIABLES_CLAVE_FASE_I).issubset(VAR_VALIDAS_CONSISTENCIA_MULTIVARIADA):
+    print("✅ Todas las variables clave superan la validación de consistencia multivariada.")
+else:
+    vars_no_validas = sorted(set(VARIABLES_CLAVE_FASE_I) - set(VAR_VALIDAS_CONSISTENCIA_MULTIVARIADA))
+    print(f"⚠️ Las siguientes variables clave presentan problemas de consistencia multivariada:")
+    print("\n".join([f" - {v}" for v in vars_no_validas]))
+
+#---- 7.3.6) Variables seleccionadas posterior al EDA ----
+
+# Se consolidan las variables que cumplen los criterios de diagnóstico definidos
+# en la Fase I (completitud, variabilidad, estabilidad y consistencia), conformando
+# el conjunto de variables aptas para continuar con la etapa de tratamiento y modelamiento.
+
+VAR_VALIDAS_POST_EDA = VAR_VALIDAS_CONSISTENCIA_MULTIVARIADA.copy()
+
+#~~~~ 7.4) Partición: Train/Test/OOT ----
+
+oot=base_propension.query(f'periodo>{ULTIMO_MES_DEV}')
+dev=base_propension.query(f'periodo<={ULTIMO_MES_DEV}')
 
 train_df, test_df = train_test_split(
     dev, 
@@ -151,47 +514,832 @@ oot['base']='oot'
 base_propension = pd.concat([train_df, test_df,oot], ignore_index=True)
 del train_df, test_df,oot
 
-#~~~~ 7.4) Selección de variables óptimas ----
+#~~~~ 7.5) Framework: Ingeniería de Variables - Tratamiento y Transformación ----
 
-#---- 7.4.1) Identificación de Variables ----
+#---- 7.5.1) Identificacion de variables ----
 
-var_dependiente='indicador_exito'
+# En esta fase se aplican los tratamientos definidos sobre las variables aptas
+# identificadas en la Fase I, ajustando los parámetros únicamente con la base de
+# entrenamiento para evitar fuga de información y asegurar una correcta
+# generalización hacia los conjuntos de validación.
 
-baneadas = []
+# Variables identificadoras (a excluir):
+VAR_IDENTIFICADORAS=var_ids+var_fechas
 
-variables_numericas_aptas=['monto_min',
-    'nivel_ventas',
-    'pasivosprom_u3m',
-    'pasivosprom_u6m',
-    'pasivosprom_u12m',
-    'flag_izipay_u03m',
-    'flag_izipay_u06m',
-    'flag_izipay_u12m',
-    'suma_uai_u12m',
-    'deuda_directa_vig_total_sf_u03m',
-    'deuda_directa_vig_total_sf_u06m',
-    'deuda_directa_vig_total_sf_u12m',
+# Variables válidas para ingeniería:
+VAR_ING_NUMERICAS = [
+    var for var in VAR_VALIDAS_POST_EDA 
+    if var not in VAR_IDENTIFICADORAS and var in var_numericas
+]
+
+VAR_ING_CATEGORICAS = [
+    var for var in VAR_VALIDAS_POST_EDA 
+    if var not in VAR_IDENTIFICADORAS and var in var_categoricas
+]
+
+VAR_ING_BINARIAS = [
+    var for var in VAR_VALIDAS_POST_EDA 
+    if var not in VAR_IDENTIFICADORAS and var in var_binarios
+]
+
+#---- 7.5.2) Caracterización de Variables ----
+
+mdl.evaluar_distribucion_numericas(
+    base_propension.query('base=="train"'),
+    [var for var in VAR_ING_NUMERICAS],
+    umbral_cv=1,
+    umbral_cardinalidad=10,
+    umbral_outlier=0.01
+)
+
+diagnostico_categoricas, variables_one_hot, variables_revision = (
+    mdl.evaluar_cardinalidad_categoricas(
+        base_propension.query('base=="train"'),
+        [var for var in (VAR_ING_CATEGORICAS+VAR_ING_BINARIAS) ],
+        umbral_categorias=5,
+        umbral_dominancia=0.95,
+        umbral_frecuencia_minima=0.01
+    )
+)
+
+diagnostico_categoricas
+
+#---- 7.5.3) Funciones ----
+
+# Framework de preparación de variables para modelamiento.
+# Aprende parámetros únicamente con train y los aplica sobre train, test y OOT.
+#
+# Incluye:
+# - Imputación de valores faltantes.
+# - Tratamiento de valores extremos mediante winsorización (opcional).
+# - Validación y transformación de variables binarias/categóricas.
+# - One Hot Encoding con cardinalidad controlada.
+# - Generación de variables derivadas.
+#
+# Objetivo: asegurar consistencia en la preparación de variables y evitar
+# fuga de información entre muestras.
+
+def _clave_woe(valor):
+    """Genera una clave consistente y conserva NaN como categoría propia."""
+    if pd.isna(valor):
+        return ("__MISSING__",)
+
+    return (type(valor).__name__, repr(valor))
+
+def _categorizar_numerica_woe(serie, cortes):
+    """Aplica los intervalos aprendidos en Train."""
+    return pd.cut(
+        serie.astype(float),
+        bins=cortes,
+        labels=False,
+        include_lowest=True
+    )
+
+def fit_transformaciones(
+    X_train,
+    var_ing_categoricas,
+    var_ing_numericas,
+    var_ing_binarias,
+    y_train=None,
+    vars_woe=None,
+    n_bins_woe=5,
+    vars_cruce_imputacion=None,
+    umbral_nas_mediana_global=0.05,
+    umbral_nas_imputacion_grupo=0.20,
+    variables_no_transformar=None,
+    max_categorias_one_hot_encoding=5,
+    alpha_winsorizacion=0.01,
+    alpha_woe=0.5
+):
+    """
+    Aprende parámetros usando exclusivamente Train.
+
+    WoE:
+    - Target binario: 0 = no evento, 1 = evento.
+    - Numéricas: intervalos por cuantiles aprendidos en Train.
+    - NaN: categoría independiente.
+    - Suavizado configurable mediante alpha_woe.
+    """
+
+    X_train = X_train.copy()
+
+    var_ing_categoricas = list(var_ing_categoricas)
+    var_ing_numericas = list(var_ing_numericas)
+    var_ing_binarias = list(var_ing_binarias)
+    vars_woe = list(vars_woe or [])
+    vars_cruce_imputacion = list(
+        vars_cruce_imputacion or ['bin', 'segmento']
+    )
+    variables_no_transformar = list(variables_no_transformar or [])
+
+    parametros = {}
+
+    # --------------------------------------------------------
+    # 1. Validaciones
+    # --------------------------------------------------------
+
+    if len(vars_woe) != len(set(vars_woe)):
+        raise ValueError("vars_woe contiene variables duplicadas.")
+
+    faltantes = [v for v in vars_woe if v not in X_train.columns]
+
+    if faltantes:
+        raise ValueError(f"Variables WoE no encontradas: {faltantes}")
+
+    if vars_woe:
+        if y_train is None:
+            raise ValueError("Debes proporcionar y_train para aprender WoE.")
+
+        if isinstance(y_train, pd.Series):
+            if not X_train.index.equals(y_train.index):
+                raise ValueError(
+                    "X_train e y_train deben tener el mismo índice y orden."
+                )
+            y = y_train.copy()
+        else:
+            if len(y_train) != len(X_train):
+                raise ValueError(
+                    "X_train e y_train deben tener la misma longitud."
+                )
+            y = pd.Series(y_train, index=X_train.index)
+
+        if y.isna().any() or not y.isin([0, 1]).all():
+            raise ValueError("y_train debe contener únicamente 0 y 1, sin NaN.")
+
+        if y.nunique() != 2:
+            raise ValueError("y_train debe contener ambas clases: 0 y 1.")
+
+        if alpha_woe <= 0:
+            raise ValueError("alpha_woe debe ser mayor que cero.")
+
+        if n_bins_woe < 2:
+            raise ValueError("n_bins_woe debe ser al menos 2.")
+
+    # Proteger variables de cruce
+    for var in vars_cruce_imputacion:
+        if var not in variables_no_transformar:
+            variables_no_transformar.append(var)
+
+    # --------------------------------------------------------
+    # 2. Aprendizaje WoE
+    # --------------------------------------------------------
+
+    parametros["vars_woe"] = vars_woe
+    parametros["woe_mappings"] = {}
+    parametros["woe_global"] = {}
+    parametros["woe_cortes_numericos"] = {}
+    parametros["woe_variables_numericas"] = []
+    parametros["alpha_woe"] = alpha_woe
+
+    for var in vars_woe:
+
+        serie = X_train[var]
+
+        # Identificar variables numéricas continuas
+        es_numerica = (
+            pd.api.types.is_numeric_dtype(serie)
+            and not pd.api.types.is_bool_dtype(serie)
+        )
+
+        if es_numerica:
+
+            valores = serie.dropna().astype(float)
+
+            if not np.isfinite(valores).all():
+                raise ValueError(
+                    f"La variable '{var}' contiene valores infinitos."
+                )
+
+            # Aprender cortes usando exclusivamente Train
+            if valores.empty:
+                cortes = [-np.inf, np.inf]
+            else:
+                cuantiles = np.linspace(0, 1, n_bins_woe + 1)
+
+                cortes_internos = np.unique(
+                    valores.quantile(cuantiles).to_numpy()
+                )
+
+                cortes_internos = cortes_internos[
+                    (cortes_internos > valores.min())
+                    & (cortes_internos < valores.max())
+                ]
+
+                cortes = np.concatenate([
+                    [-np.inf],
+                    cortes_internos,
+                    [np.inf]
+                ]).tolist()
+
+            parametros["woe_cortes_numericos"][var] = cortes
+            parametros["woe_variables_numericas"].append(var)
+
+            categorias = _categorizar_numerica_woe(serie, cortes)
+
+        else:
+            # Las categóricas mantienen sus valores originales
+            categorias = serie.copy()
+
+        # NaN constituye una categoría propia
+        claves = categorias.map(_clave_woe)
+
+        datos_woe = pd.DataFrame({
+            "__key": claves,
+            "__target": y
+        })
+
+        conteos = (
+            datos_woe
+            .groupby(["__key", "__target"], sort=False)
+            .size()
+            .unstack(fill_value=0)
+            .reindex(columns=[0, 1], fill_value=0)
+        )
+
+        n_categorias = len(conteos)
+
+        # Suavizado aditivo para evitar proporciones iguales a cero
+        dist_no_eventos = (
+            conteos[0] + alpha_woe
+        ) / (
+            (y == 0).sum() + alpha_woe * n_categorias
+        )
+
+        dist_eventos = (
+            conteos[1] + alpha_woe
+        ) / (
+            (y == 1).sum() + alpha_woe * n_categorias
+        )
+
+        # WoE = ln(% no eventos / % eventos)
+        parametros["woe_mappings"][var] = np.log(
+            dist_no_eventos / dist_eventos
+        ).to_dict()
+
+        # Respaldo neutral para categorías desconocidas
+        parametros["woe_global"][var] = 0.0
+
+    # --------------------------------------------------------
+    # 3. Filtrar variables protegidas
+    # --------------------------------------------------------
+
+    var_ing_categoricas = [
+        v for v in var_ing_categoricas
+        if v not in variables_no_transformar
+    ]
+    var_ing_numericas = [
+        v for v in var_ing_numericas
+        if v not in variables_no_transformar
+    ]
+    var_ing_binarias = [
+        v for v in var_ing_binarias
+        if v not in variables_no_transformar
     ]
 
-#---- 7.4.2) Selección datos ----
+    parametros["variables_no_transformar"] = variables_no_transformar
+    parametros["vars_cruce_imputacion"] = vars_cruce_imputacion
 
-X_ini_tr=base_propension.query('base=="train"')[variables_numericas_aptas]
-y_ini_tr=base_propension.query('base=="train"')[var_dependiente]
+    # --------------------------------------------------------
+    # 4. Imputación categóricas y binarias
+    # --------------------------------------------------------
 
-X_ini_te=base_propension.query('base=="test"')[variables_numericas_aptas]
-y_ini_te=base_propension.query('base=="test"')[var_dependiente]
+    vars_cat_bin = var_ing_categoricas + var_ing_binarias
 
-#---- 7.4.3) Framework de seleccion de variables por ML ----
+    if vars_cat_bin:
+        modas_df = X_train[vars_cat_bin].mode(dropna=True)
+        parametros["modas"] = (
+            modas_df.iloc[0].to_dict() if not modas_df.empty else {}
+        )
+    else:
+        parametros["modas"] = {}
+
+    # --------------------------------------------------------
+    # 5. Imputación numéricas y winsorización
+    # --------------------------------------------------------
+
+    if var_ing_numericas:
+
+        X_train[var_ing_numericas] = (
+            X_train[var_ing_numericas].astype(float)
+        )
+
+        pct_nas = X_train[var_ing_numericas].isna().mean()
+
+        vars_mediana_global = pct_nas[
+            pct_nas <= umbral_nas_mediana_global
+        ].index.tolist()
+
+        vars_imputacion_grupo = pct_nas[
+            (pct_nas > umbral_nas_mediana_global)
+            & (pct_nas <= umbral_nas_imputacion_grupo)
+        ].index.tolist()
+
+        vars_descartadas_nas = pct_nas[
+            pct_nas > umbral_nas_imputacion_grupo
+        ].index.tolist()
+
+        parametros["vars_mediana_global"] = vars_mediana_global
+        parametros["vars_imputacion_grupo"] = vars_imputacion_grupo
+        parametros["vars_descartadas_nas"] = vars_descartadas_nas
+
+        vars_num_activas = (
+            vars_mediana_global + vars_imputacion_grupo
+        )
+
+        parametros["medianas"] = (
+            X_train[vars_num_activas].median().to_dict()
+        )
+        parametros["promedios"] = (
+            X_train[vars_num_activas].mean().to_dict()
+        )
+
+        parametros["matrices_grupo"] = {}
+
+        for var in vars_imputacion_grupo:
+
+            cols_filtro = [var] + vars_cruce_imputacion
+            datos_validos = X_train.dropna(subset=cols_filtro)
+
+            if not datos_validos.empty:
+                matriz = (
+                    datos_validos
+                    .groupby(vars_cruce_imputacion)[var]
+                    .median()
+                    .to_dict()
+                )
+                parametros["matrices_grupo"][var] = matriz
+            else:
+                parametros["matrices_grupo"][var] = {}
+
+        if vars_num_activas:
+
+            X_wins = X_train[vars_num_activas].copy()
+
+            for var in vars_num_activas:
+                X_wins[var] = X_wins[var].fillna(
+                    parametros["medianas"][var]
+                )
+
+            q_inf = alpha_winsorizacion / 2
+            q_sup = 1 - alpha_winsorizacion / 2
+
+            cuantiles = X_wins.quantile([q_inf, q_sup])
+
+            parametros["limites_winsorizacion"] = (
+                cuantiles.T.rename(columns={
+                    q_inf: "limite_inferior",
+                    q_sup: "limite_superior"
+                }).to_dict("index")
+            )
+        else:
+            parametros["limites_winsorizacion"] = {}
+
+    else:
+        parametros["vars_mediana_global"] = []
+        parametros["vars_imputacion_grupo"] = []
+        parametros["vars_descartadas_nas"] = []
+        parametros["medianas"] = {}
+        parametros["promedios"] = {}
+        parametros["matrices_grupo"] = {}
+        parametros["limites_winsorizacion"] = {}
+
+    # --------------------------------------------------------
+    # 6. Validación de variables binarias
+    # --------------------------------------------------------
+
+    binarias_validas = []
+    binarias_categoricas = []
+
+    for var in var_ing_binarias:
+
+        valores = X_train[var].dropna().unique().tolist()
+
+        if set(valores).issubset({0, 1, 0.0, 1.0}):
+            binarias_validas.append(var)
+        else:
+            binarias_categoricas.append(var)
+
+    parametros["binarias_validas"] = binarias_validas
+    parametros["binarias_categoricas"] = binarias_categoricas
+
+    # --------------------------------------------------------
+    # 7. One-Hot Encoding
+    # --------------------------------------------------------
+
+    vars_encoding = [
+        v for v in var_ing_categoricas + binarias_categoricas
+        if v not in vars_woe
+    ]
+
+    if vars_encoding:
+
+        X_cat = X_train[vars_encoding].fillna(parametros["modas"])
+
+        variables_one_hot = []
+        variables_no_one_hot = []
+        resumen_one_hot = []
+
+        for var in vars_encoding:
+
+            n_categorias = X_cat[var].nunique()
+            aplica = n_categorias <= max_categorias_one_hot_encoding
+
+            (variables_one_hot if aplica else variables_no_one_hot).append(var)
+
+            resumen_one_hot.append({
+                "variable": var,
+                "n_categorias_train": n_categorias,
+                "aplica_one_hot": aplica
+            })
+
+        parametros["variables_one_hot"] = variables_one_hot
+        parametros["variables_no_one_hot"] = variables_no_one_hot
+        parametros["resumen_one_hot"] = pd.DataFrame(resumen_one_hot)
+
+        if variables_one_hot:
+
+            dummies = pd.get_dummies(
+                X_cat[variables_one_hot],
+                prefix=variables_one_hot,
+                drop_first=True
+            )
+
+            dummies = (
+                dummies.loc[:, dummies.nunique() > 1]
+                .astype(int)
+            )
+
+            parametros["columnas_dummies"] = dummies.columns.tolist()
+        else:
+            parametros["columnas_dummies"] = []
+
+    else:
+        parametros["variables_one_hot"] = []
+        parametros["variables_no_one_hot"] = []
+        parametros["resumen_one_hot"] = pd.DataFrame()
+        parametros["columnas_dummies"] = []
+
+    return parametros
+
+def transformar(
+    X,
+    parametros,
+    var_ing_categoricas,
+    var_ing_numericas,
+    var_ing_binarias,
+    config_feature_engineering=None,
+    variables_no_transformar=None,
+    aplicar_winsorizacion=False
+):
+    """
+    Aplica parámetros aprendidos en Train sin recalcularlos.
+
+    Genera columnas *_woe y conserva las variables originales.
+    """
+
+    X = X.copy()
+    columnas_iniciales = X.columns.tolist()
+
+    variables_no_transformar = list(set(
+        list(variables_no_transformar or [])
+        + parametros.get("variables_no_transformar", [])
+    ))
+
+    # --------------------------------------------------------
+    # 1. Aplicar WoE antes de imputar las variables originales
+    # --------------------------------------------------------
+
+    for var in parametros.get("vars_woe", []):
+
+        if var not in X.columns:
+            raise ValueError(
+                f"La variable '{var}' requerida para WoE no existe en X."
+            )
+
+        if var in parametros["woe_variables_numericas"]:
+
+            categorias = _categorizar_numerica_woe(
+                X[var],
+                parametros["woe_cortes_numericos"][var]
+            )
+        else:
+            categorias = X[var].copy()
+
+        claves = categorias.map(_clave_woe)
+
+        X[f"{var}_woe"] = (
+            claves
+            .map(parametros["woe_mappings"][var])
+            .fillna(parametros["woe_global"].get(var, 0.0))
+            .astype(float)
+        )
+
+    # --------------------------------------------------------
+    # 2. Filtrar variables excluidas
+    # --------------------------------------------------------
+
+    var_ing_categoricas = [
+        v for v in var_ing_categoricas
+        if v not in variables_no_transformar
+    ]
+    var_ing_numericas = [
+        v for v in var_ing_numericas
+        if v not in variables_no_transformar
+        and v not in parametros["vars_descartadas_nas"]
+    ]
+    var_ing_binarias = [
+        v for v in var_ing_binarias
+        if v not in variables_no_transformar
+    ]
+
+    # --------------------------------------------------------
+    # 3. Imputación numéricas
+    # --------------------------------------------------------
+
+    if var_ing_numericas:
+
+        X[var_ing_numericas] = X[var_ing_numericas].astype(float)
+
+        vars_grupo = [
+            v for v in parametros["vars_imputacion_grupo"]
+            if v in var_ing_numericas
+        ]
+        vars_cruce = parametros["vars_cruce_imputacion"]
+
+        if vars_grupo and vars_cruce:
+
+            if len(vars_cruce) == 1:
+                llave = X[vars_cruce[0]]
+            else:
+                llave = list(zip(*[X[col] for col in vars_cruce]))
+
+            for var in vars_grupo:
+
+                matriz = parametros["matrices_grupo"].get(var, {})
+                mediana = parametros["medianas"].get(var, np.nan)
+
+                valores_grupo = pd.Series(
+                    llave, index=X.index
+                ).map(matriz)
+
+                X[var] = (
+                    X[var]
+                    .fillna(valores_grupo)
+                    .fillna(mediana)
+                )
+
+        for var in parametros["vars_mediana_global"]:
+            if var in var_ing_numericas:
+                X[var] = X[var].fillna(parametros["medianas"][var])
+
+        if aplicar_winsorizacion:
+
+            for var, limites in parametros["limites_winsorizacion"].items():
+
+                if var in X.columns:
+                    X[var] = X[var].clip(
+                        lower=limites["limite_inferior"],
+                        upper=limites["limite_superior"]
+                    )
+
+    # --------------------------------------------------------
+    # 4. Imputación categóricas y binarias
+    # --------------------------------------------------------
+
+    vars_cat_bin = var_ing_categoricas + var_ing_binarias
+
+    if vars_cat_bin:
+        X[vars_cat_bin] = X[vars_cat_bin].fillna(parametros["modas"])
+
+    if parametros["binarias_validas"]:
+        vars_bin = [
+            v for v in parametros["binarias_validas"]
+            if v in X.columns
+        ]
+        X[vars_bin] = X[vars_bin].astype(float)
+
+    # --------------------------------------------------------
+    # 5. One-Hot Encoding
+    # --------------------------------------------------------
+
+    variables_one_hot = parametros["variables_one_hot"]
+
+    if variables_one_hot:
+
+        X_cat = X[variables_one_hot].fillna(parametros["modas"])
+
+        dummies = pd.get_dummies(
+            X_cat,
+            prefix=variables_one_hot,
+            drop_first=True
+        )
+
+        dummies = (
+            dummies
+            .reindex(
+                columns=parametros["columnas_dummies"],
+                fill_value=0
+            )
+            .astype(int)
+        )
+
+        X = pd.concat([X, dummies], axis=1)
+
+    # --------------------------------------------------------
+    # 6. Feature Engineering
+    # --------------------------------------------------------
+
+    if config_feature_engineering is not None:
+
+        nuevas_features = mdl.create_all_features(
+            df=X,
+            features=var_ing_numericas,
+            **config_feature_engineering
+        )
+
+        X = pd.concat([X, nuevas_features], axis=1)
+
+    # --------------------------------------------------------
+    # 7. Variables creadas
+    # --------------------------------------------------------
+    
+    X['flg_departamento_lima']=X['departamento'].isin(['LIMA'])*1
+    X['flg_comercio']=X['sei_mcdo'].isin(['COMERCIO'])*1
+
+    variables_creadas = [
+        col for col in X.columns
+        if col not in columnas_iniciales
+    ]
+
+    return X, variables_creadas
+
+#---- 7.5.4) Aplicacion ----
+
+VAR_ING_CATEGORICAS
+VAR_ING_NUMERICAS
+VAR_ING_BINARIAS
+
+VARIABLES_NO_TRANSFORMAR_ING = list(dict.fromkeys(
+    [var_dependiente, var_ponderacion]
+        + [ 'conteo',
+        'cod_instit_financiera',
+        'gestion_final',
+        'flg_gestion',
+        'flg_exito_4',
+        'cod_entidad',
+        'nombre_ifi',
+        'flg_desembolso_ibk_all_products',
+        'tasa_min',
+        'tasa_max',
+        'tasa_cliente',
+        'monto_cliente',
+        'plazo_min',
+        'plazo_max',
+        'delta_deuda_final',
+        'saldo_alta',
+        'salprom_creditos_u03m',
+        'salprom_creditos_u06m',
+        'salprom_creditos_u12m',
+        'avg_deuda_directa_vig_ibk_sf_u03m',
+        'avg_deuda_directa_vig_ibk_sf_u06m',
+        'avg_deuda_directa_vig_ibk_sf_u12m',
+        'avg_deuda_directa_vig_total_sf_u03m',
+        'avg_deuda_directa_vig_total_sf_u06m,'
+        'avg_deuda_directa_vig_total_sf_u12m']
+))
+
+X_ini_tr = base_propension.query('base=="train"')
+y_ini_tr = base_propension.query('base=="train"')[var_dependiente]
+
+X_ini_te = base_propension.query('base=="test"')
+y_ini_te = base_propension.query('base=="test"')[var_dependiente]
+
+vars_woe = ['sow_deuda_u12m','macroperfil']
+
+# 1. Ajuste de Parámetros (Aprendizaje en Train)
+parametros_transformacion = fit_transformaciones(
+    X_train=X_ini_tr,
+    y_train=y_ini_tr,
+    var_ing_categoricas=VAR_ING_CATEGORICAS,
+    var_ing_numericas=VAR_ING_NUMERICAS,
+    var_ing_binarias=VAR_ING_BINARIAS,
+    vars_cruce_imputacion=['macroperfil'],     # Variables de corte
+    umbral_nas_mediana_global=0.05,               # <= 5% -> Mediana global
+    umbral_nas_imputacion_grupo=0.20,              # > 5% y <= 20% -> Grupo | > 20% -> Descarte
+    variables_no_transformar=VARIABLES_NO_TRANSFORMAR_ING,
+    max_categorias_one_hot_encoding=3,
+    vars_woe=vars_woe,
+    n_bins_woe=4,
+    alpha_winsorizacion=0.01,
+    alpha_woe=0.5
+)
+
+config_feature_engineering = {
+    "use_trends": False,
+    "use_volatility": False,
+    "use_log": False,
+    "use_ratios": False
+}
+
+# 2. Aplicación de Transformaciones
+base_propension_feature, NUEVAS_VARIABLES = transformar(
+    X=base_propension,
+    parametros=parametros_transformacion,
+    var_ing_categoricas=VAR_ING_CATEGORICAS,
+    var_ing_numericas=VAR_ING_NUMERICAS,
+    var_ing_binarias=VAR_ING_BINARIAS,
+    variables_no_transformar=VARIABLES_NO_TRANSFORMAR_ING,
+    config_feature_engineering=config_feature_engineering,
+    aplicar_winsorizacion=True
+)
+
+base_propension_feature.head()
+
+print("Nuevas Variables:")
+print("\n".join([f" - {v}" for v in NUEVAS_VARIABLES]))
+
+#~~~~ 7.6) Selección de variables ----
+
+#---- 7.6.1) Variables a evaluar ----
+
+VARIABLES_OMITIR_SEGMENTACION = list(
+    dict.fromkeys(
+        [
+            var_dependiente,
+            var_ponderacion
+        ]
+        + [ 'conteo',
+        'cod_instit_financiera',
+        'gestion_final',
+        'flg_gestion',
+        'flg_exito_4',
+        'cod_entidad',
+        'nombre_ifi',
+        'flg_desembolso_ibk_all_products',
+        'tasa_min',
+        'tasa_max',
+        'tasa_cliente',
+        'monto_cliente',
+        'plazo_min',
+        'plazo_max',
+        'delta_deuda_final',
+        'saldo_alta',
+        'salprom_creditos_u03m',
+        'salprom_creditos_u06m',
+        'salprom_creditos_u12m',
+        'avg_deuda_directa_vig_ibk_sf_u03m',
+        'avg_deuda_directa_vig_ibk_sf_u06m',
+        'avg_deuda_directa_vig_ibk_sf_u12m',
+        'avg_deuda_directa_vig_total_sf_u03m',
+        'avg_deuda_directa_vig_total_sf_u06m,'
+        'avg_deuda_directa_vig_total_sf_u12m',
+        'sow_deuda_u12m',
+        'sow_deuda_u12m_woe',
+    ]
+    )
+)
+print(f"Variables a omitir - framework selección ML:")
+print("\n".join([f" - {v}" for v in VARIABLES_OMITIR_SEGMENTACION]))
+
+variables_candidatas_numericas=(
+        NUEVAS_VARIABLES
+        +VAR_ING_NUMERICAS
+        +[var for var in VAR_ING_BINARIAS if var not in parametros_transformacion['binarias_categoricas']]
+)
+
+variables_candidatas_numericas = list(
+    dict.fromkeys(
+        var for var in variables_candidatas_numericas
+        if var not in VARIABLES_OMITIR_SEGMENTACION
+    )
+)
+
+variables_forzadas=[var_ponderacion]
+variables_candidatas_categoricas=[]
+variables_candidatas=variables_candidatas_numericas+variables_candidatas_categoricas+variables_forzadas
+
+print(f"Variables a evaluar - framework selección ML:")
+print("\n".join([f" - {v}" for v in variables_candidatas]))
+
+#---- 7.6.2) Selección datos ----
+
+X_ini_tr=base_propension_feature.query('base=="train"')[variables_candidatas]
+y_ini_tr=base_propension_feature.query('base=="train"')[var_dependiente]
+
+X_ini_te=base_propension_feature.query('base=="test"')[variables_candidatas]
+y_ini_te=base_propension_feature.query('base=="test"')[var_dependiente]
+
+#---- 7.6.3) Framework de seleccion de variables por ML ----
 
 sel_num_ini, sel_dummy_ini = mdl.seleccionar_variables_pipeline(
     X_ini_tr, y_ini_tr,
     X_ini_te, y_ini_te,
-    features_num=variables_numericas_aptas,
+    features_num=variables_candidatas,
     features_dummy=[],
     target_type='classification',
     n_top=30,
     umbral_corr=0.70,
-    vars_baneadas=baneadas
+    vars_baneadas=[]
 )
 
 variables_arbol_ini = sel_num_ini + sel_dummy_ini
@@ -199,12 +1347,12 @@ variables_arbol_ini = sel_num_ini + sel_dummy_ini
 print("Variables a evaluar (con relevancia por ML) en el AD:")
 print("\n".join([f" - {v}" for v in variables_arbol_ini]))
 
-#~~~~ 7.5) Busqueda Exhaustiva: Arbol de decisión ----
+#~~~~ 7.7) Busqueda Exhaustiva: Arbol de decisión ----
 
-#---- 7.5.1) funcion: Modelo AD Unitario ----
+#---- 7.7.1) funcion: Modelo AD Unitario ----
 def _evaluar_modelo_ad_unitario(
     id_modelo, subset_vars, max_leaves, porc_leafs, usar_peso,
-    originaciones, X_ini_tr, y_ini_tr, 
+    base_propension, X_ini_tr, y_ini_tr, 
     col_peso, umbral_separacion, umbral_psi,
     var_dependiente, period_col, base_col
 ):
@@ -255,8 +1403,8 @@ def _evaluar_modelo_ad_unitario(
             for i, seg in enumerate(tabla_bucket["segmento_arbol"])
         }
         
-        leaf_ids_total = arbol.apply(originaciones[list(subset_vars)])
-        df_feat = originaciones.copy()
+        leaf_ids_total = arbol.apply(base_propension[list(subset_vars)])
+        df_feat = base_propension.copy()
         df_feat['segmento_arbol'] = leaf_ids_total
         df_feat['segmento_arbol_new'] = df_feat['segmento_arbol'].map(recodificacion)
         
@@ -314,9 +1462,9 @@ def _evaluar_modelo_ad_unitario(
             'error': str(e)
         }
 
-#---- 7.5.2) funcion:  Grid Search ----
+#---- 7.7.2) funcion:  Grid Search ----
 def ejecutar_grid_search_con_segmentos_reales(
-    originaciones, 
+    base_propension, 
     X_ini_tr, 
     y_ini_tr, 
     variables_disponibles, 
@@ -363,7 +1511,7 @@ def ejecutar_grid_search_con_segmentos_reales(
             max_leaves=tarea[1],
             porc_leafs=tarea[2],
             usar_peso=tarea[3],
-            originaciones=originaciones,
+            base_propension=base_propension,
             X_ini_tr=X_ini_tr,
             y_ini_tr=y_ini_tr,
             col_peso=col_peso,
@@ -393,25 +1541,25 @@ def ejecutar_grid_search_con_segmentos_reales(
     
     return df_grid_maestro
 
-#---- 7.5.3) Ejecución: Grid Search ----
+#---- 7.7.3) Ejecución: Grid Search ----
 df_grid_maestro = ejecutar_grid_search_con_segmentos_reales(
-    originaciones=base_propension,
+    base_propension=base_propension_feature,
     X_ini_tr=X_ini_tr,
     y_ini_tr=y_ini_tr,
     variables_disponibles=variables_arbol_ini,
-    min_vars=2,
+    min_vars=5,
     max_vars=5,
     lista_max_leafs=[3,4,5],
     lista_porc_leafs=[0.10, 0.15],
     lista_ponderacion=[True,False],
     umbral_separacion=0.03,
-    col_peso='monto_ofertado_ajustado',
+    col_peso=var_ponderacion,
     period_col='periodo',
     base_col='base',
-    var_dependiente='indicador_exito'
+    var_dependiente=var_dependiente
 )
 
-#---- 7.5.4) Modelos Aprrobados ----
+#---- 7.7.4) Modelos Aprrobados ----
 df_grid_maestro['estado_final'] = np.where(
     (df_grid_maestro['psi_estable_Mediana'] == 'Sí') & 
     (df_grid_maestro['cruces_suma'] <= 3) & 
@@ -420,15 +1568,307 @@ df_grid_maestro['estado_final'] = np.where(
     'NO SALE (Rechazado)'
 )
 
-#---- 7.5.5) Analisis ----
 modelos_aprobados = df_grid_maestro[df_grid_maestro['estado_final'] == 'SÍ SALE (Aprobado)']
 
-if not modelos_aprobados.empty:
-    # Seleccionar el mejor modelo según tus criterios
-    mejor_modelo = modelos_aprobados.sort_values(by=['n_segmentos_reales', 'cruces_suma'], ascending=[False, True]).iloc[0]
+#____________________ 8) Modelo de sensibilidad: Data Panel ----
+
+#~~~~ 8.1) Funciones ----
+
+def evaluar_modelo_unitario_elasticidad(
+    id_modelo,
+    datos_base, 
+    p_value_umbral=0.05, 
+    umbral_materialidad=0.03,
+    periodo_inicio=202504,
+    periodo_fin=202604,
+    umbral_winsorizacion=0.025,
+    meses_tol_min_materialidad=9
+):
+    try:
+        df_iter = datos_base.copy()
+
+        # Procesamiento: mercado
+        datos_tasa_mercado = df_iter.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna() ")
+        
+        limites_winsor = datos_tasa_mercado.groupby('cluster_modelar')['tasa_ultima'].agg(
+            limite_inferior=lambda x: x.quantile(umbral_winsorizacion),
+            limite_superior=lambda x: x.quantile(1 - umbral_winsorizacion)
+        ).reset_index()
+        
+        datos_tasa_mercado = datos_tasa_mercado.merge(limites_winsor, on='cluster_modelar', how='left')
+        datos_tasa_mercado['tasa_mercado_winsorizada'] = datos_tasa_mercado['tasa_ultima'].clip(
+            lower=datos_tasa_mercado['limite_inferior'], 
+            upper=datos_tasa_mercado['limite_superior']
+        )
+        
+        prom_pond = lambda v, w: (
+            np.average(v[v.notna() & w.notna() & (w > 0)], weights=w[v.notna() & w.notna() & (w > 0)])
+            if (v.notna() & w.notna() & (w > 0)).any()
+            else np.nan
+        )
+                
+        data_panel_sensibilidad_mercado = (
+            datos_tasa_mercado
+            .assign(tasa_x_monto=lambda df: df['tasa_mercado_winsorizada'] * df['delta_deuda_final'])
+            .groupby(['cluster_modelar', 'periodo'], observed=True)
+            .agg(
+                total_desembolsos_mercado=('llave_interna', 'size'),
+                monto_desembolsado_mercado=('delta_deuda_final', 'sum'),
+                suma_tasa_x_monto_bucket=('tasa_x_monto', 'sum'),
+                tasa_mercado=('tasa_mercado_winsorizada', lambda x: prom_pond(x, datos_tasa_mercado.loc[x.index, 'delta_deuda_final']))
+            )
+            .reset_index()
+        )
+        
+        # Procesamiento: sensibilidad interna
+        base_propension = (
+            df_iter
+            .sort_values(by=['llave_interna', 'flg_exito_4'], ascending=[True, True])
+            .drop_duplicates(subset=['llave_interna'], keep='first')
+            .assign(indicador_exito=lambda df: (df['flg_exito_4'] == 'exito_desembolso_ibk_ct').astype(int))
+        )
+        
+        columnas_si = ['periodo', 'llave_interna', 'cluster_modelar', 'indicador_exito', 'flg_exito_4', 'monto_min', 'monto_ofertado_ajustado', 'tasa_min', 'monto_desembolsado', 'tasa_desembolsada']
+        df_oi = base_propension[columnas_si].copy()
+        
+        def promedio_ponderado(valores, pesos):
+            mask = valores.notna() & pesos.notna() & (pesos > 0)
+            if mask.any():
+                return np.average(valores[mask], weights=pesos[mask])
+            return np.nan
+
+        data_panel_sensibilidad_interna = (
+            df_oi
+            .groupby(["cluster_modelar", "periodo"], observed=True)
+            .agg(
+                leads=("llave_interna", "size"),
+                monto_desembolsado_ibk=("monto_desembolsado", "sum"),
+                monto_ofertado=("monto_ofertado_ajustado", "sum"),
+                desembolsos=("indicador_exito", "sum"),
+                tasa_desembolsada=("tasa_desembolsada", lambda x: promedio_ponderado(x, df_oi.loc[x.index, "monto_desembolsado"])),
+                tasa_ofertada=("tasa_min", lambda x: promedio_ponderado(x, df_oi.loc[x.index, "monto_ofertado_ajustado"])),
+            )
+            .assign(
+                efectividad=lambda df: np.where(df["monto_ofertado"] > 0, df["monto_desembolsado_ibk"] / df["monto_ofertado"], 0),
+                conversion=lambda df: np.where(df["leads"] > 0, df["desembolsos"] / df["leads"], 0),
+            )
+            .reset_index()
+        )
+        
+        # Validación de Materialidad
+        aux_mat = (
+            data_panel_sensibilidad_interna.groupby(['periodo', 'cluster_modelar'], observed=True)
+            .agg(
+                leads=('leads', 'sum'),
+                monto_ofertado=('monto_ofertado', 'sum'),
+                desembolsos=('desembolsos', 'sum'),
+                monto_desembolsado_ibk=('monto_desembolsado_ibk', 'sum'),
+            )
+            .assign(
+                participacion_monto_desembolsado=lambda df: df.groupby(level='periodo')['monto_desembolsado_ibk'].transform(lambda x: x / x.sum()),
+                participacion_desembolsos=lambda df: df.groupby(level='periodo')['desembolsos'].transform(lambda x: x / x.sum()),
+            )
+            .reset_index()
+        )
+        
+        aux_mat['flg_mat_monto'] = np.where(aux_mat['participacion_monto_desembolsado'] > umbral_materialidad, 1, 0)
+        aux_mat['flg_mat_n'] = np.where(aux_mat['participacion_desembolsos'] > umbral_materialidad, 1, 0)
+        
+        buckets_val = (
+            aux_mat
+            .query(f'desembolsos != 0 and periodo >= {periodo_inicio} and periodo <= {periodo_fin}')
+            .groupby('cluster_modelar')
+            .agg(conteo=('cluster_modelar', 'size'),
+                 mat_n=('flg_mat_n', 'sum'),
+                 mat_monto=('flg_mat_monto', 'sum'))
+            .reset_index()
+        )
+        
+        n_buckets_iniciales = len(buckets_val)
+        buckets_val_filtrados = buckets_val.query(f'conteo == 13 and mat_monto >={meses_tol_min_materialidad} and mat_n >= {meses_tol_min_materialidad}')
+        n_buckets_validos = len(buckets_val_filtrados)
+        listado_val = buckets_val_filtrados.cluster_modelar.to_list()
+        
+        if n_buckets_validos == 0:
+            return None
+            
+        # Panel de sensibilidad completo
+        dp_sens = pd.merge(data_panel_sensibilidad_mercado, data_panel_sensibilidad_interna, how='outer', on=['cluster_modelar', 'periodo'])
+        dp_sens = dp_sens.query(f"cluster_modelar in {listado_val}")
+        dp_sens['spread'] = dp_sens['tasa_ofertada'] - dp_sens['tasa_mercado']
+        
+        dp_sens["log_efectividad"] = np.log(dp_sens["efectividad"].replace(0, np.nan))
+        dp_sens["log_tasa"] = np.log(dp_sens["tasa_ofertada"])
+        
+        # Demeaning Simultáneo (Two-Way)
+        def demeaning_sim(data, col):
+            g_mean = data[col].mean()
+            b_mean = data.groupby("cluster_modelar")[col].transform("mean")
+            t_mean = data.groupby("periodo")[col].transform("mean")
+            return data[col] - b_mean - t_mean + g_mean
+
+        dp_sim = dp_sens.copy()
+        dp_sim["log_efect_dem"] = demeaning_sim(dp_sim, "log_efectividad")
+        dp_sim["log_tasa_dem"] = demeaning_sim(dp_sim, "log_tasa")
+        dp_sim["spread_dem"] = demeaning_sim(dp_sim, "spread")
+        
+        # Modelamiento OLS por bucket
+        resultados_sim = []
+        for grupo in dp_sim["cluster_modelar"].unique():
+            dg = dp_sim[dp_sim["cluster_modelar"] == grupo].dropna(subset=["log_efect_dem", "log_tasa_dem", "spread_dem"])
+            if len(dg) < 5: continue
+            
+            m_conj = ols("log_efect_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
+            m_tasa = ols("log_efect_dem ~ log_tasa_dem - 1", data=dg).fit()
+            m_spread = ols("log_efect_dem ~ spread_dem - 1", data=dg).fit()
+            
+            resultados_sim.append({
+                "grupo": grupo,
+                "conj_elast_tasa": m_conj.params["log_tasa_dem"],
+                "conj_pval_tasa": m_conj.pvalues["log_tasa_dem"],
+                "conj_sens_spread": m_conj.params["spread_dem"],
+                "conj_pval_spread": m_conj.pvalues["spread_dem"],
+                "tasa_elast": m_tasa.params["log_tasa_dem"],
+                "tasa_pval": m_tasa.pvalues["log_tasa_dem"],
+                "spread_sens": m_spread.params["spread_dem"],
+                "spread_pval": m_spread.pvalues["spread_dem"],
+            })
+            
+        df_res_sim = pd.DataFrame(resultados_sim)
+        df_res_sim['modelo'] = id_modelo
+        
+        # Métricas de resumen filtrando por p-value Y por elasticidad/sensibilidad negativa (< 0)
+        sig_conj_tasa = ((df_res_sim['conj_pval_tasa'] < p_value_umbral) & 
+                        (df_res_sim['conj_elast_tasa'] < 0)).sum()
+
+        sig_conj_spread = ((df_res_sim['conj_pval_spread'] < p_value_umbral) & 
+                        (df_res_sim['conj_sens_spread'] < 0)).sum()
+
+        sig_conj_ambos = ((df_res_sim['conj_pval_tasa'] < p_value_umbral) & 
+                        (df_res_sim['conj_elast_tasa'] < 0) &
+                        (df_res_sim['conj_pval_spread'] < p_value_umbral) & 
+                        (df_res_sim['conj_sens_spread'] < 0)).sum()
+
+        sig_tasa_m2 = ((df_res_sim['tasa_pval'] < p_value_umbral) & 
+                    (df_res_sim['tasa_elast'] < 0)).sum()
+
+        sig_spread_m3 = ((df_res_sim['spread_pval'] < p_value_umbral) & 
+                        (df_res_sim['spread_sens'] < 0)).sum()
+
+        resumen_info = {
+            "id_modelo": id_modelo,
+            "n_buckets_iniciales": n_buckets_iniciales,
+            "n_buckets_validos": n_buckets_validos,
+            "buckets_inferencia_conjunto": df_res_sim['grupo'].to_list(),
+            "cant_sig_modelo1_tasa": int(sig_conj_tasa),
+            "cant_sig_modelo1_spread": int(sig_conj_spread),
+            "cant_sig_modelo1_ambos": int(sig_conj_ambos),
+            "cant_sig_modelo2_tasa": int(sig_tasa_m2),
+            "cant_sig_modelo3_spread": int(sig_spread_m3)
+        }
+        
+        return df_res_sim, resumen_info
+
+    except Exception as e:
+        print(f"Error evaluando modeo {id_modelo}: {e}")
+        return None, None
+
+def procesar_y_evaluar_modelo(row_modelo, base_propension_feature, datos):
+    """
+    Función que procesa la transformación de variables y evalúa un modelo individual.
+    """
+    id_modelo = row_modelo['id_modelo']
+    arbol_evaluado = row_modelo['_objeto_arbol']
+    vars_modelo_evaluado = list(row_modelo['_subset_vars'])
+    recod_evaluado = row_modelo['_recodificacion']
+    
+    # Aplicar árbol y recodificación
+    leaf_ids = arbol_evaluado.apply(base_propension_feature[vars_modelo_evaluado])
+    
+    base_propension_evaluado = base_propension_feature[['llave_interna', 'monto_ofertado_ajustado']].copy()
+    base_propension_evaluado['segmento_arbol'] = leaf_ids
+    base_propension_evaluado['segmento_arbol_new'] = base_propension_evaluado['segmento_arbol'].map(recod_evaluado)
+    
+    aux_modelamiento_segmento = base_propension_evaluado[
+        ['llave_interna', 'monto_ofertado_ajustado', 'segmento_arbol_new']
+    ].rename(columns={'segmento_arbol_new': 'cluster_modelar'})
+    
+    # Merge con los datos principales
+    datos_aux_panel = pd.merge(
+        datos,
+        aux_modelamiento_segmento,
+        how='outer',
+        on='llave_interna'
+    )
+    
+    # Evaluación del modelo
+    resultado = evaluar_modelo_unitario_elasticidad(
+        id_modelo,
+        datos_aux_panel, 
+        p_value_umbral=0.05, 
+        umbral_materialidad=0.03,
+        periodo_inicio=202504,
+        periodo_fin=202604,
+        umbral_winsorizacion=0.025,
+        meses_tol_min_materialidad=9
+    )
+    
+    return resultado
+
+#~~~~ 8.2) Ejecución ----
+
+resultados = Parallel(n_jobs=-1,backend='loky', verbose=10)(
+    delayed(procesar_y_evaluar_modelo)(
+        row, 
+        base_propension_feature, 
+        datos
+    ) for _, row in modelos_aprobados.query('n_segmentos_reales in [4,5]').copy().iterrows()
+)
+
+#~~~~ 8.3) Analisis ----
+
+#---- 8.3.1) Funciones ----
+def analizar_y_reportar_modelo_segmentacion(
+    mejor_modelo, 
+    base_propension_feature, 
+    X_ini_tr, 
+    y_ini_tr, 
+    mdl, 
+    oot_inicio='202602'
+):
+    """
+    Analiza, grafica y genera todos los reportes de desempeño, estabilidad y visualizaciones 
+    para un modelo de árbol específico seleccionado.
+    
+    Parámetros:
+    -----------
+    mejor_modelo : pd.Series o dict
+        Fila o registro del modelo a evaluar (contiene '_objeto_arbol', '_subset_vars', etc.).
+    base_propension_feature : pd.DataFrame
+        Base de datos completa de características y períodos.
+    X_ini_tr : pd.DataFrame
+        Variables independientes de entrenamiento (Train).
+    y_ini_tr : pd.Series o np.array
+        Variable objetivo (target) de entrenamiento (Train).
+    mdl : module o object
+        Módulo personalizado que contiene las funciones de ploteo y reporte (ej. mdl.plot_...).
+    oot_inicio : str
+        Período de inicio para los reportes OOT (Out Of Time). Por defecto '202602'.
+    
+    Retorna:
+    --------
+    base_propension_ganador : pd.DataFrame
+        Base con las predicciones y segmentos pegados.
+    reporte_mensual : pd.DataFrame
+        Reporte mensual de cruces por cosecha.
+    estadisticos_globales : dict o pd.DataFrame
+        Resumen estadístico global.
+    df_psi_temporal : pd.DataFrame
+        Cálculo del PSI temporal por base.
+    """
     
     print("=" * 65)
-    print("🏆 ¡MODELO GANADOR IDENTIFICADO Y APTO PARA SALIR! 🚀")
+    print("🏆 ¡ANALIZANDO MODELO SELECCIONADO! 🚀")
     print("=" * 65)
     print(f"• ID del Modelo: {mejor_modelo['id_modelo']}")
     print(f"• Estado: {mejor_modelo['estado_final']}")
@@ -439,23 +1879,15 @@ if not modelos_aprobados.empty:
     print(f"• PSI Máximo Estable: {mejor_modelo['psi_estable_Máximo']}")
     print("=" * 65)
 
-    # ==========================================
     # PASO 3.1: VISUALIZAR LOS CORTES DEL ÁRBOL
-    # ==========================================
     arbol_ganador = mejor_modelo['_objeto_arbol']
-    
-    # ⚠️ Usar siempre las variables candidatas originales con las que se entrenó el árbol
     vars_modelo = mejor_modelo['_subset_vars']  
     
     # 1. Ver reglas en formato de texto por consola
-    from sklearn.tree import export_text
-    print("\n🌳 REGLAS Y CORTES DEL ÁRBOL GANADOR:")
+    print("\n🌳 REGLAS Y CORTES DEL ÁRBOL SELECCIONADO:")
     print(export_text(arbol_ganador, feature_names=list(vars_modelo)))
     
     # 2. Graficar el árbol visualmente
-    import matplotlib.pyplot as plt
-    from sklearn.tree import plot_tree
-    
     plt.figure(figsize=(12, 6), dpi=150)
     plot_tree(
         arbol_ganador, 
@@ -467,14 +1899,12 @@ if not modelos_aprobados.empty:
     plt.title(f"Estructura del Árbol - Modelo ID: {mejor_modelo['id_modelo']}", fontsize=12)
     plt.show()
 
-    # ==========================================
     # PASO 4: REPLICACIÓN AUTOMÁTICA Y PREDICCIÓN DE TRAIN
-    # ==========================================
     recod_ganadora = mejor_modelo['_recodificacion']
     
     # Aplicar el árbol usando el subset exacto de variables con el que fue entrenado
-    leaf_ids_ganador = arbol_ganador.apply(base_propension[list(vars_modelo)])
-    base_propension_ganador = base_propension.copy()
+    leaf_ids_ganador = arbol_ganador.apply(base_propension_feature[list(vars_modelo)])
+    base_propension_ganador = base_propension_feature.copy()
     base_propension_ganador['segmento_arbol'] = leaf_ids_ganador
     base_propension_ganador['segmento_arbol_new'] = base_propension_ganador['segmento_arbol'].map(recod_ganadora)
     
@@ -487,36 +1917,44 @@ if not modelos_aprobados.empty:
     dict_ratio_train = train_con_segmentos.groupby('segmento_arbol_new')['indicador_exito'].mean().to_dict()
     base_propension_ganador['prediccion'] = base_propension_ganador['segmento_arbol_new'].map(dict_ratio_train)
     
-    print("📌 ¡Predicción/Ratio de train pegada exitosamente a cada bucket en 'originaciones_ganador' (Columna: 'ratio_train_esperado')!")
+    print("📌 ¡Predicción/Ratio de train pegada exitosamente a cada bucket en 'base_propension_ganador' (Columna: 'ratio_train_esperado')!")
 
-    print("\n📊 Generando reportes y gráficos finales con el modelo ganador...\n")
+    print("\n📊 Generando reportes y gráficos finales con el modelo seleccionado...\n")
     
     # Ejecutar visualizaciones finales de forma automática
     mdl.plot_escalera_tasas_global(base_propension_ganador, segment_col='segmento_arbol_new', target_col='indicador_exito')
     mdl.plot_escalera_tasas_global(base_propension_ganador.query('base=="train"'), segment_col='segmento_arbol_new', target_col='indicador_exito')
     mdl.plot_barras_comparacion_base(base_propension_ganador, segment_col='segmento_arbol_new', target_col='indicador_exito', base_col='base')
-    mdl.plot_todas_series_juntas(base_propension_ganador,  period_col='periodo', segment_col='segmento_arbol_new', target_col='indicador_exito')
+    mdl.plot_todas_series_juntas(base_propension_ganador, period_col='periodo', segment_col='segmento_arbol_new', target_col='indicador_exito')
     mdl.plot_evolucion_segmentos_grid(base_propension_ganador, period_col='periodo', segment_col='segmento_arbol_new', target_col='indicador_exito', base_col='base', ncols=3)
     mdl.plot_materialidad_global_temporal(base_propension_ganador, period_col='periodo', segment_col='segmento_arbol_new')
+    
     mdl.plot_materialidad_y_precancelacion(
         base_propension_ganador,
         period_col='periodo',
         segment_col='segmento_arbol_new',
         target_col='indicador_exito',
-        oot_inicio='202602'
+        oot_inicio=oot_inicio
     )
+    
     reporte_mensual, estadisticos_globales = mdl.calcular_reporte_cruces_por_cosecha(
-    df=base_propension_ganador,
-    period_col='periodo',
-    segment_col='segmento_arbol_new',
-    target_col='indicador_exito',
-    ascending=True
+        df=base_propension_ganador,
+        period_col='periodo',
+        segment_col='segmento_arbol_new',
+        target_col='indicador_exito',
+        ascending=True
     )
 
     print("Reporte Mensual:", reporte_mensual)
     print("Resumen Estadístico:", estadisticos_globales)
 
-    df_psi_temporal, stats_bases = mdl.calcular_psi_temporal_por_base(base_propension_ganador, period_col='periodo', segment_col='segmento_arbol_new', base_col='base', base_ref_nombre='train')
+    df_psi_temporal, stats_bases = mdl.calcular_psi_temporal_por_base(
+        base_propension_ganador, 
+        period_col='periodo', 
+        segment_col='segmento_arbol_new', 
+        base_col='base', 
+        base_ref_nombre='train'
+    )
 
     print("--- Estadísticos Resumen del PSI Temporal por Base ---")
     print(stats_bases)
@@ -525,283 +1963,401 @@ if not modelos_aprobados.empty:
     print(df_psi_temporal)
 
     mdl.plot_precancelacion_barras_agrupadas(
-    base_propension_ganador,
-    period_col='periodo',
-    segment_col='segmento_arbol_new',
-    target_col='indicador_exito',
-    oot_inicio='202602',
-    mostrar_promedios=False
+        base_propension_ganador,
+        period_col='periodo',
+        segment_col='segmento_arbol_new',
+        target_col='indicador_exito',
+        oot_inicio=oot_inicio,
+        mostrar_promedios=False
     )
-else:
-    print("❌ Ningún modelo cumplió con los criterios estrictos de aprobación. Se sugiere revisar la grilla o relajar los umbrales.")
+    
+    return base_propension_ganador, reporte_mensual, estadisticos_globales, df_psi_temporal
 
+#---- 8.3.2) Analisis ----
 
-base_propension_ganador
+resultados_validos = [res for res in resultados if res[0] is not None]
 
-# #____________________ 7) Busqueda Exhaustiva ----
+df_detallado_global = pd.concat([res[0] for res in resultados_validos], ignore_index=True)
 
-# #~~~~ 7.1) Variables Candidatas ----
+df_resumen_global = pd.DataFrame([res[1] for res in resultados_validos])
 
-# listado_variables=vars_categorizadas.columns
+df_resumen_global[['n_buckets_iniciales','cant_sig_modelo2_tasa']].value_counts().reset_index()
 
-# #~~~~ 7.2) Función unitaria de modelamiento ----
+df_resumen_global.n_buckets_iniciales.value_counts()
 
-# def evaluar_familia_variables(
-#     combinacion_vars, 
-#     datos_base, 
-#     p_value_umbral=0.05, 
-#     umbral_materialidad=0.03,
-#     periodo_inicio=202504,
-#     periodo_fin=202604,
-#     umbral_winsorizacion=0.025,
-#     meses_tol_min_materialidad=9
-# ):
-#     try:
-#         df_iter = datos_base.copy()
-#         df_iter['cluster_comercial'] = df_iter[list(combinacion_vars)].astype(str).agg(' & '.join, axis=1)
+modelo_segmentacion_evaluado = modelos_aprobados.query('id_modelo==416').iloc[0]
+    
+base_ganadora, rep_mensual, est_globales, psi_temporal = analizar_y_reportar_modelo_segmentacion(
+    mejor_modelo=modelo_segmentacion_evaluado,
+    base_propension_feature=base_propension_feature,
+    X_ini_tr=X_ini_tr,
+    y_ini_tr=y_ini_tr,
+    mdl=mdl,
+    oot_inicio='202602'
+)
 
-#         # Procesamiento: mercado
-#         datos_tasa_mercado = df_iter.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna() ")
-        
-#         limites_winsor = datos_tasa_mercado.groupby('cluster_comercial')['tasa_ultima'].agg(
-#             limite_inferior=lambda x: x.quantile(umbral_winsorizacion),
-#             limite_superior=lambda x: x.quantile(1 - umbral_winsorizacion)
-#         ).reset_index()
-        
-#         datos_tasa_mercado = datos_tasa_mercado.merge(limites_winsor, on='cluster_comercial', how='left')
-#         datos_tasa_mercado['tasa_mercado_winsorizada'] = datos_tasa_mercado['tasa_ultima'].clip(
-#             lower=datos_tasa_mercado['limite_inferior'], 
-#             upper=datos_tasa_mercado['limite_superior']
-#         )
-        
-#         prom_pond = lambda v, w: (
-#             np.average(v[v.notna() & w.notna() & (w > 0)], weights=w[v.notna() & w.notna() & (w > 0)])
-#             if (v.notna() & w.notna() & (w > 0)).any()
-#             else np.nan
-#         )
-        
-#         data_panel_mercado_by_entidad = (
-#             datos_tasa_mercado
-#             .assign(tasa_x_monto=lambda df: df['tasa_mercado_winsorizada'] * df['delta_deuda_final'])
-#             .groupby(['cluster_comercial', 'nombre_ifi', 'periodo'], observed=True)
-#             .agg(
-#                 desembolsos=('llave_interna', 'size'),
-#                 monto_desembolsado=('delta_deuda_final', 'sum'),
-#                 suma_tasa_x_monto=('tasa_x_monto', 'sum'),
-#                 tasa_mercado=('tasa_mercado_winsorizada', lambda x: prom_pond(x, datos_tasa_mercado.loc[x.index, 'delta_deuda_final']))
-#             )
-#             .reset_index()
-#         )
-        
-#         data_panel_sensibilidad_mercado = (
-#             data_panel_mercado_by_entidad
-#             .groupby(['cluster_comercial', 'periodo'], observed=True)
-#             .agg(
-#                 total_desembolsos_mercado=('desembolsos', 'sum'),
-#                 monto_desembolsado_mercado=('monto_desembolsado', 'sum'),
-#                 suma_tasa_x_monto_bucket=('suma_tasa_x_monto', 'sum')
-#             )
-#             .assign(tasa_mercado=lambda df: df['suma_tasa_x_monto_bucket'] / df['monto_desembolsado_mercado'])
-#             .reset_index()
-#         )
-        
-#         # Procesamiento: sensibilidad interna
-#         datos_oferta_relevante = (
-#             df_iter
-#             .sort_values(by=['llave_interna', 'flg_exito_4'], ascending=[True, True])
-#             .drop_duplicates(subset=['llave_interna'], keep='first')
-#             .assign(indicador_exito=lambda df: (df['flg_exito_4'] == 'exito_desembolso_ibk_ct').astype(int))
-#         )
-        
-#         datos_oferta_relevante['monto_ofertado_ajustado'] = np.where(
-#             datos_oferta_relevante['monto_desembolsado'].isna(),
-#             datos_oferta_relevante['monto_min'],
-#             np.where(
-#                 datos_oferta_relevante['monto_desembolsado'] > datos_oferta_relevante['monto_min'],
-#                 datos_oferta_relevante['monto_desembolsado'],
-#                 datos_oferta_relevante['monto_min']
-#             )
-#         )
-        
-#         columnas_si = ['periodo', 'llave_interna', 'cluster_comercial', 'indicador_exito', 'flg_exito_4', 'monto_min', 'monto_ofertado_ajustado', 'tasa_min', 'monto_desembolsado', 'tasa_desembolsada']
-#         df_oi = datos_oferta_relevante[columnas_si].copy()
-        
-#         def promedio_ponderado(valores, pesos):
-#             mask = valores.notna() & pesos.notna() & (pesos > 0)
-#             if mask.any():
-#                 return np.average(valores[mask], weights=pesos[mask])
-#             return np.nan
+# # 1. Asegurar que 'periodo' sea string para extraer los meses fácilmente
+# base_propension_feature['periodo_str'] = base_propension_feature['periodo'].astype(str)
 
-#         data_panel_sensibilidad_interna = (
-#             df_oi
-#             .groupby(["cluster_comercial", "periodo"], observed=True)
-#             .agg(
-#                 leads=("llave_interna", "size"),
-#                 monto_desembolsado_ibk=("monto_desembolsado", "sum"),
-#                 monto_ofertado=("monto_ofertado_ajustado", "sum"),
-#                 desembolsos=("indicador_exito", "sum"),
-#                 tasa_desembolsada=("tasa_desembolsada", lambda x: promedio_ponderado(x, df_oi.loc[x.index, "monto_desembolsado"])),
-#                 tasa_ofertada=("tasa_min", lambda x: promedio_ponderado(x, df_oi.loc[x.index, "monto_ofertado_ajustado"])),
-#             )
-#             .assign(
-#                 efectividad=lambda df: np.where(df["monto_ofertado"] > 0, df["monto_desembolsado_ibk"] / df["monto_ofertado"], 0),
-#                 conversion=lambda df: np.where(df["leads"] > 0, df["desembolsos"] / df["leads"], 0),
-#             )
-#             .reset_index()
-#         )
+# # 2. Extraer los últimos 2 caracteres del YYYYMM para obtener el mes ('01', '02', ..., '12')
+# base_propension_feature['mes'] = base_propension_feature['periodo_str'].str[-2:].astype(int)
+
+# # 3. Crear las variables binarias (dummies) para los trimestres Q1, Q2 y Q3
+# base_propension_feature['q2'] = base_propension_feature['mes'].isin([4, 5, 6]).astype(int)
+# base_propension_feature['q3'] = base_propension_feature['mes'].isin([7, 8, 9]).astype(int)
+# base_propension_feature['q4'] = base_propension_feature['mes'].isin([10,11,12]).astype(int)
+
+# # 4. Añadirlas automáticamente a tu listado de variables candidatas para el Logit
+# variables_candidatas = variables_arbol_ini + ['tasa_cliente','monto_cliente']
+
+# listado_exclusion=['deuda_directa_vig_total_sf_u03m','monto_min','nivel_ventas']
+
+# variables_candidatas=[var for var in variables_candidatas if var not in listado_exclusion]
+
+# import statsmodels.api as sm
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# from sklearn.metrics import roc_auc_score, roc_curve
+
+# print("=" * 65)
+# print("🚀 INICIANDO PIPELINE END-TO-END: MODELO LOGIT CON SELECCIÓN & EVALUACIÓN")
+# print("=" * 65)
+
+# # ==========================================
+# # PASO 1: SELECCIÓN BACKWARD DE VARIABLES SIGNIFICATIVAS
+# # ==========================================
+# def seleccionar_logit_significativo(X_train, y_train, lista_variables, umbral_pvalue=0.05):
+#     vars_actuales = list(lista_variables)
+    
+#     # Aprender media y desviación estándar de Train
+#     mean_train = X_train[vars_actuales].mean()
+#     std_train = X_train[vars_actuales].std().replace(0, 1)
+    
+#     print(f"• Variables candidatas iniciales: {len(vars_actuales)}")
+#     print(f"• Umbral de p-value máximo permitido: {umbral_pvalue}")
+    
+#     iteracion = 1
+#     while len(vars_actuales) > 0:
+#         X_scaled = (X_train[vars_actuales] - mean_train[vars_actuales]) / std_train[vars_actuales]
+#         X_const = sm.add_constant(X_scaled, has_constant='add')
+#         y = np.asarray(y_train)
         
-#         # Validación de Materialidad
-#         aux_mat = (
-#             data_panel_sensibilidad_interna.groupby(['periodo', 'cluster_comercial'], observed=True)
-#             .agg(
-#                 leads=('leads', 'sum'),
-#                 monto_ofertado=('monto_ofertado', 'sum'),
-#                 desembolsos=('desembolsos', 'sum'),
-#                 monto_desembolsado_ibk=('monto_desembolsado_ibk', 'sum'),
-#             )
-#             .assign(
-#                 participacion_monto_desembolsado=lambda df: df.groupby(level='periodo')['monto_desembolsado_ibk'].transform(lambda x: x / x.sum()),
-#                 participacion_desembolsos=lambda df: df.groupby(level='periodo')['desembolsos'].transform(lambda x: x / x.sum()),
-#             )
-#             .reset_index()
-#         )
+#         modelo = sm.Logit(y, X_const)
+#         modelo_fit = modelo.fit(disp=False)
         
-#         aux_mat['flg_mat_monto'] = np.where(aux_mat['participacion_monto_desembolsado'] > umbral_materialidad, 1, 0)
-#         aux_mat['flg_mat_n'] = np.where(aux_mat['participacion_desembolsos'] > umbral_materialidad, 1, 0)
+#         p_values = modelo_fit.pvalues.drop('const', errors='ignore')
+#         peor_var = p_values.idxmax()
+#         peor_pval = p_values.max()
         
-#         buckets_val = (
-#             aux_mat
-#             .query(f'desembolsos != 0 and periodo >= {periodo_inicio} and periodo <= {periodo_fin}')
-#             .groupby('cluster_comercial')
-#             .agg(conteo=('cluster_comercial', 'size'),
-#                  mat_n=('flg_mat_n', 'sum'),
-#                  mat_monto=('flg_mat_monto', 'sum'))
-#             .reset_index()
-#         )
-        
-#         n_buckets_iniciales = len(buckets_val)
-#         buckets_val_filtrados = buckets_val.query(f'conteo == 13 and mat_monto >={meses_tol_min_materialidad} and mat_n >= {meses_tol_min_materialidad}')
-#         n_buckets_validos = len(buckets_val_filtrados)
-#         listado_val = buckets_val_filtrados.cluster_comercial.to_list()
-        
-#         if n_buckets_validos == 0:
-#             return None
+#         if peor_pval > umbral_pvalue:
+#             vars_actuales.remove(peor_var)
+#             iteracion += 1
+#         else:
+#             break
             
-#         # Panel de sensibilidad completo
-#         dp_sens = pd.merge(data_panel_sensibilidad_mercado, data_panel_sensibilidad_interna, how='outer', on=['cluster_comercial', 'periodo'])
-#         dp_sens = dp_sens.query(f"cluster_comercial in {listado_val}")
-#         dp_sens['spread'] = dp_sens['tasa_ofertada'] - dp_sens['tasa_mercado']
+#     if len(vars_actuales) == 0:
+#         raise ValueError("⚠️ Se eliminaron todas las variables. Ninguna cumplió con el umbral.")
         
-#         dp_sens["log_efectividad"] = np.log(dp_sens["efectividad"].replace(0, np.nan))
-#         dp_sens["log_tasa"] = np.log(dp_sens["tasa_ofertada"])
-        
-#         # Demeaning Simultáneo (Two-Way)
-#         def demeaning_sim(data, col):
-#             g_mean = data[col].mean()
-#             b_mean = data.groupby("cluster_comercial")[col].transform("mean")
-#             t_mean = data.groupby("periodo")[col].transform("mean")
-#             return data[col] - b_mean - t_mean + g_mean
+#     # Ajuste final con las sobrevivientes
+#     X_final_scaled = (X_train[vars_actuales] - mean_train[vars_actuales]) / std_train[vars_actuales]
+#     X_final_const = sm.add_constant(X_final_scaled)
+#     modelo_final = sm.Logit(np.asarray(y_train), X_final_const).fit(disp=True)
+    
+#     print("\n" + "=" * 65)
+#     print(f"🏆 MODELO FINAL OBTENIDO ({len(vars_actuales)} variables significativas)")
+#     print("=" * 65)
+#     print(modelo_final.summary())
+#     print("=" * 65)
+    
+#     return modelo_final, vars_actuales, mean_train, std_train
 
-#         dp_sim = dp_sens.copy()
-#         dp_sim["log_efect_dem"] = demeaning_sim(dp_sim, "log_efectividad")
-#         dp_sim["log_tasa_dem"] = demeaning_sim(dp_sim, "log_tasa")
-#         dp_sim["spread_dem"] = demeaning_sim(dp_sim, "spread")
-        
-#         # Modelamiento OLS por bucket
-#         resultados_sim = []
-#         for grupo in dp_sim["cluster_comercial"].unique():
-#             dg = dp_sim[dp_sim["cluster_comercial"] == grupo].dropna(subset=["log_efect_dem", "log_tasa_dem", "spread_dem"])
-#             if len(dg) < 5: continue
-            
-#             m_conj = ols("log_efect_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
-#             m_tasa = ols("log_efect_dem ~ log_tasa_dem - 1", data=dg).fit()
-#             m_spread = ols("log_efect_dem ~ spread_dem - 1", data=dg).fit()
-            
-#             resultados_sim.append({
-#                 "grupo": grupo,
-#                 "conj_elast_tasa": m_conj.params["log_tasa_dem"],
-#                 "conj_pval_tasa": m_conj.pvalues["log_tasa_dem"],
-#                 "conj_sens_spread": m_conj.params["spread_dem"],
-#                 "conj_pval_spread": m_conj.pvalues["spread_dem"],
-#                 "tasa_elast": m_tasa.params["log_tasa_dem"],
-#                 "tasa_pval": m_tasa.pvalues["log_tasa_dem"],
-#                 "spread_sens": m_spread.params["spread_dem"],
-#                 "spread_pval": m_spread.pvalues["spread_dem"],
-#             })
-            
-#         df_res_sim = pd.DataFrame(resultados_sim)
-#         df_res_sim['familia'] = " & ".join(combinacion_vars)
-        
-#         # Métricas de resumen
-#         sig_conj_tasa = (df_res_sim['conj_pval_tasa'] < p_value_umbral).sum()
-#         sig_conj_spread = (df_res_sim['conj_pval_spread'] < p_value_umbral).sum()
-        
-#         sig_conj_ambos = ((df_res_sim['conj_pval_tasa'] < p_value_umbral) & 
-#                           (df_res_sim['conj_pval_spread'] < p_value_umbral)).sum()
-        
-#         sig_tasa_m2 = (df_res_sim['tasa_pval'] < p_value_umbral).sum()
-#         sig_spread_m3 = (df_res_sim['spread_pval'] < p_value_umbral).sum()
-        
-#         resumen_info = {
-#             "familia": " & ".join(combinacion_vars),
-#             "n_buckets_iniciales": n_buckets_iniciales,
-#             "n_buckets_validos": n_buckets_validos,
-#             "buckets_inferencia_conjunto": df_res_sim['grupo'].to_list(),
-#             "cant_sig_modelo1_tasa": int(sig_conj_tasa),
-#             "cant_sig_modelo1_spread": int(sig_conj_spread),
-#             "cant_sig_modelo1_ambos": int(sig_conj_ambos),
-#             "cant_sig_modelo2_tasa": int(sig_tasa_m2),
-#             "cant_sig_modelo3_spread": int(sig_spread_m3)
-#         }
-        
-#         return df_res_sim, resumen_info
-
-#     except Exception as e:
-#         print(f"Error evaluando familia {combinacion_vars}: {e}")
-#         return None, None
-
-# #~~~~ 7.3) Busqueda ----
-
-# listado_variables = list(vars_categorizadas.columns)
-
-# combinaciones_totales = []
-# for r in [1,2,3]:
-#     combinaciones_totales.extend(list(itertools.combinations(listado_variables, r)))
-
-# print(f"Evaluando {len(combinaciones_totales)} familias de variables en paralelo...")
-
-# resultados_paralelos = Parallel(n_jobs=-1, verbose=10)(
-#     delayed(evaluar_familia_variables)(
-#         comb, 
-#         datos, 
-#         p_value_umbral=0.10, 
-#         umbral_materialidad=0.03,
-#         periodo_inicio=202504,
-#         periodo_fin=202604,
-#         umbral_winsorizacion=0.025,
-#         meses_tol_min_materialidad=9
-#     ) 
-#     for comb in combinaciones_totales
+# df_train_raw = base_propension_feature.query('base=="train"')
+# resultado_logit, variables_significativas, mean_train, std_train = seleccionar_logit_significativo(
+#     X_train=df_train_raw[variables_candidatas],
+#     y_train=df_train_raw[var_dependiente],
+#     lista_variables=variables_candidatas,
+#     umbral_pvalue=0.05
 # )
 
-# valid_results = [res for res in resultados_paralelos if res is not None and res[0] is not None]
+# # ==========================================
+# # PASO 2: EVALUACIÓN INDIVIDUAL (TRAIN, TEST, OOT)
+# # ==========================================
+# def evaluar_gini_base_individual(modelo_fit, lista_vars, X_base, y_base, mean_tr, std_tr, nombre_base="Base"):
+#     # Reutilizar estandarización aprendida en Train
+#     X_scaled = (X_base[lista_vars].copy() - mean_tr[lista_vars]) / std_tr[lista_vars]
+#     X_const = sm.add_constant(X_scaled, has_constant='add')
+#     y_arr = np.asarray(y_base)
+    
+#     y_pred = modelo_fit.predict(X_const)
+    
+#     auc = roc_auc_score(y_arr, y_pred)
+#     gini = (2 * auc) - 1
+    
+#     print(f"📊 Evaluación {nombre_base:<6} | Registros: {len(y_arr):<6} | AUC: {auc:.4f} | Gini: {gini:.4f}")
+    
+#     # Gráfico ROC individual
+#     plt.figure(figsize=(5, 4), dpi=150)
+#     fpr, tpr, _ = roc_curve(y_arr, y_pred)
+#     plt.plot(fpr, tpr, label=f'{nombre_base} (Gini = {gini:.4f})', color='royalblue', lw=2)
+#     plt.plot([0, 1], [0, 1], 'k--', lw=1, label='Azar')
+#     plt.xlabel('1 - Especificidad', fontsize=9)
+#     plt.ylabel('Sensibilidad', fontsize=9)
+#     plt.title(f'Curva ROC - {nombre_base}', fontsize=10, fontweight='bold')
+#     plt.legend(loc='lower right')
+#     plt.grid(True, linestyle='--', alpha=0.5)
+#     plt.show()
+    
+#     return {'base': nombre_base, 'auc': auc, 'gini': gini}
 
-# df_elasticidades_todas = pd.concat(
-#     [res[0] for res in valid_results], 
-#     ignore_index=True
+# print("\n" + "=" * 65)
+# print("📈 EVALUACIÓN DE DESEMPEÑO POR BASE")
+# print("=" * 65)
+# res_train = evaluar_gini_base_individual(resultado_logit, variables_significativas, base_propension_feature.query('base=="train"'), base_propension_feature.query('base=="train"')[var_dependiente], mean_train, std_train, "Train")
+# res_test  = evaluar_gini_base_individual(resultado_logit, variables_significativas, base_propension_feature.query('base=="test"'),  base_propension_feature.query('base=="test"')[var_dependiente],  mean_train, std_train, "Test")
+# res_oot   = evaluar_gini_base_individual(resultado_logit, variables_significativas, base_propension_feature.query('base=="oot"'),   base_propension_feature.query('base=="oot"')[var_dependiente],   mean_train, std_train, "OOT")
+# print("=" * 65)
+
+
+# # ==========================================
+# # PASO 3: PREDICCIÓN GLOBAL Y GRÁFICO TEMPORAL
+# # ==========================================
+# # Estandarizar toda la base completa con la escala de Train y predecir
+# X_global_scaled = (base_propension_feature[variables_significativas] - mean_train[variables_significativas]) / std_train[variables_significativas]
+# base_propension_feature['prob_predicha'] = resultado_logit.predict(sm.add_constant(X_global_scaled))
+
+# print(f"✅ ¡Predicción global completada en {len(base_propension_feature):,} registros (Columna: 'prob_predicha')!")
+
+# # Agrupar temporalmente por período (YYYYMM)
+# df_temporal = base_propension_feature.groupby('periodo').agg(
+#     tasa_exito=(var_dependiente, 'mean'),
+#     prob_promedio=('prob_predicha', 'mean')
+# ).reset_index()
+
+# df_temporal['periodo'] = df_temporal['periodo'].astype(str)
+
+# # Gráfico de evolución temporal
+# plt.figure(figsize=(12, 5), dpi=150)
+# plt.plot(df_temporal['periodo'], df_temporal['tasa_exito'], marker='o', label='Tasa Real (Target)', color='royalblue', lw=2)
+# plt.plot(df_temporal['periodo'], df_temporal['prob_promedio'], marker='s', label='Probabilidad Predicha (Logit)', color='crimson', linestyle='--', lw=2)
+
+# plt.title('Evolución Temporal: Tasa Real vs Probabilidad Predicha (Logit Significativo)', fontsize=12, fontweight='bold')
+# plt.xlabel('Período (YYYYMM)', fontsize=10)
+# plt.ylabel('Tasa / Probabilidad Promedio', fontsize=10)
+# plt.xticks(rotation=45)
+# plt.legend()
+# plt.grid(True, linestyle='--', alpha=0.5)
+# plt.tight_layout()
+# plt.show()
+
+# def simular_curva_tasa(modelo_fit, df_base, mean_tr, std_tr, incrementos_bps=[0, 50, 100, 150, 200, 250, 300]):
+#     """
+#     Simula cómo cambia la probabilidad predicha al incrementar la tasa_cliente en puntos básicos (bps).
+#     Nota: Se asume que tasa_cliente está en formato porcentaje (ej. 18.5 para 18.5%). 
+#           Por lo tanto, 50 bps = +0.5. Si está en decimales (0.185), ajusta el divisor a 10000.
+#     """
+#     vars_modelo = [col for col in modelo_fit.model.exog_names if col != 'const']
+#     resultados = []
+    
+#     print("=" * 60)
+#     print("📊 SIMULACIÓN DE SENSIBILIDAD A LA TASA (+50 bps increments)")
+#     print("=" * 60)
+    
+#     for bps in incrementos_bps:
+#         df_sim = df_base.copy()
+        
+#         # 1. Incrementar la tasa del cliente (50 bps = 0.5 unidades porcentuales)
+#         delta = bps / 10000.0
+#         df_sim['tasa_cliente'] = df_sim['tasa_cliente'] + delta
+        
+#         # 2. Asegurar que existan todas las variables del modelo
+#         for col in vars_modelo:
+#             if col not in df_sim.columns:
+#                 df_sim[col] = 0
+                
+#         # 3. Estandarizar usando estrictamente la media y std de Train
+#         X_scaled = (df_sim[vars_modelo] - mean_tr[vars_modelo]) / std_tr[vars_modelo]
+#         X_const = sm.add_constant(X_scaled, has_constant='add')
+        
+#         # 4. Predecir nuevas probabilidades
+#         y_pred_sim = modelo_fit.predict(X_const)
+        
+#         # Guardar el promedio de la tasa simulada y la probabilidad predicha resultante
+#         resultados.append({
+#             'delta_bps': bps,
+#             'tasa_promedio': df_sim['tasa_cliente'].mean(),
+#             'prob_predicha_promedio': y_pred_sim.mean()
+#         })
+        
+#     df_curva = pd.DataFrame(resultados)
+#     print(df_curva.to_string(index=False))
+#     print("=" * 60)
+    
+#     # 5. Graficar la curva de sensibilidad
+#     plt.figure(figsize=(9, 5), dpi=150)
+#     plt.plot(df_curva['delta_bps'], df_curva['prob_predicha_promedio'], marker='o', color='crimson', lw=2.5, label='Probabilidad Predicha')
+    
+#     plt.title('Curva de Sensibilidad: Incremento de Tasa vs Probabilidad', fontsize=11, fontweight='bold')
+#     plt.xlabel('Incremento en Puntos Básicos (bps)', fontsize=10)
+#     plt.ylabel('Probabilidad Predicha Promedio', fontsize=10)
+#     plt.grid(True, linestyle='--', alpha=0.5)
+#     plt.legend()
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return df_curva
+
+# df_resultado_curva = simular_curva_tasa(
+#     modelo_fit=resultado_logit,
+#     df_base=base_propension_feature.query('macroperfil!="Por Fidelizar - Mayor Escala"'), # o base_propension_feature completa
+#     mean_tr=mean_train,
+#     std_tr=std_train,
+#     incrementos_bps=list(range(-500, 510, 50))
 # )
 
-# lista_diccionarios_resumen = [
-#     res[1] for res in valid_results if res[1] is not None
-# ]
+# def simular_curva_cliente_individual(modelo_fit, cliente_df, mean_tr, std_tr, incrementos_bps=[0, 50, 100, 150, 200, 250, 300]):
+#     """
+#     Simula la curva de probabilidad para un ÚNICO cliente al incrementar su tasa_cliente en bps.
+#     'cliente_df' debe ser un DataFrame de exactamente 1 sola fila (ej. base.iloc[[0]]).
+#     """
+#     vars_modelo = [col for col in modelo_fit.model.exog_names if col != 'const']
+#     resultados = []
+    
+#     # Extraer la fila del cliente
+#     cliente_base = cliente_df.copy().iloc[0]
+#     tasa_original = cliente_base['tasa_cliente']
+    
+#     print("=" * 60)
+#     print("👤 SIMULACIÓN DE SENSIBILIDAD PARA CLIENTE INDIVIDUAL")
+#     print(f"• Tasa base actual del cliente: {tasa_original:.2f}%")
+#     print("=" * 60)
+    
+#     for bps in incrementos_bps:
+#         fila_sim = cliente_base.copy()
+        
+#         # Incrementar tasa (50 bps = 0.5 unidades porcentuales)
+#         delta = bps / 10000.0
+#         fila_sim['tasa_cliente'] = tasa_original + delta
+        
+#         # Convertir a DataFrame de 1 fila para operar
+#         df_sim = pd.DataFrame([fila_sim])
+        
+#         # Asegurar variables del modelo
+#         for col in vars_modelo:
+#             if col not in df_sim.columns:
+#                 df_sim[col] = 0
+                
+#         # Estandarizar estrictamente con los valores de Train
+#         X_scaled = (df_sim[vars_modelo] - mean_tr[vars_modelo]) / std_tr[vars_modelo]
+#         X_const = sm.add_constant(X_scaled, has_constant='add')
+        
+#         # Predecir probabilidad para este cliente
+#         prob_pred = modelo_fit.predict(X_const).values[0]
+        
+#         resultados.append({
+#             'incremento_bps': bps,
+#             'tasa_simulada': fila_sim['tasa_cliente'],
+#             'probabilidad_predicha': prob_pred
+#         })
+        
+#     df_curva_cliente = pd.DataFrame(resultados)
+#     print(df_curva_cliente.to_string(index=False))
+#     print("=" * 60)
+    
+#     # Graficar curva individual
+#     plt.figure(figsize=(8, 4.5), dpi=150)
+#     plt.plot(df_curva_cliente['tasa_simulada'], df_curva_cliente['probabilidad_predicha'], marker='o', color='crimson', lw=2.5, label='Probabilidad del Cliente')
+    
+#     plt.title('Curva de Sensibilidad: Incremento de Tasa (Cliente Individual)', fontsize=11, fontweight='bold')
+#     plt.xlabel('Tasa del Cliente (%)', fontsize=10)
+#     plt.ylabel('Probabilidad Predicha', fontsize=10)
+#     plt.grid(True, linestyle='--', alpha=0.5)
+#     plt.legend()
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return df_curva_cliente
 
-# df_resumen_familias = pd.DataFrame(lista_diccionarios_resumen)
 
-# if not df_resumen_familias.empty:
-#     df_resumen_familias = df_resumen_familias.sort_values(
-#         by=['cant_sig_modelo1_ambos', 'n_buckets_validos'], 
-#         ascending=False
-#     ).reset_index(drop=True)
 
-# print("\n--- Top 5 Familias de Variables ---")
-# print(df_resumen_familias.head())
+# import numpy as np
+# import pandas as pd
+# import statsmodels.api as sm
+# import matplotlib.pyplot as plt
+
+# def simular_curva_cliente_individual(modelo_fit, cliente_df, mean_tr, std_tr, incrementos_bps=[0, 50, 100, 150, 200, 250, 300]):
+#     """
+#     Simula la curva de probabilidad para un ÚNICO cliente al incrementar su tasa_cliente en bps.
+#     'cliente_df' debe ser un DataFrame de exactamente 1 sola fila (ej. base.iloc[[0]]).
+#     """
+#     vars_modelo = [col for col in modelo_fit.model.exog_names if col != 'const']
+#     resultados = []
+    
+#     # Extraer la fila del cliente
+#     cliente_base = cliente_df.copy().iloc[0]
+#     tasa_original = cliente_base['tasa_cliente']
+    
+#     print("=" * 60)
+#     print("👤 SIMULACIÓN DE SENSIBILIDAD PARA CLIENTE INDIVIDUAL")
+#     print(f"• Tasa base actual del cliente: {tasa_original:.2f}%")
+#     print("=" * 60)
+    
+#     for bps in incrementos_bps:
+#         fila_sim = cliente_base.copy()
+        
+#         # Incrementar tasa (50 bps = 0.5 unidades porcentuales)
+#         delta = bps / 10000.0
+#         fila_sim['tasa_cliente'] = tasa_original + delta
+        
+#         # Convertir a DataFrame de 1 fila para operar
+#         df_sim = pd.DataFrame([fila_sim])
+        
+#         # Asegurar variables del modelo
+#         for col in vars_modelo:
+#             if col not in df_sim.columns:
+#                 df_sim[col] = 0
+                
+#         # Estandarizar estrictamente con los valores de Train
+#         X_scaled = (df_sim[vars_modelo] - mean_tr[vars_modelo]) / std_tr[vars_modelo]
+#         X_const = sm.add_constant(X_scaled, has_constant='add')
+        
+#         # Predecir probabilidad para este cliente
+#         prob_pred = modelo_fit.predict(X_const).values[0]
+        
+#         resultados.append({
+#             'incremento_bps': bps,
+#             'tasa_simulada': fila_sim['tasa_cliente'],
+#             'probabilidad_predicha': prob_pred
+#         })
+        
+#     df_curva_cliente = pd.DataFrame(resultados)
+#     print(df_curva_cliente.to_string(index=False))
+#     print("=" * 60)
+    
+#     # Graficar curva individual
+#     plt.figure(figsize=(8, 4.5), dpi=150)
+#     plt.plot(df_curva_cliente['tasa_simulada'], df_curva_cliente['probabilidad_predicha'], marker='o', color='crimson', lw=2.5, label='Probabilidad del Cliente')
+    
+#     plt.title('Curva de Sensibilidad: Incremento de Tasa (Cliente Individual)', fontsize=11, fontweight='bold')
+#     plt.xlabel('Tasa del Cliente (%)', fontsize=10)
+#     plt.ylabel('Probabilidad Predicha', fontsize=10)
+#     plt.grid(True, linestyle='--', alpha=0.5)
+#     plt.legend()
+#     plt.tight_layout()
+#     plt.show()
+    
+#     return df_curva_cliente
+
+
+# # 1. Selecciona un cliente de ejemplo (por ejemplo, el primer registro de tu OOT o el que tú elijas)
+# un_cliente = base_propension_feature.query('base=="oot"').iloc[[1]] 
+# # O si buscas por ID: base_propension_feature.query('id_cliente == "123456"')
+
+# # 2. Ejecutas la función
+# df_res_cliente = simular_curva_cliente_individual(
+#     modelo_fit=resultado_logit,
+#     cliente_df=un_cliente,
+#     mean_tr=mean_train,
+#     std_tr=std_train,
+#     incrementos_bps=list(range(-300, 310, 50))
+# )

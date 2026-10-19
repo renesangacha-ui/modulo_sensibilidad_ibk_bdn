@@ -2207,10 +2207,11 @@ def calcular_psi_temporal(
             psi_max = float(np.max(psi_vals))
             psi_prom = float(np.mean(psi_vals))
             psi_std = float(np.std(psi_vals))
+            psi_median= float(np.median(psi_vals))
 
-            if psi_max < 0.10:
+            if psi_median < 0.10:
                 estado = "Estable"
-            elif psi_max < 0.25:
+            elif psi_median < 0.25:
                 estado = "Cambio moderado"
             else:
                 estado = "Cambio significativo"
@@ -2222,6 +2223,7 @@ def calcular_psi_temporal(
                 "n_buckets": n_buckets,
                 "psi_max": psi_max,
                 "psi_promedio": psi_prom,
+                "psi_median": psi_median,
                 "psi_std": psi_std,
                 "estado": estado,
             })
@@ -3461,9 +3463,9 @@ def plot_barras_comparacion_base(df, segment_col='segmento_arbol_new', target_co
         )
         
     # 3. Estética general y formato ejecutivo
-    ax.set_title('Tasa de Precancelación (%) por Segmento y Base (Train, Test, OOT)', fontsize=14, fontweight='bold', pad=15)
+    ax.set_title('Tasa de Conversión (%) por Segmento y Base (Train, Test, OOT)', fontsize=14, fontweight='bold', pad=15)
     ax.set_xlabel('Segmentos del Árbol', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Tasa Promedio de Precancelación (%)', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Tasa Promedio de Conversión (%)', fontsize=11, fontweight='bold')
     
     # Dar un respiro superior en el eje Y para que los textos no se corten
     y_max = df_agg[target_col + '_pct'].max()
@@ -3574,7 +3576,7 @@ def plot_evolucion_segmentos_grid(df, period_col='periodo_x', segment_col='segme
         
     # Storytelling gerencial en el título principal
     plt.suptitle(
-        'Validación de Estabilidad Temporal: Tasa de Precancelación (%) por Segmento y Partición (Train / Test / OOT)', 
+        'Validación de Estabilidad Temporal: Tasa de Conversión (%) por Segmento y Partición (Train / Test / OOT)', 
         fontsize=13, 
         fontweight='bold', 
         y=1.03
@@ -3779,9 +3781,9 @@ def plot_todas_series_juntas(df, period_col='periodo_x', segment_col='segmento_a
             )
             
     # Storytelling gerencial y etiquetas claras
-    ax.set_title('Evolución y Discriminación Temporal de la Tasa de Precancelación (%) por Segmento', fontsize=13, fontweight='bold', pad=15)
+    ax.set_title('Evolución y Discriminación Temporal de la Tasa de Conversión (%) por Segmento', fontsize=13, fontweight='bold', pad=15)
     ax.set_xlabel('Periodo de Originación', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Tasa Promedio de Precancelación (%)', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Tasa Promedio de Conversión (%)', fontsize=11, fontweight='bold')
     
     # Leyenda limpia al costado
     ax.legend(title='Segmentos del Árbol', bbox_to_anchor=(1.02, 1), loc='upper left', fontsize=9, title_fontsize=10)
@@ -3835,9 +3837,9 @@ def plot_escalera_tasas_global(df, segment_col='segmento_arbol_new', target_col=
         )
         
     # Storytelling gerencial
-    ax.set_title('Comportamiento de Pre-cancelación por Segmento', fontsize=13, fontweight='bold', pad=15)
+    ax.set_title('Comportamiento de Conversión por Segmento', fontsize=13, fontweight='bold', pad=15)
     ax.set_xlabel('Segmentos del Árbol', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Tasa de Pre-cancelación (%)', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Tasa de Conversión (%)', fontsize=11, fontweight='bold')
     
     # Dar un respiro superior al eje Y para que las etiquetas no se corten
     ax.set_ylim(0, df_agg['target_pct'].max() * 1.18)
@@ -4291,7 +4293,7 @@ def plot_materialidad_y_precancelacion(
     # ============================================================
 
     ax1.set_ylabel(
-        'Tasa de precancelación (%)',
+        'Tasa de conversión (%)',
         fontsize=11,
         fontweight='bold'
     )
@@ -4520,9 +4522,9 @@ def plot_precancelacion_barras_agrupadas(
   ax.set_xlabel(
       'Periodo de originación (Cosecha)', fontsize=11, fontweight='bold'
   )
-  ax.set_ylabel('Tasa de precancelación (%)', fontsize=11, fontweight='bold')
+  ax.set_ylabel('Tasa de Conversión (%)', fontsize=11, fontweight='bold')
   ax.set_title(
-      'Tasa de precancelación por Cosecha y Segmento',
+      'Tasa de Conversión por Cosecha y Segmento',
       fontsize=14,
       fontweight='bold',
       pad=15,
