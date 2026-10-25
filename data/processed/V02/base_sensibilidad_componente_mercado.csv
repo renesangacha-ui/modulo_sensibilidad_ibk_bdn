@@ -1,0 +1,712 @@
+cluster|cluster_comercial|FLG_CLIENTE|tipo_cliente|cluster_comercial_aperturado|nombre_ifi|periodo|desembolsos|monto_desembolsado|suma_tasa_x_monto|tasa_mercado
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202503|18|1685213.25|352143.63269921875|0.20896087346762718
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202504|19|1737257.48|334499.21801|0.19254441086648827
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202505|31|5104486.52|914137.37527|0.17908507970161122
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202506|48|7301825.51|1294062.34063|0.17722449527967424
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202507|80|12817344.99|2124321.46206|0.1657380263788936
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202508|61|11509885.7578125|1795085.7886796875|0.15596034803918427
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202509|102|18498644.5703125|2585882.649988281|0.13978768228988128
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202510|81|13212469.88|2075859.6357200001|0.15711367023528838
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202511|97|16481953.23046875|2706437.360964844|0.16420610610408048
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202512|79|13960134.484375|2344769.767599805|0.1679618323322177
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202601|62|10498518.09|1849932.93982|0.17620895863217967
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202602|79|12963868.53125|2324109.3518164065|0.17927591183249308
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202603|172|31159126.828125|5271311.739041797|0.16917392352226576
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202604|73|14630898.68359375|2393673.64625|0.1636040066994742
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BBVA|202605|58|10919280.21484375|1852235.5862445312|0.16962982447566355
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202503|64|6892805.3125|1445657.5969335937|0.2097342854457118
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202504|67|6200039.96|1436831.01821|0.23174544478419776
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202505|186|26774455.93|6179527.5386735|0.23079936917595845
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202506|224|33263055.07|7523713.7475752495|0.22618829604623114
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202507|224|32630398.32|6699265.650087|0.20530750450511198
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202508|194|29336440.67578125|6212828.726119922|0.2117785451473987
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202509|249|40418108.9296875|8433955.027929688|0.2086677296704217
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202510|276|41964905.17|8624480.21158025|0.2055164947148682
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202511|292|41437760.1953125|8846204.060406836|0.21348171374879313
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202512|251|35782559.80078125|7365559.935145703|0.2058421749632593
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202601|154|21737175.09|4587080.47278875|0.2110246825448352
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202602|129|20717078.125|3946181.0651486325|0.19047961499873103
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202603|298|48616416.34375|10638925.348303515|0.21883401016396034
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202604|131|21282135.60546875|4372592.747436328|0.20545836322519848
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|BCP|202605|93|17623184.04296875|3454769.1723984373|0.19603547031995117
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202503|8|796114.765625|165648.95803125|0.20807170672334557
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202504|5|493709.75|140917.51304|0.2854258256799669
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202505|19|2107793.21|516702.330316|0.2451390050336105
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202506|13|1178938.17|288234.17873|0.2444862555684324
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202507|16|1684454.16|374326.604321|0.22222427490754632
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202508|44|4626391.87890625|1214583.807349414|0.26253370642621826
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202509|39|4592204.6484375|1015924.0376171875|0.22122795375917237
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202510|47|5051837.38|1115545.82142|0.22081982009880138
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202511|39|4065556.42578125|895791.1170642577|0.22033665831906882
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202512|24|2558781.73828125|559397.5816484375|0.21861871736828498
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202601|15|1305393.79|337050.52839|0.25819835437550226
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202602|17|1776451.86328125|434164.4255046875|0.244399769269712
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202603|24|2387429.90625|537042.0028881836|0.22494566289978743
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202604|8|831428.625|133587.41775|0.16067214158040327
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|MI BANCO|202605|7|804316.59375|142492.4708125|0.17715968055333933
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202503|25|1804956.28515625|342297.9357907226|0.18964333851503273
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202504|45|3241117.25|711415.5843400001|0.2194970220037551
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202505|62|6300352.84|1281090.07513|0.20333624285239238
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202506|69|6173067.7|1460741.7505595|0.23663141594243328
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202507|82|7256203.15|1592685.98946525|0.21949302638601703
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202508|82|7410410.73828125|1493561.5172663084|0.20154908682062084
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202509|84|8060697.67578125|1691722.6674001953|0.20987298313929534
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202510|100|8988008.95|1744531.53956175|0.19409543863012618
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202511|99|9241250.16015625|1790534.2054296874|0.19375454342201395
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202512|81|7813789.453125|1495269.5105723632|0.1913629129044876
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202601|48|4073962.27|782003.568741|0.19195159820196372
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202602|51|4973691.140625|920569.1617890625|0.1850877217264003
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202603|91|9233524.796875|1785042.65761875|0.19332191085065165
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202604|47|5024013.26953125|1047158.4316769531|0.20843066598322402
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|OTROS|202605|29|2672442.4296875|576126.9874882812|0.2155806916879591
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202503|14|1616901.34765625|265359.78503125|0.16411624952622955
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202504|22|2090161.61|384378.34676|0.1838988645284706
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202505|27|3375185.61|610301.71612|0.18082019380261583
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202506|26|3770600.23|666614.33882|0.17679263198368822
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202507|34|4217493.05|770199.94108|0.18262032253497135
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202508|30|3972382.984375|749113.9824140625|0.18858050327992865
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202509|44|5159730.13671875|920920.3095507813|0.1784822626666336
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202510|55|6599314.81|1128997.93452|0.17107805386238273
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202511|45|5818631.58984375|954039.1044726563|0.16396279601855243
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202512|41|5423125.890625|876642.2828046875|0.16164889041579245
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202601|27|3766848.34|593798.26378|0.15763795358429536
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202602|34|5464245.1484375|907511.830375|0.16608182936933255
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202603|68|9857863.0703125|1652717.5020089843|0.16765474324615387
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202604|28|4528903.8125|756920.786890625|0.16713112449009979
+cluster_1_nulo|Emprendedor Izipay|0|No Cliente|Emprendedor Izipay & No Cliente|SCOTIA|202605|31|4501376.015625|904467.0278624999|0.20093123185509265
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BBVA|202507|1|67502.0|12622.874|0.187
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202506|1|53100.0|24445.9125|0.460375
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202507|1|66400.0|6507.2|0.098
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202508|1|62800.0|28134.4|0.448
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202510|2|400000.0|59150.0|0.147875
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202511|2|260000.0|35980.0|0.13838461538461538
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202601|1|75400.0|31517.199999999997|0.418
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202602|1|127500.0|18615.0|0.146
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202603|1|250000.0|23281.25|0.093125
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|BCP|202604|1|150000.0|38700.0|0.258
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|MI BANCO|202505|1|92408.68|36778.65464|0.398
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|MI BANCO|202508|1|65236.37109375|18983.783988281248|0.291
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|MI BANCO|202509|1|52056.30078125|14055.201210937501|0.27
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|MI BANCO|202511|1|52073.05859375|12445.46100390625|0.239
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|MI BANCO|202601|1|154311.94|49688.44468|0.322
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|OTROS|202506|4|328000.0|70128.0|0.21380487804878048
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|OTROS|202509|1|63592.33984375|13354.3913671875|0.21
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|OTROS|202601|1|60000.0|12600.0|0.21
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|SCOTIA|202505|1|80000.0|18400.0|0.23
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|SCOTIA|202508|1|80000.0|19600.0|0.245
+cluster_1_nulo|Emprendedor Izipay|1|Cliente|Emprendedor Izipay & Cliente|SCOTIA|202604|1|284340.0|39807.600000000006|0.14
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202503|1|118968.25|13443.412250000001|0.11300000000000002
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202504|1|224000.0|34944.0|0.156
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202505|1|135439.77|22212.12228|0.164
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202506|1|347325.53|81621.49955000001|0.23500000000000001
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202507|1|135247.51|27590.49204|0.204
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202508|3|540000.0|93330.0|0.17283333333333334
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202509|7|1096243.71875|156393.14575|0.14266275197300873
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202510|3|650000.0|107500.0|0.16538461538461538
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202511|1|229465.0|37861.725|0.16499999999999998
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202512|2|280540.59375|51725.683125|0.1843786042995783
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202601|5|823758.28|159033.43310999998|0.19305837279110566
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202602|6|1036627.48828125|143740.08342968748|0.13866126940933385
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202603|7|1297544.6875|187798.0909375|0.14473342825620408
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202604|6|1100466.53125|156191.301453125|0.1419318961710813
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BBVA|202605|6|1116160.51171875|185302.14072265624|0.16601746682232443
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202505|2|356805.06|83196.97065|0.2331720594153009
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202506|7|1177176.44|227864.83419999998|0.1935689727191618
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202507|4|552875.76|161335.4476|0.2918113964699773
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202508|6|1093257.1171875|188350.45994531253|0.17228377202781048
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202509|6|1000752.0234375|227120.4200625|0.22694974853246885
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202510|8|1458160.41|341306.03425|0.23406617811685065
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202511|12|1550311.1015625|308100.436109375|0.19873458675413744
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202512|8|1053964.1171875|235770.2713203125|0.2236985751938735
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202601|8|944308.19|195019.45491|0.2065209822123856
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202602|6|1214753.17578125|299912.74084375|0.24689191748839484
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202603|6|696363.2578125|181188.3120859375|0.2601922345172375
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202604|9|2113162.37109375|378171.985765625|0.17896021192630232
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|BCP|202605|7|1001531.3828125|256111.313734375|0.25571970896724505
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202504|1|91210.03|11857.3039|0.13
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202505|3|300316.77|79387.16601|0.26434476506257043
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202506|1|103125.08|28153.14684|0.273
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202507|1|354238.21|67659.49811|0.191
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202508|2|180736.890625|57037.101242187506|0.3155808481873815
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202509|2|172095.9375|27539.812125|0.16002592812511918
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202510|1|91601.63|20518.76512|0.22399999999999998
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202511|1|122524.8515625|21196.799320312497|0.173
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202602|1|59413.51953125|15506.928597656251|0.261
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202603|2|148422.4765625|38710.902546875004|0.26081563549826653
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|MI BANCO|202605|2|162779.7734375|55041.71604687499|0.3381360895431428
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202504|1|60000.0|10800.0|0.18
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202505|1|106964.7|24067.0575|0.225
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202507|2|193525.01|37888.777109999995|0.19578232865095832
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202508|2|169989.2734375|26283.047765625|0.15461591919379838
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202509|3|201783.48828125|45382.09900390625|0.22490491858606262
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202510|1|70702.09|12726.376199999999|0.18
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202511|1|106822.546875|33755.9248125|0.316
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202512|2|220000.0|52960.0|0.24072727272727273
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202601|2|154900.0|27620.3|0.1783105229180116
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202602|1|96000.0|17664.0|0.184
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202603|2|162220.2890625|42539.190972656244|0.2622310144957688
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202604|3|245402.6328125|43614.42125|0.177725971193323
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|OTROS|202605|1|81676.2109375|15273.4514453125|0.187
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202505|2|210000.0|46540.0|0.22161904761904763
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202506|1|86388.02|16413.7238|0.18999999999999997
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202507|2|122233.38|23438.44942|0.19175162643788465
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202508|4|527408.546875|87220.160390625|0.16537494681764586
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202509|2|284340.0|55243.2|0.19428571428571428
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202510|2|116234.41|21505.16047|0.18501543966197273
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202512|1|160000.0|33440.0|0.209
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202601|1|110000.0|18260.0|0.166
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202602|1|250000.0|30750.0|0.123
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202603|7|1481332.4453125|200530.52574218748|0.1353717231920103
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202604|6|674810.1796875|129663.26546875|0.19214776150649682
+cluster_1_sow_no_nulo|Cliente Ancla|1|Cliente|Cliente Ancla & Cliente|SCOTIA|202605|3|269564.98046875|47830.0909609375|0.17743436435164964
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202506|1|100000.0|17000.0|0.17
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202509|1|300000.0|33600.0|0.112
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202510|2|500000.0|84000.0|0.168
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202512|2|450185.9609375|81121.943390625|0.18019651972640544
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202603|3|462000.0|94304.0|0.20412121212121212
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202604|1|200000.0|33400.0|0.167
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BBVA|202605|2|394000.0|66792.0|0.1695228426395939
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202503|1|110000.0|20460.0|0.186
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202505|4|508700.0|142646.4|0.28041360330253584
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202506|8|967200.0|256656.2|0.26536000827129863
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202507|5|689742.14|199308.0317|0.2889602072159894
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202508|6|1079507.5703125|243534.529203125|0.22559779653293743
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202509|11|1673856.4921875|493983.645140625|0.29511708288388355
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202510|4|670000.0|127990.0|0.19102985074626866
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202511|7|1197935.1171875|310073.12113281246|0.25883966225215854
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202512|5|801900.0|165980.655|0.20698423120089787
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202601|8|985000.0|162911.3|0.16539218274111675
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202602|5|741400.0|151392.7|0.20419840841650927
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202603|7|1090000.0|237590.0|0.21797247706422018
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202604|2|510700.0|111110.8|0.21756569414529078
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|BCP|202605|1|350000.0|138950.0|0.397
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202504|1|71472.83|15223.71279|0.213
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202505|2|131380.38|31393.939799999996|0.23895455166136675
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202508|1|121679.3984375|12654.6574375|0.104
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202509|3|231743.3125|64493.9291875|0.2782989873224497
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202510|2|173227.27000000002|22443.864807500002|0.12956311559663788
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202512|1|154169.203125|23125.380468749998|0.15
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|MI BANCO|202602|1|152517.265625|22877.58984375|0.15
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202505|1|95000.0|15865.0|0.167
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202507|2|169000.0|45156.0|0.26719526627218937
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202508|1|59060.609375|13406.758328125|0.227
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202509|2|237538.984375|58894.377343750006|0.24793562832942884
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202510|6|496000.0|110422.5|0.22262600806451613
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202511|4|406768.3828125|65888.30890625|0.1619799170493082
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202512|1|60000.0|26400.0|0.44
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202601|1|90000.0|20700.0|0.23
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202602|1|60000.0|11040.0|0.184
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202603|4|337994.71875|57346.847875|0.16966788146005607
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202604|1|60000.0|16140.000000000002|0.269
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|OTROS|202605|1|63908.03125|8947.124375000001|0.14
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202503|1|100000.0|19000.0|0.19
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202510|2|239842.15|51170.008499999996|0.21334868996129328
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202511|1|150000.0|15000.0|0.1
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202512|1|200000.0|34000.0|0.17
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202604|2|384076.421875|61748.206171875005|0.16077062442529036
+cluster_2_nulo|Nuevo en Expansión|1|Cliente|Nuevo en Expansión & Cliente|SCOTIA|202605|1|81240.0|19091.399999999998|0.235
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202505|11|984550.27|201836.86310000002|0.20500412142490196
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202506|16|1561319.84|339526.18093000003|0.2174610046138913
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202507|15|1410844.34|272698.71234|0.19328759708530283
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202508|32|3187353.3515625|615910.0329375|0.19323556725694355
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202509|17|1786117.6171875|298380.869234375|0.1670555546639861
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202510|7|628282.37|107158.66537|0.1705581287757605
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202511|12|1188711.9921875|221707.54900781251|0.18651073638099694
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202512|11|1025569.1015625|183254.36808593752|0.17868553938173581
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202601|5|445752.27|68583.82022|0.1538608434231866
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202602|5|419454.8984375|70821.5014921875|0.16884175570723514
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202603|1|67000.0|7504.0|0.112
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BBVA|202604|3|267000.0|32945.0|0.12338951310861423
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202505|36|3690020.17|823528.30818|0.22317718338650705
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202506|60|6397748.38|1557193.03533|0.24339704265299655
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202507|64|5836292.1|1368391.94315|0.23446255254256373
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202508|56|5617929.21484375|1204311.0739023439|0.2143692146779459
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202509|61|6449058.69921875|1453143.3308632812|0.22532642338010006
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202510|70|7671382.81|1711050.70579|0.2230433219366353
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202511|69|7266146.54296875|1728756.2945273437|0.23791927183194697
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202512|40|4263108.43359375|881448.1988984375|0.206761852912896
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202601|37|4088326.55|829987.69734|0.20301404185534055
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202602|44|5292986.73046875|968728.963296875|0.1830212340643982
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202603|11|1415726.61328125|250005.60710546875|0.17659172665125447
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202604|9|1169945.453125|263333.1537734375|0.22508156518755434
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|BCP|202605|4|588643.609375|145970.25921875|0.2479773107088274
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202505|85|7890115.04|2102663.97897|0.2664934501347905
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202506|114|10991366.47|2722769.49446|0.24771892574882007
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202507|89|8575902.71|2097945.45963|0.24463260960081493
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202508|179|16218760.3828125|3758036.4429609375|0.23170922772516203
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202509|144|12350055.3828125|2814135.22734375|0.22786417875179457
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202510|145|13731771.74|3078701.97915|0.22420282228999536
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202511|189|17234828.3828125|4129419.9316171873|0.2395973919725982
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202512|107|9617746.2890625|2014843.1158945311|0.20949222981540408
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202601|55|4822382.9|1075503.118|0.22302316931324556
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202602|54|4815671.8125|1115455.9204570313|0.2316303859332049
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202603|19|1902386.6484375|491548.6110078125|0.25838522963328164
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202604|6|628736.01953125|133132.87038281249|0.21174684803658753
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|MI BANCO|202605|8|789569.13671875|181560.2046015625|0.22994845689648008
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202505|115|9706253.36|2284485.4702914995|0.23536223355821195
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202506|264|21213068.65|4392904.010140999|0.20708479676470573
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202507|224|18060655.24|3914862.008391|0.2167619035061653
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202508|241|19164541.734375|3833262.6606343747|0.20001848798496127
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202509|224|18124300.140625|3764670.651237305|0.20771398741068758
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202510|195|15965088.02|3510746.8332645|0.2199015018812593
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202511|330|26136175.91015625|5414766.018413671|0.20717514440624613
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202512|226|18507855.73046875|4157169.961925|0.22461651000883995
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202601|76|6159207.76|1401748.4458299999|0.22758583578450356
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202602|77|6264934.3671875|1151411.1262890624|0.1837866223019927
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202603|25|2038260.21484375|374165.2231328125|0.18357088089535
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202604|11|993018.88671875|156721.5413046875|0.1578233238066048
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|OTROS|202605|13|1147197.3984375|181758.0365078125|0.15843658358654725
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202505|7|589284.17|121606.43995|0.2063629843476026
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202506|7|613699.71|126307.57782|0.20581332492400886
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202507|4|326921.45|64633.62715|0.19770384338500885
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202508|5|479436.7421875|101334.7205859375|0.211362024786801
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202509|5|438080.1875|80409.36103125|0.18354941247200318
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202510|7|594963.54|106769.9613|0.1794563097093311
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202511|9|673998.12109375|135020.999078125|0.20032845026187276
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202512|5|386145.578125|90017.331828125|0.2331176036385565
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202601|9|889568.01|174391.3308|0.19604047002544528
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202602|5|441755.16796875|84734.87205859376|0.19181410474090468
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202603|1|78159.5078125|15162.944515625|0.194
+cluster_2_sow_no_nulo|Socio en Crecimiento|0|No Cliente|Socio en Crecimiento & No Cliente|SCOTIA|202604|4|423629.75|79856.88575|0.18850632126284805
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202506|2|283282.9|62459.606|0.220484914550084
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202507|4|546412.5700000001|124489.49953999999|0.22783059244043374
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202508|7|847000.0|165537.0|0.1954391971664699
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202509|9|1049406.609375|164243.321546875|0.156510660481445
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202510|11|1827397.76|285735.0912|0.15636173878203727
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202511|16|2233701.6484375|374387.8708984375|0.16760871854140688
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202512|10|1133964.1328125|182333.096578125|0.16079264881676258
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202601|11|1829427.16|301134.4637|0.1646058778858405
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202602|9|1181906.5703125|188628.5738515625|0.1595968569678807
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202603|10|1629069.1328125|251340.8217109375|0.15428493281743735
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202604|10|1235513.27734375|222079.32523828125|0.1797466116396039
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BBVA|202605|5|557018.14453125|84095.081625|0.150973684521119
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202503|1|116735.59375|22646.7051875|0.194
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202504|2|183372.2|34525.2562|0.18827966398396268
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202505|7|960031.87|160005.13309|0.16666648065548073
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202506|21|3227730.76|782800.54488|0.2425234950141876
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202507|12|1808720.65|508478.08790000004|0.28112582664437435
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202508|22|3063442.5546875|670500.45903125|0.2188715626494414
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202509|28|3903635.19140625|1014121.6211171875|0.25978903544822773
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202510|23|3853984.33|745621.62426|0.19346773635169398
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202511|18|2098100.55859375|454933.41004296875|0.21683107998783788
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202512|17|2506591.78125|500435.036390625|0.19964760123049055
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202601|34|4655193.0|933975.65189|0.20063091946778575
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202602|13|1772426.6484375|328935.272828125|0.1855847028242896
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202603|15|2507032.265625|571251.876625|0.22785980238773978
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202604|5|1004544.9296875|146868.96284375|0.1462044737903748
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|BCP|202605|6|732459.140625|180441.118359375|0.2463497393252631
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202505|1|90876.63|12995.35809|0.143
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202506|3|322503.8|53559.51154000001|0.1660740479336988
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202507|5|470597.3|83489.33568|0.1774114209325043
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202508|7|596051.20703125|96402.84335937501|0.16173584118641127
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202509|19|1519651.515625|364812.52835546876|0.24006328069592273
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202510|8|674408.71|122202.17066|0.18119898045207633
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202511|13|1339357.84375|284255.7560195312|0.2122328676731067
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202512|5|354364.4921875|76086.980921875|0.2147138965650547
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202601|9|886985.03|178875.14629|0.20166647715576438
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202602|5|433785.984375|100827.001328125|0.23243489868257683
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202603|9|677753.2578125|182695.64221484377|0.26956069942696814
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202604|1|81229.9296875|21038.5517890625|0.259
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|MI BANCO|202605|4|439068.6796875|108585.93497656251|0.24730968069470768
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202505|2|138359.79|28663.717470000003|0.20716797466951925
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202506|7|568079.13|130761.1608|0.23018124394043485
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202507|2|130000.0|25560.0|0.1966153846153846
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202508|10|765352.31640625|168429.2210078125|0.22006756548236545
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202509|17|1329705.26953125|273299.9584765625|0.2055342373523921
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202510|10|900867.93|190559.48757|0.2115287726692635
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202511|17|1495026.3671875|307164.27428125|0.2054574293957765
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202512|14|1161925.33203125|225776.4719609375|0.1943123759650205
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202601|19|1830349.49|468325.07675999997|0.255866477587294
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202602|7|620739.08984375|155731.00593359375|0.25087997273185053
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202603|15|1374251.46875|272261.309609375|0.19811607686111485
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202604|9|747096.16796875|151646.75802734375|0.20298157657487398
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|OTROS|202605|3|381092.8984375|97443.9459140625|0.25569604239173066
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202506|1|82128.0|20532.0|0.25
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202507|2|130862.23000000001|25983.308230000002|0.19855468021597983
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202508|4|298103.546875|56510.518437499995|0.1895667429317634
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202509|5|434650.0|84513.08|0.19443938801334407
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202510|7|677928.6799999999|127509.6816|0.18808716220709235
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202511|5|431751.1015625|88287.636796875|0.20448734578177918
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202512|5|485859.0|96532.705|0.198684608085885
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202601|7|856096.28|151247.9039|0.1766716050909601
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202602|2|147247.5|35704.979999999996|0.24248275862068963
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202603|9|753339.9296875|149906.61025781248|0.19898933316862236
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202604|4|358545.0|74197.62|0.20694088608124503
+cluster_2_sow_no_nulo|Socio en Crecimiento|1|Cliente|Socio en Crecimiento & Cliente|SCOTIA|202605|1|51790.5|5955.9075|0.115
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BBVA|202510|2|500000.0|74200.0|0.1484
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BBVA|202511|1|172000.0|54180.0|0.315
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BBVA|202605|1|220000.0|36300.0|0.165
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202505|1|130200.0|44268.0|0.34
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202507|1|120000.0|21600.0|0.18
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202508|2|401846.609375|63542.903156249995|0.15812725969015773
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202509|3|722391.21875|105095.20575|0.14548239654941125
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202510|5|712000.0|133662.0|0.18772752808988763
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202511|3|325600.0|67587.1|0.20757708845208847
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202512|1|280000.0|133560.0|0.477
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202601|4|760000.45|137367.5428625|0.1807466599032935
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202603|4|610000.0|137302.5|0.2250860655737705
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202604|1|250000.0|111000.0|0.444
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|BCP|202605|1|57100.0|13304.300000000001|0.233
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|MI BANCO|202601|1|55798.01|6528.36717|0.117
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|MI BANCO|202605|1|50411.6015625|15627.596484375|0.31
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202504|2|179000.0|28468.0|0.1590391061452514
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202509|2|230000.0|86110.0|0.3743913043478261
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202510|3|251315.66|49542.601800000004|0.19713296736064917
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202511|2|194000.0|34407.0|0.17735567010309278
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202602|2|179530.0|54586.2|0.3040505765053194
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202603|1|89747.1171875|17051.952265625|0.19
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|OTROS|202605|1|99800.0|28343.199999999997|0.284
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202505|1|81240.0|22097.280000000002|0.272
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202509|1|83960.3984375|12761.980562499999|0.152
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202510|1|81584.0|16724.719999999998|0.20499999999999996
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202601|1|84040.0|18909.0|0.225
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202602|1|50775.0|11322.825|0.223
+cluster_3_nulo|Próximo Recurrente|1|Cliente|Próximo Recurrente & Cliente|SCOTIA|202604|1|200000.0|34000.0|0.17
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202505|2|564349.72|84007.11683|0.1488564871264577
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202506|1|267224.39|51574.307270000005|0.193
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202507|3|470524.9|64711.643970000005|0.13753075335651738
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202508|1|100000.0|13100.0|0.131
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202509|3|544603.109375|104487.67995312499|0.19186023391059526
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202510|5|1041592.44|171874.66876|0.16501144032881038
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202511|4|804775.75|130352.37828125|0.16197354142598108
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202512|3|710000.0|96640.0|0.13611267605633803
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202601|3|999000.0|158103.0|0.15826126126126125
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202602|5|1309695.203125|193610.062453125|0.147828335929735
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202603|8|1918193.359375|341550.0294375|0.1780581857236678
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202604|14|3675052.359375|692705.7176875001|0.18848866626904479
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BBVA|202605|4|988147.1328125|178688.358671875|0.18083173318864545
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202504|2|322622.1|125630.76895|0.3894053412645941
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202505|6|950663.86|291784.61738|0.3069272217626954
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202506|8|979531.03|152172.54078|0.15535244532273773
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202507|5|1104979.34|246471.45572|0.22305526157620287
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202508|3|324495.0234375|102223.24354531249|0.31502253089253124
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202509|8|1542729.4765625|359955.4586640625|0.23332377071456037
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202510|7|1448837.1600000001|188310.80672|0.1299737554495082
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202511|10|1809523.640625|306872.1529132812|0.16958725822851875
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202512|4|725716.17578125|105021.112984375|0.14471375516925383
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202601|7|1380685.83|266143.96735|0.19276214875762146
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202602|2|337030.0390625|133596.50896953125|0.3963934767985374
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202603|4|955574.703125|190977.4520625|0.19985611950373908
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202604|12|1775390.5390625|383278.467140625|0.21588403154554167
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|BCP|202605|7|1748551.75|256524.76759374997|0.1467069919970913
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202504|1|151158.6|67394.06181|0.44584999999999997
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202506|1|121105.91|19982.475150000002|0.165
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202508|2|243451.734375|57694.304625000004|0.23698457015767566
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202512|1|90844.953125|11264.7741875|0.12399999999999999
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202601|1|151234.8|23290.1592|0.154
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|MI BANCO|202603|1|104550.96875|42134.04040625|0.403
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202510|2|161590.16|43939.222836|0.2719176887751086
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202512|2|278631.328125|54481.0125|0.19553082155772034
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202601|2|182552.75|33216.04775|0.181953149158257
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202603|2|158230.7890625|44569.37625|0.281673222475023
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202604|2|315187.625|47094.016|0.14941581542105278
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|OTROS|202605|4|599698.625|118501.02187499999|0.19760095643874453
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202505|1|116174.4|22073.136|0.19
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202506|2|285137.07|50897.365529999995|0.1785013976962027
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202507|2|184487.78|27397.753559999997|0.14850714535130727
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202510|4|532226.28|111884.54288|0.2102198765532585
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202511|4|595448.6953125|95844.1341640625|0.1609611960166646
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202512|4|645990.87109375|103573.93501953126|0.16033343450220366
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202601|4|448506.77|83557.7509|0.1863020950609062
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202602|4|758747.2890625|104821.712890625|0.13815102129740928
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202603|4|539219.875|91235.9440625|0.169199890976756
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202604|6|776587.4921875|152547.729109375|0.19643340981410468
+cluster_3_sow_no_nulo|Cuenta Estratégica|1|Cliente|Cuenta Estratégica & Cliente|SCOTIA|202605|5|704076.3984375|105752.710609375|0.1502006186318182
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202505|4|418193.76|80131.45604|0.19161322741879264
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202506|8|960957.05|168095.37355|0.174924960017724
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202507|15|1648524.91|240189.91693|0.14569990145311176
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202508|14|1487704.7421875|204835.48924999998|0.1376855792963413
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202509|24|2712985.87109375|501702.520921875|0.18492633016168708
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202510|10|1293563.05|187759.23509|0.14514888554523878
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202511|10|958285.84765625|173823.025109375|0.18138953584100895
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202512|9|1017165.71875|158437.04246875|0.15576325425463028
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202601|1|150000.0|34200.0|0.228
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202602|9|1170817.0078125|192141.0159140625|0.1641084940105626
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202603|4|605645.046875|81480.66695312501|0.1345353476818608
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202604|7|929000.0|155500.0|0.16738428417653392
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BBVA|202605|3|390000.0|72420.0|0.18569230769230768
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202505|47|5351553.82|1196498.1708199999|0.22357958287710922
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202506|43|5044033.24|972963.08708|0.19289386901026848
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202507|57|5914535.06|1317336.5779449998|0.22272867851509534
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202508|61|6804655.64453125|1413918.27205625|0.20778689560765426
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202509|67|7305294.46484375|1550699.7042734374|0.2122706636585394
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202510|64|7216744.69|1592755.5490399997|0.2207027707723993
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202511|70|8079749.78125|1881549.1875874996|0.2328722099728699
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202512|40|4579892.37890625|1069786.5655195313|0.23358334148782184
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202601|23|2540996.06|455939.79559|0.1794334917583461
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202602|37|4785084.84375|1025625.8253515625|0.21433806480802015
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202603|21|2534243.6171875|546958.6792890625|0.21582719024308972
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202604|22|2642719.6875|493369.2335234374|0.1866899602924449
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|BCP|202605|16|2173832.58203125|461285.06206796854|0.2121989825163718
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202505|38|4178072.96|1102551.499965|0.26388995848578956
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202506|51|5125628.91|1231409.7630409999|0.24024559418231467
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202507|45|4753961.08|1236941.0214439998|0.2601916592560744
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202508|43|4388309.4921875|918609.3176445313|0.2093310235478901
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202509|48|4946742.5703125|1175285.6200390626|0.23758778697974905
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202510|64|6270077.98|1536314.6425349999|0.24502321142344066
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202511|61|6585841.5625|1569475.7519367184|0.23831058446248776
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202512|23|2554056.17578125|577161.0483953124|0.2259782121741182
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202601|25|2684613.05|576681.5143259999|0.21480991993464382
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202602|14|1496778.9453125|434948.12188124994|0.29058941752447
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202603|23|2493423.88671875|474395.42516796873|0.19025863500179055
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202604|5|449896.11328125|110231.57023046876|0.24501560910698092
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|MI BANCO|202605|3|261626.05078125|44494.745371093755|0.1700700111408117
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202505|69|5586174.78|1185598.7526509997|0.21223803395764854
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202506|78|6684838.58|1416022.0530499995|0.21182591563041145
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202507|93|7889247.56|1437206.1506119997|0.1821727787956498
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202508|103|9276870.59765625|1888402.3016828122|0.20356027194773058
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202509|116|9597106.50390625|1964571.260151562|0.20470453874320713
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202510|108|9497857.62|1957242.5754999998|0.2060720063205159
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202511|110|9378137.0546875|1871594.088863281|0.19956992289079384
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202512|87|7944651.03515625|1758538.2508605462|0.22134870909732293
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202601|58|5091876.27|961271.0667069998|0.18878523666620828
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202602|61|5763792.93359375|1040480.7215710937|0.180520142475408
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202603|38|3532148.05859375|657105.5029414062|0.18603566216389547
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202604|21|1595330.5625|275710.5229023438|0.1728234444843112
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|OTROS|202605|12|1061420.421875|195912.717921875|0.18457598316772067
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202505|13|1156089.25|223153.49117|0.1930244496002363
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202506|8|743518.63|142413.39375|0.1915397785661403
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202507|13|1116615.97|241536.98265999998|0.21631159606287914
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202508|12|954824.26953125|206570.883453125|0.2163443997444016
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202509|16|1518447.83984375|273957.16121484374|0.1804192110036748
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202510|22|2184258.53|384292.79244|0.17593741178614059
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202511|11|1020565.9453125|179600.1208203125|0.17598090710867145
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202512|8|814331.70703125|142100.58656640624|0.1744996361304069
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202601|7|695202.46|132943.4512|0.1912298342557649
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202602|7|893073.6640625|151942.83389062498|0.17013471565094945
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202603|3|340371.8359375|55572.180421875004|0.16326903272948623
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202604|8|1018752.140625|171176.77203125|0.16802592623386667
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|0|No Cliente|Gran Cuenta por Conquistar & No Cliente|SCOTIA|202605|3|413801.4921875|73855.853671875|0.17848136139250495
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202503|1|100000.0|26700.0|0.267
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202505|1|175624.78|20196.849700000002|0.11500000000000002
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202506|4|509387.45|64337.53085|0.12630372195074693
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202507|10|1697769.8399999999|284657.49135|0.167665536660729
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202508|6|1026000.0|152154.0|0.1482982456140351
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202509|8|1106700.625|238884.351859375|0.21585273059674565
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202510|10|1615076.77|277146.82206|0.17159978225679018
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202511|8|1536253.921875|302224.43810937495|0.196728180026717
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202512|9|1196997.29296875|173173.09015625|0.1446729171180933
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202601|13|2257232.1|473312.1245|0.20968695443414967
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202602|4|794856.2578125|205282.9157421875|0.2582642002557046
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202603|13|2438463.890625|386959.19365625|0.15868973706929446
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202604|10|1907110.640625|318706.157765625|0.1671146660170583
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BBVA|202605|7|1161313.734375|237404.078015625|0.20442716811869274
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202504|7|917487.79|155486.64539|0.16946998868508104
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202505|4|511487.55|100460.65439000001|0.19640879702741545
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202506|13|1845937.35|480469.4767|0.260284823155022
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202507|12|1754250.6600000001|361840.49264|0.2062649887445389
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202508|18|2487014.046875|625410.608515625|0.2514704769365779
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202509|20|2544707.68359375|534701.1952734375|0.21012283600225098
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202510|19|3457531.41|777674.07347|0.22492176679025452
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202511|27|3547852.59765625|826658.3600117187|0.23300245352859877
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202512|15|2066499.59765625|335161.60845703125|0.16218808309334273
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202601|19|2246095.64|364177.25068|0.1621379090874332
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202602|6|953506.1953125|196975.50053125|0.20658020000246952
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202603|23|3152796.53515625|623066.0950820312|0.19762331255262963
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202604|9|1469524.8125|302210.677609375|0.2056519733717494
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|BCP|202605|11|1596754.2890625|349891.6668828125|0.2191268057205244
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202504|3|175081.73|64258.11637|0.36701782858782583
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202505|1|112314.44|19093.454800000003|0.17
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202506|1|79006.14|13510.04994|0.171
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202508|1|153156.0625|67771.55765625|0.44250000000000006
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202509|2|199699.8359375|51519.7162265625|0.25798577141889395
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202510|5|606416.1000000001|190929.02434|0.31484821121998574
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202511|9|946902.78515625|232364.70750390625|0.24539447042133616
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202512|7|729794.15234375|177937.82375390624|0.24381919638908456
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202601|5|425902.37|77773.02877|0.18260764496332807
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202602|3|235375.78515625|62543.32625976563|0.2657169097417874
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|MI BANCO|202603|2|215004.4453125|51535.9914609375|0.23969732991349124
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202503|1|100000.0|44250.0|0.4425
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202505|4|365203.2|72263.06036999999|0.19787083018440144
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202506|4|331971.3|61373.72434|0.18487659728416278
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202507|4|377342.74|87601.92904999999|0.23215480189177617
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202508|3|214321.21875|40590.668125|0.18939173807306467
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202509|7|577300.87109375|113547.4735234375|0.19668682174047528
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202510|10|850183.9|148847.72613|0.17507709347354142
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202511|9|672827.55859375|144981.350203125|0.21548069538968456
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202512|3|292990.6328125|64607.3771875|0.22051004350315062
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202601|8|672766.44|160898.444245|0.23915943881653792
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202602|8|718741.875|155041.109578125|0.21571180832913764
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202603|7|565990.8515625|118346.82721875|0.20909671400524651
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202604|4|349326.8203125|49533.7353046875|0.14179768750757735
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|OTROS|202605|3|448500.0|71810.0|0.16011148272017836
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202504|2|233398.39|46498.31181|0.1992229329859559
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202505|3|309553.57|56758.346170000004|0.18335548890616898
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202507|2|315555.0|57911.0|0.18352109774841152
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202508|4|503400.546875|86182.26531249999|0.17120018213627414
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202509|5|536649.34375|97138.93187500001|0.18101006365946942
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202510|7|859820.0|144018.69|0.16749865088041682
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202511|2|165527.1796875|33826.420546875|0.20435568714899965
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202512|4|497410.1328125|96881.7678046875|0.19477240493049489
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202601|2|344900.0|60082.0|0.1742012177442737
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202602|3|320338.953125|81685.6896875|0.2549976794599353
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202603|7|891657.6015625|157111.103125|0.17620115933480038
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202604|7|616349.70703125|107888.44892578125|0.17504421223049454
+cluster_4_sow_no_nulo|Gran Cuenta por Conquistar|1|Cliente|Gran Cuenta por Conquistar & Cliente|SCOTIA|202605|7|796975.60546875|139855.38634765625|0.17548264387013296
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202504|1|345885.64|47732.21832000001|0.138
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202505|3|321787.46|49801.581190000004|0.15476545043116352
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202506|1|291806.15|46980.79015000001|0.161
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202507|7|1214504.72|178280.88816|0.14679307970083474
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202508|3|750000.0|122000.0|0.16266666666666665
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202509|6|1549635.65625|225410.74390625|0.1454604784015662
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202510|7|1565616.23|230890.9214|0.14747606531902138
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202511|6|1327759.84765625|177108.35930078125|0.13338885010976298
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202512|8|2085831.03125|330750.863|0.15857030509407424
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202601|1|109721.35|15251.267650000002|0.139
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202602|7|1927308.765625|339512.96028125|0.17615909102719748
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202603|4|918374.765625|179358.6059296875|0.19530001546550008
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202604|11|2741000.0|424540.0|0.15488507843852609
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BBVA|202605|11|2181592.48828125|329272.68126953125|0.150932258448023
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202504|4|645020.78|162394.72109|0.25176665020001376
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202505|16|2888566.41|502214.8882575|0.17386302302722545
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202506|24|3514239.15|744368.5256425|0.2118149886419938
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202507|14|2093853.86|412976.9880625|0.19723295687049522
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202508|21|3979735.3046875|897751.0411054688|0.22558059076141562
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202509|18|2654039.9140625|603307.59190625|0.22731669885957967
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202510|10|1898414.8599999999|493008.19691|0.25969465752601617
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202511|18|3640081.1640625|841017.1216621094|0.2310435080308746
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202512|16|1883498.19921875|409277.89807812497|0.21729667607215553
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202601|10|1758988.25|306455.59467|0.17422265024794795
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202602|12|2930952.09375|836227.0950703125|0.28530902871237435
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202603|11|1888734.2734375|353476.959453125|0.1871501801096648
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202604|13|2577768.06640625|639520.2207929688|0.24809067546738006
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|BCP|202605|5|1170987.5234375|161534.6790859375|0.13794739555528598
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202503|1|121679.3984375|27012.826453125|0.222
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202505|1|121129.42|10568.541894999998|0.08725
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202508|3|262714.19140625|76857.18585546875|0.29255056776365795
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202509|1|120926.8828125|20557.570078125|0.17
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202512|1|102801.4921875|28064.807367187503|0.273
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202601|1|121042.19|11620.05024|0.096
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|MI BANCO|202605|1|299426.21875|62580.07971875|0.209
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202503|1|95000.0|19760.0|0.208
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202504|1|73995.79|15539.115899999999|0.21
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202505|3|326622.4|79567.1613|0.24360595384762343
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202506|4|533433.19|82208.75305|0.1541125572820094
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202507|4|421780.2|69370.0812|0.16446974324541552
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202508|2|228000.0|41740.0|0.1830701754385965
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202509|5|487942.3046875|104391.058390625|0.21394139714424165
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202510|3|283828.33|59745.0656|0.21049718891697666
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202511|2|337655.15625|49379.031718750004|0.14624101188666508
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202512|1|230000.0|49910.0|0.217
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202601|1|108000.0|18360.0|0.17
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202602|3|513921.9375|87284.38750000001|0.16983977746620324
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202603|4|449349.34375|98238.04568750001|0.2186228756175857
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202604|3|292572.1953125|70099.778671875|0.23959822496803074
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|OTROS|202605|1|58317.19140625|9330.750625|0.16
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202504|2|248880.44|36094.93656|0.14502922190269352
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202505|3|432376.0|65527.68|0.1515525376061576
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202506|3|516869.14|84392.0995|0.16327556235994278
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202507|5|735285.82|122800.46994|0.16701052379875894
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202508|6|728255.0|118021.88|0.16206120109027744
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202509|6|938041.203125|154352.89250000002|0.1645480944608693
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202510|5|660655.76|148043.364|0.22408548137081255
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202511|4|452991.2578125|77625.626625|0.1713623061951682
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202512|5|734513.0234375|127491.825546875|0.17357326756470146
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202601|4|566412.5|98247.575|0.1734558735903604
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202602|3|657391.90625|99454.94206249999|0.15128714107514157
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202603|4|652696.703125|109358.43953125|0.16754863171157525
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202604|3|706113.59375|121289.3109375|0.17177025341398905
+cluster_5_sow_no_nulo|Maduro Multibanco|1|Cliente|Maduro Multibanco & Cliente|SCOTIA|202605|3|673262.0|109273.68400000001|0.1623048441765613
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202503|5|339727.92578125|69568.43041015626|0.20477689683641492
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202504|5|341000.0|60692.0|0.17798240469208212
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202505|1|70000.0|11830.0|0.169
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202506|2|204543.3|31552.4795|0.1542581912973928
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202507|1|84000.0|12768.0|0.152
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202509|3|213334.08203125|35403.701953125|0.16595427048519573
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202510|4|346525.6|57841.5976|0.16691868537274016
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202511|3|220000.0|38145.0|0.17338636363636364
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202512|2|191001.1484375|26193.141257812502|0.13713604065780527
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202604|1|100000.0|12700.0|0.127
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BBVA|202605|1|75000.0|12600.0|0.168
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202503|6|403704.140625|102542.4869296875|0.2540040505181219
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202504|16|1043985.04|186139.68746000002|0.17829727470041143
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202505|3|294958.83999999997|60029.52076|0.20351829685796163
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202506|6|439352.41000000003|99747.74135000001|0.22703355911943218
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202507|2|170586.84|75610.99283999999|0.44324047998075344
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202508|2|152856.921875|19881.395203125|0.130065390296052
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202509|2|178992.96875|44048.042453124996|0.24608811597871771
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202510|38|2833788.93|698140.67813|0.2463629774042487
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202511|6|464989.359375|103152.004296875|0.22183734362335375
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202512|5|468407.5546875|108774.3383359375|0.23222157125221163
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202601|1|90000.0|12689.999999999998|0.141
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202602|3|284075.0703125|73009.2912265625|0.2570070339021576
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|BCP|202604|3|303417.359375|79302.217890625|0.26136348313747493
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202503|33|2040407.25|462771.65625781246|0.22680357377568253
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202504|39|2380141.43|512720.19762|0.2154158535108562
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202505|3|241985.55|47852.48747|0.19774935929025514
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202507|2|141316.63|24948.257170000004|0.17654155190369317
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202508|4|264078.80078125|56840.049046875|0.21523896987838312
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202509|2|190629.25|83107.47475|0.43596391818149627
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202510|95|7107148.93|1799380.90963|0.25317900713106345
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202511|11|846849.86328125|186802.03173046873|0.22058459218104556
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202512|4|255325.10546875|53759.312789062504|0.21055239628851252
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202601|2|142728.76|47602.64116|0.3335182142687991
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|MI BANCO|202603|1|89683.2578125|39101.90040625|0.43600000000000005
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202503|44|2835526.29296875|583025.8113671875|0.205614672949045
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202504|93|5654612.76|1190981.47917|0.21062122725624102
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202505|9|644200.63|126521.55718|0.19640085912365532
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202506|11|823830.99|158882.08021000001|0.1928576153829805
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202507|8|500988.28|107258.63421999999|0.21409409860845446
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202508|8|499219.0|99336.2080234375|0.19898322784877479
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202509|3|251827.625|61081.181|0.24255155088723881
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202510|190|13340716.46|2806428.6168400003|0.21036565953969757
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202511|24|1738315.44140625|356544.09365625|0.20510897226329391
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202512|18|1380177.53515625|262007.97109375|0.1898364264160321
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202601|3|182713.03|34239.04085|0.18739244185266918
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202602|3|217222.40625|39795.607125|0.1832021282334911
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202604|4|362596.48828125|68173.2218984375|0.1880140158598518
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|OTROS|202605|6|437885.35546875|93659.630234375|0.21389075716887976
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202503|1|53000.171875|7420.024062500001|0.14
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202504|2|127834.54999999999|26324.65588|0.20592755151091782
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202506|3|237133.53999999998|50424.1141|0.21264016089836976
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202510|11|747127.13|158019.22033|0.21150245250764754
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202511|1|62100.0|13724.1|0.221
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202602|1|77625.0|17465.625|0.225
+cluster_6_sow_no_nulo|Cliente por Reactivar|0|No Cliente|Cliente por Reactivar & No Cliente|SCOTIA|202604|1|51459.48046875|4837.1911640625|0.094
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202503|2|133258.69140625|21423.5685546875|0.16076676371806775
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202509|2|147686.89453125|21696.30156640625|0.14690742624976377
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202510|1|88308.39|8919.14739|0.101
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202511|1|110000.0|21340.0|0.194
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202512|2|140000.0|22845.0|0.16317857142857142
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202601|2|177323.11|26052.0043|0.14691826857762647
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202603|3|399000.0|50079.0|0.1255112781954887
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202604|1|113369.84375|25054.73546875|0.221
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BBVA|202605|2|138436.7421875|16829.59782871094|0.12156886649294865
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202503|2|152001.81640625|55217.70649550781|0.3632700437469073
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202504|2|165916.28|29124.4526|0.17553703952378874
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202505|1|92496.62|14706.96258|0.159
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202506|1|90403.56|9853.98804|0.109
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202507|2|185674.38|19139.690947000003|0.10308202427820146
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202509|4|352949.5078125|67481.5296796875|0.19119315422175404
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202510|8|832492.25|133728.46111|0.1606362835329698
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202511|4|361402.23828125|68182.8567359375|0.1886619658478051
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202512|3|384767.09375|104871.348625|0.27255799762632377
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202601|5|535835.21|86104.05775|0.1606913023688757
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202602|2|189140.328125|31715.068789062505|0.16768009817611448
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202603|2|235500.0|62083.14750000001|0.26362270700636947
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|BCP|202605|1|69780.703125|10187.98265625|0.146
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202503|1|51052.01953125|17612.946738281247|0.345
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202504|1|78243.88|7198.43696|0.092
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202508|1|121679.3984375|19590.3831484375|0.161
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202509|2|181909.203125|29199.462398437503|0.16051668577962444
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202510|1|65334.16|7513.428400000001|0.115
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202512|1|70776.0|27956.52|0.395
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202602|1|58979.4609375|13742.214398437502|0.23300000000000004
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|MI BANCO|202605|1|66535.09375|7318.8603125|0.11
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202503|3|256000.0|50852.0|0.198640625
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202504|5|354311.83|73724.34684|0.20807757629769236
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202505|1|60000.0|16980.0|0.283
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202506|1|61877.25|16706.857500000002|0.27
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202507|4|304250.88|53246.65664|0.17500904727046313
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202509|4|255508.53125|67065.59413935547|0.262478884017128
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202510|4|260550.84|62464.7039|0.23974094230515627
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202511|1|95000.0|15485.0|0.163
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202512|2|200000.0|33700.0|0.1685
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202602|2|129674.3125|27827.89|0.21459832301019524
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202603|2|180546.1796875|35509.2359375|0.19667675050760688
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202604|1|63665.328125|10186.4525|0.16
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|OTROS|202605|1|122500.0|21805.0|0.178
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|SCOTIA|202509|2|132925.0|32455.975|0.24416757570058303
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|SCOTIA|202510|3|244735.0|50312.979999999996|0.20558146566694585
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|SCOTIA|202601|3|360884.57|57982.9644|0.16066900394217462
+cluster_6_sow_no_nulo|Cliente por Reactivar|1|Cliente|Cliente por Reactivar & Cliente|SCOTIA|202604|1|111705.0|19548.375|0.175

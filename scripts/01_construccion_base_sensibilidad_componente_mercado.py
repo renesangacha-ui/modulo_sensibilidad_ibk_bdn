@@ -41,7 +41,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V01/data_sensibilidad.csv',sep=',')
+datos=pd.read_csv(dir_b+r'/raw/V02/data_fin_no_clientes.csv',sep=',')
 
 datos.head().T
 datos.info()
@@ -78,6 +78,19 @@ mapeo_clusters = {
 
 datos['cluster_comercial'] = datos['cluster'].map(mapeo_clusters).fillna(datos['cluster'])
 datos[['cluster_comercial','cluster']].value_counts().reset_index()
+
+
+mapeo_tipo_cliente={
+   1: 'Cliente',
+   0: 'No Cliente'
+}
+
+datos['tipo_cliente'] = datos['FLG_CLIENTE'].map(mapeo_tipo_cliente).fillna(datos['FLG_CLIENTE'])
+datos[['tipo_cliente','FLG_CLIENTE']].value_counts().reset_index()
+
+datos['cluster_comercial_aperturado']=datos['cluster_comercial'].astype(str)+' & '+ datos['tipo_cliente'].astype(str)
+
+datos['cluster_comercial_aperturado'].value_counts()
 
 #____________________ 6) Validaciones ----
 
@@ -152,7 +165,7 @@ datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notn
 #____ By Cluster Comercial ----
 aux_completitud_inferencia_fracasos_by_cluster = (
     datos.query("flg_exito_4 != 'exito_desembolso_ibk_ct'")
-    .groupby('cluster_comercial')
+    .groupby(['cluster_comercial','cluster_comercial_aperturado'])
     .agg(
         completitud=('tasa_ultima', lambda x: x.notna().mean()),
         registros=('llave_interna', 'size'),
@@ -164,7 +177,7 @@ aux_completitud_inferencia_fracasos_by_cluster['bloque_cluster']=aux_completitud
 
 graficos.plot_completitud_por_bloques_y_materialidad(
     df=aux_completitud_inferencia_fracasos_by_cluster,
-    columna_cluster='cluster_comercial',
+    columna_cluster='cluster_comercial_aperturado',
     columna_bloque='bloque_cluster',
     metrica_completitud='completitud',
     columna_materialidad='registros',
@@ -201,7 +214,7 @@ graficos.plot_completitud_por_periodo_y_materialidad(
 
 aux_completitud_inferencia_fracasos_by_periodo_cluster = (
     datos.query("flg_exito_4 != 'exito_desembolso_ibk_ct'")
-    .groupby(['periodo','cluster_comercial'])
+    .groupby(['periodo','cluster_comercial','cluster_comercial_aperturado'])
     .agg(
         completitud=('tasa_ultima', lambda x: x.notna().mean()),
         registros=('llave_interna', 'size'),
@@ -212,7 +225,7 @@ aux_completitud_inferencia_fracasos_by_periodo_cluster = (
 graficos.plot_evolutivo_multiserie_panel(
     df=aux_completitud_inferencia_fracasos_by_periodo_cluster,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica='completitud',
     label_metrica='Completitud (%)',
     titulo=(
@@ -221,10 +234,10 @@ graficos.plot_evolutivo_multiserie_panel(
         )
 )
 
-for cluster in aux_completitud_inferencia_fracasos_by_periodo_cluster.cluster_comercial.unique():
+for cluster in aux_completitud_inferencia_fracasos_by_periodo_cluster.cluster_comercial_aperturado.unique():
     
     graficos.plot_completitud_por_periodo_y_materialidad(
-    df=aux_completitud_inferencia_fracasos_by_periodo_cluster.query(f'cluster_comercial=="{cluster}"'),
+    df=aux_completitud_inferencia_fracasos_by_periodo_cluster.query(f'cluster_comercial_aperturado=="{cluster}"'),
     columna_periodo='periodo',
     metrica_completitud='completitud',
     columna_materialidad='registros',
@@ -308,27 +321,27 @@ aux_pareto_by_cluster=(
     datos.query(
         "flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna()"
     )
-    .groupby(['cluster_comercial', 'cod_instit_financiera'])
+    .groupby(['cluster_comercial_aperturado', 'cod_instit_financiera'])
     .size()
     .reset_index(name='registros')
     .sort_values(
-        by=['cluster_comercial', 'registros'], ascending=[True, False]
+        by=['cluster_comercial_aperturado', 'registros'], ascending=[True, False]
     )
     .assign(
-        proporcion=lambda df: df.groupby('cluster_comercial')[
+        proporcion=lambda df: df.groupby('cluster_comercial_aperturado')[
             'registros'
         ].transform(lambda x: x / x.sum()),
-        cumsum_proporcion=lambda df: df.groupby('cluster_comercial')[
+        cumsum_proporcion=lambda df: df.groupby('cluster_comercial_aperturado')[
             'proporcion'
         ].cumsum(),
     )
     .reset_index(drop=True)
 )
 
-for cluster in aux_pareto_by_cluster.cluster_comercial.unique():
+for cluster in aux_pareto_by_cluster.cluster_comercial_aperturado.unique():
     
     graficos.plot_pareto_instituciones(
-        aux_pareto_by_cluster.query(f"cluster_comercial=='{cluster}'"),
+        aux_pareto_by_cluster.query(f"cluster_comercial_aperturado=='{cluster}'"),
         columna_institucion='cod_instit_financiera',
         columna_registros='registros',
         titulo=(
@@ -394,43 +407,43 @@ for periodo in aux_pareto_by_periodo.periodo.unique():
 
 #____________________ 7) Funnel: Entidades Financieras ----
 
-# Conservamos las entidades que concentran la mayor parte de las inferencias de tasa:
-# 1: BCP
-# 6: BBVA
-# 4: SCOTIA BANK
-# 123: MIBANCO
+# # Conservamos las entidades que concentran la mayor parte de las inferencias de tasa:
+# # 1: BCP
+# # 6: BBVA
+# # 4: SCOTIA BANK
+# # 123: MIBANCO
 
-cod_entidades_inferencia=[1.0,6.0,4.0,123.0]
+# cod_entidades_inferencia=[1.0,6.0,4.0,123.0]
 
-cod_entidades_inferencia=[1.0,
- 6.0,
- 4.0,
- 103.0,
- 123.0,
- 22.0,
- 106.0,
- 148.0,
- 107.0,
- 114.0,
- 228.0,
- 104.0,
- 108.0,
- 55.0,
- 224.0,
- 185.0,
- 112.0,
- 231.0,
- 184.0,
- 109.0,
- 227.0,
- 102.0,
- 171.0,
- 170.0,
- 172.0,
- 169.0]
+# cod_entidades_inferencia=[1.0,
+#  6.0,
+#  4.0,
+#  103.0,
+#  123.0,
+#  22.0,
+#  106.0,
+#  148.0,
+#  107.0,
+#  114.0,
+#  228.0,
+#  104.0,
+#  108.0,
+#  55.0,
+#  224.0,
+#  185.0,
+#  112.0,
+#  231.0,
+#  184.0,
+#  109.0,
+#  227.0,
+#  102.0,
+#  171.0,
+#  170.0,
+#  172.0,
+#  169.0]
 
 datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna()")
-datos_tasa_mercado=datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna() and cod_instit_financiera in @cod_entidades_inferencia")
+datos_tasa_mercado=datos.query("flg_exito_4 not in ['exito_desembolso_ibk_ct'] and tasa_ultima.notna()")
 
 datos_tasa_mercado['tasa_ultima'].describe(percentiles=[0.01,0.05,0.10, 0.25, 0.50, 0.75, 0.90,0.95,0.99])
 
@@ -440,15 +453,14 @@ datos_tasa_mercado['tasa_ultima'].describe(percentiles=[0.01,0.05,0.10, 0.25, 0.
 
 UMBRAL_WINSORIZACION=0.025
 
-limites_winsor = datos_tasa_mercado.groupby('cluster_comercial')['tasa_ultima'].agg(
+limites_winsor = datos_tasa_mercado.groupby('cluster_comercial_aperturado')['tasa_ultima'].agg(
     limite_inferior=lambda x: x.quantile(UMBRAL_WINSORIZACION),
     limite_superior=lambda x: x.quantile(1 - UMBRAL_WINSORIZACION)
 ).reset_index()
 
-
 datos_tasa_mercado
 
-datos_tasa_mercado = datos_tasa_mercado.merge(limites_winsor, on='cluster_comercial', how='left')
+datos_tasa_mercado = datos_tasa_mercado.merge(limites_winsor, on='cluster_comercial_aperturado', how='left')
 
 datos_tasa_mercado['tasa_mercado_winsorizada'] = datos_tasa_mercado['tasa_ultima'].clip(
     lower=datos_tasa_mercado['limite_inferior'], 
@@ -477,7 +489,7 @@ data_panel_mercado_by_entidad = (
     .assign(
         tasa_x_monto=lambda df: df['tasa_mercado_winsorizada'] * df['delta_deuda_final']
     )
-    .groupby(['cluster','cluster_comercial', 'nombre_ifi', 'periodo'], observed=True)
+    .groupby(['cluster','cluster_comercial','FLG_CLIENTE','tipo_cliente','cluster_comercial_aperturado', 'nombre_ifi', 'periodo'], observed=True)
     .agg(
         desembolsos=('llave_interna', 'size'),
         monto_desembolsado=('delta_deuda_final', 'sum'),
@@ -497,7 +509,7 @@ data_panel_mercado_by_entidad = (
 
 data_panel_mercado = (
     data_panel_mercado_by_entidad
-    .groupby(['cluster_comercial', 'periodo'], observed=True)
+    .groupby(['cluster_comercial_aperturado', 'periodo'], observed=True)
     .agg(
         total_desembolsos=('desembolsos', 'sum'),
         monto_desembolsado=('monto_desembolsado', 'sum'),
@@ -517,7 +529,7 @@ data_panel_mercado = (
 graficos.plot_evolutivo_multiserie_panel(
     df=data_panel_mercado,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica='tasa_mercado',
     label_metrica='Tasa Mercado (%)',
     titulo=(
@@ -526,10 +538,10 @@ graficos.plot_evolutivo_multiserie_panel(
 )
 
 # Tasa de cada institución y su aporte, por segmento
-for cluster in data_panel_mercado_by_entidad.cluster_comercial.unique():
+for cluster in data_panel_mercado_by_entidad.cluster_comercial_aperturado.unique():
 
     graficos.plot_evolutivo_multiserie_con_barras_apiladas(
-        df=data_panel_mercado_by_entidad.query(f"cluster_comercial=='{cluster}'"),
+        df=data_panel_mercado_by_entidad.query(f"cluster_comercial_aperturado=='{cluster}'"),
         columna_periodo='periodo',
         columna_grupo='nombre_ifi',
         label_grupo='Institución Financiera',
@@ -544,4 +556,4 @@ for cluster in data_panel_mercado_by_entidad.cluster_comercial.unique():
 
 #____________________ 10) Almacenamiento ----
 
-data_panel_mercado_by_entidad.to_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_mercado.csv',sep='|', index=False)
+data_panel_mercado_by_entidad.to_csv(dir_b+r'/processed/V02/base_sensibilidad_componente_mercado.csv',sep='|', index=False)

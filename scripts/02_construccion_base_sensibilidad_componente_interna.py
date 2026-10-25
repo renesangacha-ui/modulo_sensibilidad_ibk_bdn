@@ -41,7 +41,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V01/data_sensibilidad.csv',sep=',')
+datos=pd.read_csv(dir_b+r'/raw/V02/data_fin_no_clientes.csv',sep=',')
 
 datos.head().T
 datos.info()
@@ -51,7 +51,7 @@ datos.periodo.min(), datos.periodo.max()
 
 #____________________ 4) Funnel ----
 
-datos.flg_exito_4.value_counts()
+datos.flg_exito_4.value_counts(dropna=False)
 
 # Nos quedamos con los exitos y los fracasos de desembolso no IBK con monto similar con gestión,
 #  que son los que nos interesan para la construcción de la base de sensibilidad.
@@ -59,43 +59,6 @@ datos.flg_exito_4.value_counts()
 funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion']
 
 datos = datos.query("flg_exito_4 in @funnel_oferta_relevante").copy()
-
-# Conservamos las entidades que concentran la mayor parte de las inferencias de tasa:
-# 1: BCP
-# 6: BBVA
-# 4: SCOTIA BANK
-# 123: MIBANCO
-# 2: IBK
-
-cod_entidades_inferencia=[1.0,
- 2.0,
- 6.0,
- 4.0,
- 103.0,
- 123.0,
- 22.0,
- 106.0,
- 148.0,
- 107.0,
- 114.0,
- 228.0,
- 104.0,
- 108.0,
- 55.0,
- 224.0,
- 185.0,
- 112.0,
- 231.0,
- 184.0,
- 109.0,
- 227.0,
- 102.0,
- 171.0,
- 170.0,
- 172.0,
- 169.0]
-
-datos=datos.query(f"cod_instit_financiera in @cod_entidades_inferencia")
 
 #____________________ 5) Validaciones ----
 
@@ -139,12 +102,6 @@ validacion_duplicidad.query('tasa_min>1 or monto_min>1 or cluster>1')
 validacion_duplicidad.query('cod_instit_financiera>1 or flg_exito_4>1')
 
 validacion_duplicidad.query('flg_exito_4==1 and cod_instit_financiera==1')
-
-# El 5.5% de los registros presenta duplicidad por desembolsos en más de un banco.
-# A diferencia del Share of Sales, que considera todos los registros del cliente, el análisis
-# de sensibilidad evalúa la aceptación de la oferta de IBK, por lo que requiere un único
-# registro por cliente-periodo. Se considera éxito si el cliente desembolsa en IBK y fracaso
-# en caso contrario.
 
 #~~~~ 5.2) Completitud: Tasas y Monto ----
 
@@ -206,6 +163,19 @@ mapeo_clusters = {
 datos['cluster_comercial'] = datos['cluster'].map(mapeo_clusters).fillna(datos['cluster'])
 datos[['cluster_comercial','cluster']].value_counts().reset_index()
 
+
+mapeo_tipo_cliente={
+   1: 'Cliente',
+   0: 'No Cliente'
+}
+
+datos['tipo_cliente'] = datos['FLG_CLIENTE'].map(mapeo_tipo_cliente).fillna(datos['FLG_CLIENTE'])
+datos[['tipo_cliente','FLG_CLIENTE']].value_counts().reset_index()
+
+datos['cluster_comercial_aperturado']=datos['cluster_comercial'].astype(str)+' & '+ datos['tipo_cliente'].astype(str)
+
+datos['cluster_comercial_aperturado'].value_counts()
+
 #~~~~ 6.2) Reescalamiento ----
 
 datos['tasa_desembolsada'] = datos['tasa_2022']/100
@@ -243,6 +213,9 @@ columnas_sensibilidad_interna = [
     'llave_interna',
     'cluster',
     'cluster_comercial',
+    'tipo_cliente',
+    'FLG_CLIENTE',
+    'cluster_comercial_aperturado',
     'indicador_exito',
     'flg_exito_4',
     'monto_min',
@@ -269,7 +242,7 @@ def promedio_ponderado(valores, pesos):
 
 data_panel = (
     datos_oferta_relevante
-    .groupby(["cluster_comercial", "periodo"], observed=True)
+    .groupby(['cluster_comercial',"cluster_comercial_aperturado", "periodo"], observed=True)
     .agg(
         leads=("llave_interna", "size"),
         monto_desembolsado_ibk=("monto_desembolsado", "sum"),
@@ -302,7 +275,7 @@ data_panel = (
 #~~~~ 7.2) Efectividad Promedio----
 
 aux_tasa_efectividad_global = (
-    data_panel.groupby(['cluster_comercial'], observed=True)
+    data_panel.groupby(['cluster_comercial','cluster_comercial_aperturado'], observed=True)
     .agg(
         leads=('leads', 'sum'),
         monto_desembolsado_ibk=('monto_desembolsado_ibk', 'sum'),
@@ -343,10 +316,10 @@ aux_tasa_efectividad_global['bloque_cluster']=aux_tasa_efectividad_global['clust
 
 graficos.plot_efectividad_y_tasa_por_bloques(
     df=aux_tasa_efectividad_global,
-    columna_cluster='cluster_comercial',
+    columna_cluster='cluster_comercial_aperturado',
     columna_bloque='bloque_cluster',
     metrica_efectividad='efectividad',
-    columna_tasa='tasa_desembolsada',
+    columna_tasa='tasa_ofertada',
     titulo="Efectividad y Tasa por Clúster Comercial\nHorizonte: Mar' 25 - May' 26",
 )
 
@@ -354,7 +327,7 @@ graficos.plot_efectividad_y_tasa_por_bloques(
 
 graficos.plot_efectividad_por_bloques_y_materialidad(
     df=aux_tasa_efectividad_global,
-    columna_cluster='cluster_comercial',
+    columna_cluster='cluster_comercial_aperturado',
     columna_bloque='bloque_cluster',
     metrica_efectividad='efectividad',
     columna_materialidad='desembolsos',
@@ -367,7 +340,7 @@ graficos.plot_efectividad_por_bloques_y_materialidad(
 
 aux_materialidad_global = (
     data_panel
-    .groupby('cluster_comercial', observed=True)
+    .groupby('cluster_comercial_aperturado', observed=True)
     .agg(
         leads=('leads', 'sum'),
         monto_ofertado=('monto_ofertado', 'sum'),
@@ -385,28 +358,28 @@ aux_materialidad_global = (
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_leads',
     titulo="Materialidad: Leads\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_ofertado',
     titulo="Materialidad: Monto Ofertado\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_desembolsos',
     titulo="Materialidad: Desembolsos\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_global,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_desembolsado',
     titulo="Materialidad: Monto Desembolsado\nPor Segmento Comercial\nHorizonte: Mar' 25 - May' 26",
     ylabel='Participación (%)')
@@ -414,7 +387,7 @@ graficos.plot_participacion_segmento(
 #---- 7.3.2) Mensual ----
 
 aux_materialidad_mensual = (
-    data_panel.groupby(['periodo', 'cluster_comercial'], observed=True)
+    data_panel.groupby(['periodo', 'cluster_comercial_aperturado'], observed=True)
     .agg(
         leads=('leads', 'sum'),
         monto_ofertado=('monto_ofertado', 'sum'),
@@ -440,7 +413,7 @@ aux_materialidad_mensual = (
 
 graficos.plot_participacion_segmento_mensual_grid(
     df_panel=aux_materialidad_mensual,  
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_leads',
     titulo_base='Materialidad: Leads',
     ylabel='Participación (%)',
@@ -448,7 +421,7 @@ graficos.plot_participacion_segmento_mensual_grid(
 
 graficos.plot_participacion_segmento_mensual_grid(
     df_panel=aux_materialidad_mensual,  
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_ofertado',
     titulo_base='Materialidad: Monto Ofertado',
     ylabel='Participación (%)',
@@ -456,7 +429,7 @@ graficos.plot_participacion_segmento_mensual_grid(
 
 graficos.plot_participacion_segmento_mensual_grid(
     df_panel=aux_materialidad_mensual,  
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_desembolsos',
     titulo_base='Materialidad: Desembolsos',
     ylabel='Participación (%)',
@@ -464,7 +437,7 @@ graficos.plot_participacion_segmento_mensual_grid(
 
 graficos.plot_participacion_segmento_mensual_grid(
     df_panel=aux_materialidad_mensual,  
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_desembolsado',
     titulo_base='Materialidad: Monto Desembolsado',
     ylabel='Participación (%)',
@@ -475,8 +448,8 @@ graficos.plot_participacion_segmento_mensual_grid(
 total_periodos = data_panel['periodo'].nunique()
 
 aux_materialidad_promedio = (
-    aux_materialidad_mensual.set_index(['periodo', 'cluster_comercial'])
-    .unstack(level='cluster_comercial')
+    aux_materialidad_mensual.set_index(['periodo', 'cluster_comercial_aperturado'])
+    .unstack(level='cluster_comercial_aperturado')
     .fillna(0)
     .sum(axis=0)
     .unstack(level=0) / total_periodos  
@@ -484,28 +457,28 @@ aux_materialidad_promedio = (
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_promedio,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_leads',
     titulo='Materialidad Promedio Mensual: Leads\nPor Segmento Comercial',
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_promedio,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_ofertado',
     titulo='Materialidad Promedio Mensual: Monto Ofertado\nPor Segmento Comercial',
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_promedio,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_desembolsos',
     titulo='Materialidad Promedio Mensual: Desembolsos\nPor Segmento Comercial',
     ylabel='Participación (%)')
 
 graficos.plot_participacion_segmento(
     df=aux_materialidad_promedio,
-    col_segmento='cluster_comercial',
+    col_segmento='cluster_comercial_aperturado',
     col_participacion='participacion_monto_desembolsado',
     titulo='Materialidad Promedio Mensual: Monto Desembolsado\nPor Segmento Comercial',
     ylabel='Participación (%)')
@@ -524,7 +497,7 @@ aux_materialidad_mensual['flg_cumplimiento_mat_des_n']=np.where(
 
 graficos.plot_heatmap_cumplimiento(
     df_panel=aux_materialidad_mensual.query('desembolsos!=0'),
-    col_cluster='cluster_comercial',
+    col_cluster='cluster_comercial_aperturado',
     col_periodo='periodo',
     col_flag='flg_cumplimiento_mat_des_monto',
     titulo='Cumplimiento de Materialidad: Monto Desembolsado', 
@@ -533,7 +506,7 @@ graficos.plot_heatmap_cumplimiento(
 
 graficos.plot_heatmap_cumplimiento(
     df_panel=aux_materialidad_mensual.query('desembolsos!=0'),
-    col_cluster='cluster_comercial',
+    col_cluster='cluster_comercial_aperturado',
     col_periodo='periodo',
     col_flag='flg_cumplimiento_mat_des_n',
     titulo='Cumplimiento de Materialidad: Desembolsos', 
@@ -541,9 +514,9 @@ graficos.plot_heatmap_cumplimiento(
 
 #~~~~ 7.4) Evolutivo: Precio y Demanda ----
 
-for bucket in data_panel['cluster_comercial'].unique():
+for bucket in data_panel['cluster_comercial_aperturado'].unique():
 
-    df_filtrado = data_panel.query("cluster_comercial==@bucket")
+    df_filtrado = data_panel.query("cluster_comercial_aperturado==@bucket")
 
     graficos.plot_evolutivo_precio_demanda(
         df=df_filtrado,
@@ -559,7 +532,7 @@ for bucket in data_panel['cluster_comercial'].unique():
 graficos.plot_evolutivo_multiserie_panel(
     df=data_panel,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica='efectividad',
     label_metrica='Efectividad (%)',
     titulo='Evolución de Efectividad por Cluster Comercial'
@@ -568,7 +541,7 @@ graficos.plot_evolutivo_multiserie_panel(
 graficos.plot_evolutivo_multiserie_panel(
     df=data_panel,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica='tasa_desembolsada',
     label_metrica='Tasa Desembolsada (%)',
     titulo='Evolución de Tasa Desembolsada por Cluster Comercial'
@@ -577,7 +550,7 @@ graficos.plot_evolutivo_multiserie_panel(
 graficos.plot_participacion_panel(
     df=data_panel,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica_materialidad='desembolsos',
     titulo='Mix de Desembolsos por Cluster Comercial'
 )
@@ -585,7 +558,7 @@ graficos.plot_participacion_panel(
 graficos.plot_participacion_panel(
     df=data_panel,
     columna_periodo='periodo',
-    columna_grupo='cluster_comercial',
+    columna_grupo='cluster_comercial_aperturado',
     metrica_materialidad='monto_desembolsado_ibk',
     titulo='Mix de Monto Desembolsado por Cluster Comercial'
 )
@@ -617,7 +590,7 @@ for periodo in sorted(data_panel['periodo'].unique()):
       columna_precio='tasa_desembolsada',
       columna_demanda='efectividad',
       columna_tamanio='monto_desembolsado_ibk',
-      columna_cluster='cluster_comercial',
+      columna_cluster='cluster_comercial_aperturado',
       titulo=(
           'Relación entre Tasa Desembolsada y'
           f' Efectividad\nPeriodo: {periodo_label}'
@@ -626,4 +599,4 @@ for periodo in sorted(data_panel['periodo'].unique()):
 
 #____________________ 8) Almacenamiento ----
 
-datos_oferta_relevante.to_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_interna.csv',sep='|', index=False)
+datos_oferta_relevante.to_csv(dir_b+r'/processed/V02/base_sensibilidad_componente_interna.csv',sep='|', index=False)

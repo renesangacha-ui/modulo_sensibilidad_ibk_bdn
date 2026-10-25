@@ -43,8 +43,8 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos_sensibilidad_mercado=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_mercado.csv',sep='|')
-datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_componente_interna.csv',sep='|')
+datos_sensibilidad_mercado=pd.read_csv(dir_b+r'/processed/V02/base_sensibilidad_componente_mercado.csv',sep='|')
+datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V02/base_sensibilidad_componente_interna.csv',sep='|')
 
 #____________________ 4) Parametros ----
 
@@ -54,16 +54,41 @@ datos_sensibilidad_interna=pd.read_csv(dir_b+r'/processed/V01/base_sensibilidad_
 PERIODO_INICIO=202504
 PERIODO_FIN=202604
 
+# CLUSTER_MODELAMIENTO={
+#  'Gran Cuenta por Conquistar & Cliente': 'Grandes por fidelizar',
+#  'Gran Cuenta por Conquistar & No Cliente': 'Grandes por fidelizar',
+#  'Emprendedor Izipay & No Cliente': 'Emprendedor Izipay & No Cliente',
+#  'Socio en Crecimiento & No Cliente': 'Fidelizados',
+#  'Socio en Crecimiento & Cliente': 'Fidelizados',
+#  'Maduro Multibanco & Cliente': 'Medianos por Fidelizar',
+#  'Cliente por Reactivar & No Cliente': 'Medianos por Fidelizar',
+#  'Cuenta Estratégica & Cliente': 'Grandes por fidelizar',
+#  'Cliente Ancla & Cliente': 'Fidelizados',
+#  'Emprendedor Izipay & Cliente': 'Sin historial crediticio',
+#  'Nuevo en Expansión & Cliente': 'Sin historial crediticio',
+#  'Cliente por Reactivar & Cliente':  'Medianos por Fidelizar',
+#  'Próximo Recurrente & Cliente': 'Sin historial crediticio'
+# }
+
 CLUSTER_MODELAMIENTO={
-     'cluster_1_sow_no_nulo': 'Fidelizados',
-     'cluster_2_sow_no_nulo': 'Fidelizados',
-     'cluster_3_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
-     'cluster_4_sow_no_nulo': 'Por Fidelizar - Mayor Escala',
-     'cluster_5_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',
-     'cluster_6_sow_no_nulo': 'Por Fidelizar - Escala Intermedia',     
-     'cluster_1_nulo': 'Sin Deuda',
-     'cluster_2_nulo': 'Sin Deuda',
-     'cluster_3_nulo': 'Sin Deuda'
+ 'Gran Cuenta por Conquistar & Cliente': 'Grandes por fidelizar & Cliente',
+ 'Gran Cuenta por Conquistar & No Cliente': 'No Cliente',
+ 'Emprendedor Izipay & No Cliente': 'No Cliente',
+ 'Socio en Crecimiento & No Cliente': 'No Cliente',
+ 'Socio en Crecimiento & Cliente': 'Fidelizado & Cliente',
+ 'Maduro Multibanco & Cliente': 'Medianos por Fidelizar & Cliente',
+ 'Cliente por Reactivar & No Cliente': 'No Cliente',
+ 'Cuenta Estratégica & Cliente': 'Grandes por fidelizar & Cliente',
+ 'Cliente Ancla & Cliente': 'Fidelizado & Cliente',
+ 'Emprendedor Izipay & Cliente': 'Sin historial crediticio & Cliente',
+ 'Nuevo en Expansión & Cliente': 'Sin historial crediticio & Cliente',
+ 'Cliente por Reactivar & Cliente':  'Medianos por Fidelizar & Cliente',
+ 'Próximo Recurrente & Cliente': 'Sin historial crediticio & Cliente'
+}
+
+MAPEO_TIPO_CLIENTE={
+   1: 'Cliente',
+   0: 'No Cliente'
 }
 
 #____________________ 5) Funnel ----
@@ -75,13 +100,22 @@ datos_sensibilidad_mercado=datos_sensibilidad_mercado.query(f'periodo>={PERIODO_
 
 #~~~~ 6.1) Identificación: Cluster de Modelamiento ----
 
-datos_sensibilidad_mercado['cluster_modelar']=datos_sensibilidad_mercado['cluster'].map(CLUSTER_MODELAMIENTO)
-datos_sensibilidad_interna['cluster_modelar']=datos_sensibilidad_interna['cluster'].map(CLUSTER_MODELAMIENTO)
+datos_sensibilidad_mercado['cluster_comercial_new']=datos_sensibilidad_mercado['cluster_comercial_aperturado'].map(CLUSTER_MODELAMIENTO)
+datos_sensibilidad_interna['cluster_comercial_new']=datos_sensibilidad_interna['cluster_comercial_aperturado'].map(CLUSTER_MODELAMIENTO)
 
-datos_sensibilidad_mercado.value_counts(['cluster_modelar','cluster']).reset_index()
-datos_sensibilidad_interna.value_counts(['cluster_modelar','cluster']).reset_index()
+datos_sensibilidad_mercado['tipo_cliente_new'] = datos_sensibilidad_mercado['FLG_CLIENTE'].map(MAPEO_TIPO_CLIENTE).fillna(datos_sensibilidad_mercado['FLG_CLIENTE'])
+datos_sensibilidad_interna['tipo_cliente_new'] = datos_sensibilidad_interna['FLG_CLIENTE'].map(MAPEO_TIPO_CLIENTE).fillna(datos_sensibilidad_interna['FLG_CLIENTE'])
 
-#~~~~ 6.2) Construcción: Data Panel Sensibilidad ----
+datos_sensibilidad_mercado.value_counts(['cluster_comercial_new','cluster']).reset_index()
+datos_sensibilidad_interna.value_counts(['cluster_comercial_new','cluster']).reset_index()
+
+datos_sensibilidad_mercado['cluster_modelar']=datos_sensibilidad_mercado['cluster_comercial_new'].astype(str)+' & '+ datos_sensibilidad_mercado['tipo_cliente_new'].astype(str)
+datos_sensibilidad_interna['cluster_modelar']=datos_sensibilidad_interna['cluster_comercial_new'].astype(str)+' & '+ datos_sensibilidad_interna['tipo_cliente_new'].astype(str)
+
+datos_sensibilidad_mercado['cluster_modelar']=datos_sensibilidad_mercado['cluster_comercial_new'].astype(str)
+datos_sensibilidad_interna['cluster_modelar']=datos_sensibilidad_interna['cluster_comercial_new'].astype(str)
+
+# ~~~~ 6.2) Construcción: Data Panel Sensibilidad ----
 
 #---- 6.2.1) Construcción Data Panel: Sensibilidad Mercado ----
 
@@ -150,6 +184,18 @@ data_panel_sensibilidad=pd.merge(data_panel_sensibilidad_mercado,
          how='outer',
          on=['cluster_modelar','periodo'])
 
+data_panel_sensibilidad.cluster_modelar.value_counts()
+
+cluster_interes=[
+'Fidelizado & Cliente',
+'Grandes por fidelizar & Cliente',
+'Medianos por Fidelizar & Cliente',
+# 'No Cliente',
+'Sin historial crediticio & Cliente'
+]
+
+data_panel_sensibilidad=data_panel_sensibilidad.query(f'cluster_modelar in {cluster_interes}')
+
 #~~~~ 6.3) Creación de Indicadores ----
 
 data_panel_sensibilidad['spread']=data_panel_sensibilidad['tasa_ofertada']-data_panel_sensibilidad['tasa_mercado']
@@ -159,140 +205,200 @@ data_panel_sensibilidad.efectividad.describe()
 
 #____________________ 7) Modelamiento ----
 
-#~~~~ 7.1) Creación: Variables Auxiliares ----
+resultados_seq_global=pd.DataFrame()
+resultados_sim_global=pd.DataFrame()
 
-data_panel_sensibilidad[['cluster_modelar','periodo','efectividad','tasa_ofertada','spread']]
+for mes_cierre in [202509,202510,202511,202512,202601,202602,202603,202604]:
+   
+    data_panel_sensibilidad_cierre=data_panel_sensibilidad.query(f'periodo<={mes_cierre}').copy()
 
-data_panel_sensibilidad["log_efectividad"] = np.log(data_panel_sensibilidad["efectividad"])
-data_panel_sensibilidad["log_tasa"] = np.log(data_panel_sensibilidad["tasa_ofertada"])
+    #~~~~ 7.1) Creación: Variables Auxiliares ----
 
-#~~~~ 7.2) Modelo: Demeaning Secuencial + OLS por bucket ----
+    data_panel_sensibilidad_cierre["log_efectividad"] = np.log(data_panel_sensibilidad_cierre["efectividad"])
+    data_panel_sensibilidad_cierre["log_tasa"] = np.log(data_panel_sensibilidad_cierre["tasa_ofertada"])
 
-print('\n--- 2A. Demeaning Secuencial ---')
+    #~~~~ 7.2) Modelo: Demeaning Secuencial + OLS por bucket ----
 
-df_seq = data_panel_sensibilidad.copy()
+    print('\n--- 2A. Demeaning Secuencial ---')
 
-#---- 7.2.1) Demeaning temporal ----
+    df_seq = data_panel_sensibilidad_cierre.copy()
 
-df_seq["log_efectividad_dm"] = df_seq["log_efectividad"] - df_seq.groupby("periodo")["log_efectividad"].transform("mean")
-df_seq["log_tasa_dm"] = df_seq["log_tasa"] - df_seq.groupby("periodo")["log_tasa"].transform("mean")
-df_seq["spread_dm"] = df_seq["spread"] - df_seq.groupby("periodo")["spread"].transform("mean")
+    #---- 7.2.1) Demeaning temporal ----
 
-#---- 7.2.2) Demeaning estructural por grupo ----
+    df_seq["log_efectividad_dm"] = df_seq["log_efectividad"] - df_seq.groupby("periodo")["log_efectividad"].transform("mean")
+    df_seq["log_tasa_dm"] = df_seq["log_tasa"] - df_seq.groupby("periodo")["log_tasa"].transform("mean")
+    df_seq["spread_dm"] = df_seq["spread"] - df_seq.groupby("periodo")["spread"].transform("mean")
 
-df_seq["log_efectividad_within"] = df_seq["log_efectividad_dm"] - df_seq.groupby("cluster_modelar")["log_efectividad_dm"].transform("mean")
-df_seq["log_tasa_within"] = df_seq["log_tasa_dm"] - df_seq.groupby("cluster_modelar")["log_tasa_dm"].transform("mean")
-df_seq["spread_within"] = df_seq["spread_dm"] - df_seq.groupby("cluster_modelar")["spread_dm"].transform("mean")
+    #---- 7.2.2) Demeaning estructural por grupo ----
 
-#---- 7.2.3) Modelamiento ----
+    df_seq["log_efectividad_within"] = df_seq["log_efectividad_dm"] - df_seq.groupby("cluster_modelar")["log_efectividad_dm"].transform("mean")
+    df_seq["log_tasa_within"] = df_seq["log_tasa_dm"] - df_seq.groupby("cluster_modelar")["log_tasa_dm"].transform("mean")
+    df_seq["spread_within"] = df_seq["spread_dm"] - df_seq.groupby("cluster_modelar")["spread_dm"].transform("mean")
 
-resultados_seq = []
-for grupo in df_seq["cluster_modelar"].unique():
-    dg = df_seq[df_seq["cluster_modelar"] == grupo].copy()
-    
-    # Modelo 1: Conjunto (Tasa + Spread)
-    m_conj = ols("log_efectividad_within ~ log_tasa_within + spread_within - 1", data=dg).fit()
-    
-    # Modelo 2: Solo Tasa
-    m_tasa = ols("log_efectividad_within ~ log_tasa_within - 1", data=dg).fit()
-    
-    # Modelo 3: Solo Spread
-    m_spread = ols("log_efectividad_within ~ spread_within - 1", data=dg).fit()
-    
-    resultados_seq.append({
-        "grupo": grupo,
-        # --- Modelo 1: Conjunto ---
-        "conj_elast_tasa": m_conj.params["log_tasa_within"],
-        "conj_pval_tasa": m_conj.pvalues["log_tasa_within"],
-        "conj_sens_spread": m_conj.params["spread_within"],
-        "conj_pval_spread": m_conj.pvalues["spread_within"],
-        "conj_r2": m_conj.rsquared,
+    #---- 7.2.3) Modelamiento ----
+
+    resultados_seq = []
+    for grupo in df_seq["cluster_modelar"].unique():
+        dg = df_seq[df_seq["cluster_modelar"] == grupo].copy()
         
-        # --- Modelo 2: Solo Tasa ---
-        "tasa_elast": m_tasa.params["log_tasa_within"],
-        "tasa_pval": m_tasa.pvalues["log_tasa_within"],
-        "tasa_r2": m_tasa.rsquared,
+        # Modelo 1: Conjunto (Tasa + Spread)
+        m_conj = ols("log_efectividad_within ~ log_tasa_within + spread_within - 1", data=dg).fit()
         
-        # --- Modelo 3: Solo Spread ---
-        "spread_sens": m_spread.params["spread_within"],
-        "spread_pval": m_spread.pvalues["spread_within"],
-        "spread_r2": m_spread.rsquared
-    })
-
-df_res_seq = pd.DataFrame(resultados_seq)
-print(df_res_seq.to_string(index=False))
-
-#~~~~ 7.3) Modelo: Demeaning Simultáneo: (Two-Way) + OLS POR BUCKET ----
-
-print('\n--- 2B. Demeaning Simultáneo ---')
-
-df_sim = data_panel_sensibilidad.copy()
-
-#---- 7.2.1) Demeaning ----
-
-def demeaning_simultaneo(data, col):
-    g_mean = data[col].mean()
-    b_mean = data.groupby("cluster_modelar")[col].transform("mean")
-    t_mean = data.groupby("periodo")[col].transform("mean")
-    return data[col] - b_mean - t_mean + g_mean
-
-df_sim["log_efectividad_dem"] = demeaning_simultaneo(df_sim, "log_efectividad")
-df_sim["log_tasa_dem"] = demeaning_simultaneo(df_sim, "log_tasa")
-df_sim["spread_dem"] = demeaning_simultaneo(df_sim, "spread")
-
-#---- 7.2.2) Modelamiento ----
-
-resultados_sim = []
-for grupo in df_sim["cluster_modelar"].unique():
-    dg = df_sim[df_sim["cluster_modelar"] == grupo].copy()
-    
-    # Modelo 1: Conjunto (Tasa + Spread)
-    m_conj = ols("log_efectividad_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
-    
-    # Modelo 2: Solo Tasa
-    m_tasa = ols("log_efectividad_dem ~ log_tasa_dem - 1", data=dg).fit()
-    
-    # Modelo 3: Solo Spread
-    m_spread = ols("log_efectividad_dem ~ spread_dem - 1", data=dg).fit()
-    
-    resultados_sim.append({
-        "grupo": grupo,
-        # --- Modelo 1: Conjunto ---
-        "conj_elast_tasa": m_conj.params["log_tasa_dem"],
-        "conj_pval_tasa": m_conj.pvalues["log_tasa_dem"],
-        "conj_sens_spread": m_conj.params["spread_dem"],
-        "conj_pval_spread": m_conj.pvalues["spread_dem"],
-        "conj_r2": m_conj.rsquared,
+        # Modelo 2: Solo Tasa
+        m_tasa = ols("log_efectividad_within ~ log_tasa_within - 1", data=dg).fit()
         
-        # --- Modelo 2: Solo Tasa ---
-        "tasa_elast": m_tasa.params["log_tasa_dem"],
-        "tasa_pval": m_tasa.pvalues["log_tasa_dem"],
-        "tasa_r2": m_tasa.rsquared,
+        # Modelo 3: Solo Spread
+        m_spread = ols("log_efectividad_within ~ spread_within - 1", data=dg).fit()
         
-        # --- Modelo 3: Solo Spread ---
-        "spread_sens": m_spread.params["spread_dem"],
-        "spread_pval": m_spread.pvalues["spread_dem"],
-        "spread_r2": m_spread.rsquared
-    })
+        resultados_seq.append({
+            "grupo": grupo,
+            # --- Modelo 1: Conjunto ---
+            "conj_elast_tasa": m_conj.params["log_tasa_within"],
+            "conj_pval_tasa": m_conj.pvalues["log_tasa_within"],
+            "conj_sens_spread": m_conj.params["spread_within"],
+            "conj_pval_spread": m_conj.pvalues["spread_within"],
+            "conj_r2": m_conj.rsquared,
+            
+            # --- Modelo 2: Solo Tasa ---
+            "tasa_elast": m_tasa.params["log_tasa_within"],
+            "tasa_pval": m_tasa.pvalues["log_tasa_within"],
+            "tasa_r2": m_tasa.rsquared,
+            
+            # --- Modelo 3: Solo Spread ---
+            "spread_sens": m_spread.params["spread_within"],
+            "spread_pval": m_spread.pvalues["spread_within"],
+            "spread_r2": m_spread.rsquared
+        })
 
-df_res_sim = pd.DataFrame(resultados_sim)
-print(df_res_sim.to_string(index=False))
+    df_res_seq = pd.DataFrame(resultados_seq)
+    print(df_res_seq.to_string(index=False))
 
-#____________________ 8) Visualizaciones ----
+    #~~~~ 7.3) Modelo: Demeaning Simultáneo: (Two-Way) + OLS POR BUCKET ----
 
-data_panel_largo = data_panel_sensibilidad[['cluster_modelar', 'periodo', 'tasa_ofertada', 'tasa_desembolsada', 'tasa_mercado']].melt(
-    id_vars=['cluster_modelar', 'periodo'], 
-    var_name='tasa', 
-    value_name='valor'
+    print('\n--- 2B. Demeaning Simultáneo ---')
+
+    df_sim = data_panel_sensibilidad_cierre.copy()
+
+    #---- 7.2.1) Demeaning ----
+
+    def demeaning_simultaneo(data, col):
+        g_mean = data[col].mean()
+        b_mean = data.groupby("cluster_modelar")[col].transform("mean")
+        t_mean = data.groupby("periodo")[col].transform("mean")
+        return data[col] - b_mean - t_mean + g_mean
+
+    df_sim["log_efectividad_dem"] = demeaning_simultaneo(df_sim, "log_efectividad")
+    df_sim["log_tasa_dem"] = demeaning_simultaneo(df_sim, "log_tasa")
+    df_sim["spread_dem"] = demeaning_simultaneo(df_sim, "spread")
+
+    #---- 7.2.2) Modelamiento ----
+
+    resultados_sim = []
+    for grupo in df_sim["cluster_modelar"].unique():
+        dg = df_sim[df_sim["cluster_modelar"] == grupo].copy()
+        
+        # Modelo 1: Conjunto (Tasa + Spread)
+        m_conj = ols("log_efectividad_dem ~ log_tasa_dem + spread_dem - 1", data=dg).fit()
+        
+        # Modelo 2: Solo Tasa
+        m_tasa = ols("log_efectividad_dem ~ log_tasa_dem - 1", data=dg).fit()
+        
+        # Modelo 3: Solo Spread
+        m_spread = ols("log_efectividad_dem ~ spread_dem - 1", data=dg).fit()
+        
+        resultados_sim.append({
+            "grupo": grupo,
+            # --- Modelo 1: Conjunto ---
+            "conj_elast_tasa": m_conj.params["log_tasa_dem"],
+            "conj_pval_tasa": m_conj.pvalues["log_tasa_dem"],
+            "conj_sens_spread": m_conj.params["spread_dem"],
+            "conj_pval_spread": m_conj.pvalues["spread_dem"],
+            "conj_r2": m_conj.rsquared,
+            
+            # --- Modelo 2: Solo Tasa ---
+            "tasa_elast": m_tasa.params["log_tasa_dem"],
+            "tasa_pval": m_tasa.pvalues["log_tasa_dem"],
+            "tasa_r2": m_tasa.rsquared,
+            
+            # --- Modelo 3: Solo Spread ---
+            "spread_sens": m_spread.params["spread_dem"],
+            "spread_pval": m_spread.pvalues["spread_dem"],
+            "spread_r2": m_spread.rsquared
+        })
+
+    df_res_sim = pd.DataFrame(resultados_sim)
+
+    df_res_seq['mes_cierre']=mes_cierre
+    df_res_sim['mes_cierre']=mes_cierre
+    
+    resultados_seq_global=pd.concat([resultados_seq_global, df_res_seq])
+    resultados_sim_global=pd.concat([resultados_sim_global, df_res_sim])    
+
+
+# #____________________ 8) Visualizaciones ----
+
+# data_panel_largo = data_panel_sensibilidad[['cluster_modelar', 'periodo', 'tasa_ofertada', 'tasa_desembolsada', 'tasa_mercado']].melt(
+#     id_vars=['cluster_modelar', 'periodo'], 
+#     var_name='tasa', 
+#     value_name='valor'
+# )
+
+# for bucket in data_panel_largo.cluster_modelar.unique():
+
+#     graficos.plot_evolutivo_multiserie_panel(
+#         df=data_panel_largo.query(f"cluster_modelar=='{bucket}'"),
+#         columna_periodo='periodo',
+#         columna_grupo='tasa',
+#         metrica='valor',
+#         label_metrica='Tasa (%)',
+#         titulo=f'Evolutivos de Tasa\n{bucket}'
+#     )
+
+resultados_seq_global['flg_significativo']=(resultados_seq_global['tasa_pval']<0.1)*1
+
+graficos.plot_heatmap_cumplimiento(
+    df_panel=resultados_seq_global,
+    col_cluster='grupo',
+    col_periodo='mes_cierre',
+    col_flag='flg_significativo',
+    titulo='Elasticidades Significativas', 
+    subtitulo=f'Umbral mínimo de significancia: < {0.1:.0%}')
+
+resultados_seq_global[['grupo','tasa_elast','tasa_r2']]
+
+
+graficos.plot_evolutivo_multiserie_panel(
+    df=resultados_seq_global,
+    columna_periodo='mes_cierre',
+    columna_grupo='grupo',
+    metrica='tasa_elast',
+    multiplicar_100=False,
+    label_metrica='Elasticidad',
+    titulo=(
+            'Evolución: Elasticidad'
+        )
 )
 
-for bucket in data_panel_largo.cluster_modelar.unique():
+graficos.plot_evolutivo_multiserie_panel(
+    df=resultados_seq_global,
+    columna_periodo='mes_cierre',
+    columna_grupo='grupo',
+    metrica='tasa_r2',
+    multiplicar_100=True,
+    label_metrica='R2 (%)',
+    titulo=(
+            'Evolución: R2'
+        )
+)
 
-    graficos.plot_evolutivo_multiserie_panel(
-        df=data_panel_largo.query(f"cluster_modelar=='{bucket}'"),
-        columna_periodo='periodo',
-        columna_grupo='tasa',
-        metrica='valor',
-        label_metrica='Tasa (%)',
-        titulo=f'Evolutivos de Tasa\n{bucket}'
-    )
+graficos.plot_evolutivo_multiserie_panel(
+    df=resultados_seq_global,
+    columna_periodo='mes_cierre',
+    columna_grupo='grupo',
+    metrica='tasa_pval',
+    multiplicar_100=True,
+    label_metrica='pvalue (%)',
+    titulo=(
+            'Evolución: P Valor'
+        )
+)
