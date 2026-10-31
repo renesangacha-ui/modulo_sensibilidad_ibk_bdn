@@ -574,7 +574,7 @@ def plot_evolutivo_precio_demanda(
       label_demanda, fontsize=9, fontweight='bold', color=color_demanda
   )
   ax1.tick_params(axis='both', labelsize=8, labelcolor='black')
-  ax1.tick_params(axis='x', rotation=90)
+  ax1.tick_params(axis='x', rotation=0)
 
   # Serie Precio
   ax2 = ax1.twinx()
@@ -2534,3 +2534,197 @@ def plot_evolutivo_multiserie_con_barras_apiladas(
     fig.subplots_adjust(bottom=0.32, right=0.90)
     plt.show()
 
+
+import math
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def plot_evolutivo_demanda_precio_barras(
+    df,
+    columna_demanda='efectividad',
+    columna_precio='tasa_oferta_ponderada',
+    label_demanda=None,
+    label_precio=None,
+    titulo=None,
+    flg_etiqueta_demanda=True,
+    flg_etiqueta_precio=False,
+    color_demanda='#27D75A',
+    color_precio='#1D4290',
+):
+    if df.empty:
+        print('El DataFrame no contiene registros para graficar')
+        return
+
+    sub_df = df.copy()
+    sub_df['periodo'] = sub_df['periodo'].astype(int)
+    sub_df = sub_df.sort_values('periodo').reset_index(drop=True)
+
+    # Definir etiquetas ejecutivas por defecto si no se proporcionan
+    label_demanda = label_demanda or columna_demanda.replace('_', ' ').capitalize()
+    label_precio = label_precio or columna_precio.replace('_', ' ').capitalize()
+
+    # Formato de periodo (ej. Ene' 24)
+    meses = {
+        1: 'Ene', 2: 'Feb', 3: 'Mar', 4: 'Abr', 5: 'May', 6: 'Jun',
+        7: 'Jul', 8: 'Ago', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dic',
+    }
+    sub_df['periodo_label'] = sub_df['periodo'].apply(
+        lambda x: f"{meses[int(x) % 100]}'{str(int(x) // 100)[-2:]}"
+    )
+
+    # ==========================================
+    # REESCALADO INTELIGENTE (Función Auxiliar)
+    # ==========================================
+    def _escalar_serie(serie):
+        s_clean = serie.dropna()
+        if s_clean.empty:
+            return serie, ''
+        # Si los valores máximos son menores o iguales a 1.0 y distintos de cero, asumimos formato decimal (ej: 0.15 -> 15%)
+        if s_clean.max() <= 1.0 and s_clean.min() >= -1.0 and s_clean.max() != 0:
+            return serie * 100, '%'
+        return serie, ''
+
+    # Aplicar reescalado a ambas series
+    y_demanda_raw, sufijo_demanda = _escalar_serie(sub_df[columna_demanda])
+    y_precio_raw, sufijo_precio = _escalar_serie(sub_df[columna_precio])
+
+    fig, ax1 = plt.subplots(figsize=(9, 4.5))
+    x = np.arange(len(sub_df))
+
+    # ==========================================
+    # 1. DEMANDA EN BARRAS (Eje Principal ax1)
+    # ==========================================
+    valores_demanda = y_demanda_raw.fillna(0)
+    barras = ax1.bar(
+        x, valores_demanda, width=0.6, color=color_demanda, alpha=0.75, zorder=2, label=label_demanda
+    )
+
+    max_demanda = valores_demanda.max()
+    if max_demanda > 0:
+        ax1.set_ylim(0, max_demanda * 1.25)
+    else:
+        ax1.set_ylim(0, 1)
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(sub_df['periodo_label'])
+    ax1.set_xlabel('Periodo', fontsize=9, fontweight='bold')
+    ax1.set_ylabel(label_demanda, fontsize=9, fontweight='bold', color=color_demanda)
+    ax1.tick_params(axis='both', labelsize=8, labelcolor='black')
+    ax1.tick_params(axis='x', rotation=0)
+
+    # Formateador automático del eje Y principal según el sufijo detectado
+    if sufijo_demanda == '%':
+        ax1.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: f'{val:.1f}%'))
+
+    # Etiquetas sobre las barras de demanda
+    if flg_etiqueta_demanda:
+        for barra, valor in zip(barras, valores_demanda):
+            if pd.notnull(valor) and valor > 0:
+                ax1.annotate(
+                    f'{valor:.1f}{sufijo_demanda}',
+                    (barra.get_x() + barra.get_width() / 2, valor),
+                    xytext=(0, 4),
+                    textcoords='offset points',
+                    ha='center',
+                    va='bottom',
+                    fontsize=7,
+                    color='black'
+                )
+
+    # ==========================================
+    # 2. PRECIO EN LÍNEA (Eje Secundario ax2)
+    # ==========================================
+    ax2 = ax1.twinx()
+    
+    def _plot_serie_con_discontinuidades(ax, y_vals, color, marker, label):
+        df_temp = pd.DataFrame({'x': x, 'y': y_vals, 'idx': sub_df['periodo']}).dropna(subset=['y'])
+
+        if df_temp.empty:
+            return ax.plot([], [], color=color, linestyle='-', marker=marker, label=label)
+
+        df_temp['salto'] = df_temp['x'].diff().fillna(1).gt(1)
+        grupo_salto = df_temp['salto'].cumsum()
+
+        for _, tramo in df_temp.groupby(grupo_salto):
+            ax.plot(
+                tramo['x'], tramo['y'],
+                color=color, linestyle='-', marker=marker,
+                markersize=4.5, linewidth=2, zorder=4,
+            )
+
+        indices_saltos = df_temp.index[df_temp['salto']].tolist()
+        for idx in indices_saltos:
+            pos_actual = df_temp.index.get_loc(idx)
+            idx_anterior = df_temp.index[pos_actual - 1]
+            x_prev, y_prev = df_temp.loc[idx_anterior, ['x', 'y']]
+            x_curr, y_curr = df_temp.loc[idx, ['x', 'y']]
+
+            ax.plot(
+                [x_prev, x_curr], [y_prev, y_curr],
+                color=color, linestyle='--', linewidth=1.5, zorder=3.5,
+            )
+
+        return ax.plot([], [], color=color, linestyle='-', marker=marker, label=label)
+
+    linea_precio = _plot_serie_con_discontinuidades(
+        ax2, y_precio_raw.values, color_precio, 's', label_precio
+    )
+
+    ax2.set_ylabel(label_precio, fontsize=9, fontweight='bold', color=color_precio)
+    ax2.tick_params(axis='y', labelsize=8, labelcolor='black')
+
+    # Formateador automático del eje Y secundario según el sufijo detectado
+    if sufijo_precio == '%':
+        ax2.yaxis.set_major_formatter(plt.FuncFormatter(lambda val, _: f'{val:.1f}%'))
+
+    # Etiquetas flotantes para el precio
+    if flg_etiqueta_precio:
+        for xi, valor in zip(x, y_precio_raw.values):
+            if pd.notnull(valor):
+                ax2.annotate(
+                    f'{valor:.1f}{sufijo_precio}',
+                    (xi, valor),
+                    xytext=(0, 9),
+                    textcoords='offset points',
+                    ha='center',
+                    va='bottom',
+                    fontsize=7,
+                    color='black',
+                    bbox=dict(boxstyle='round,pad=0.22', fc='#E8F1F5', ec=color_precio, lw=0.5, alpha=0.9)
+                )
+
+    # Limpieza visual de bordes y rejillas
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['right'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['left'].set_visible(False)
+
+    ax1.grid(True, axis='y', linestyle='--', alpha=0.3, color='gray')
+    ax2.grid(False)
+
+    # Leyenda combinada
+    linea_demanda_dummy = plt.Rectangle((0, 0), 1, 1, fc=color_demanda, alpha=0.75, label=label_demanda)
+    lineas = [linea_demanda_dummy] + linea_precio
+    etiquetas = [l.get_label() for l in lineas]
+
+    ax1.legend(
+        lineas, etiquetas,
+        loc='upper left', frameon=True,
+        facecolor='white', edgecolor='lightgray', fontsize=8
+    )
+
+    # Título del gráfico
+    titulo_final = titulo or f'Evolución de {label_demanda} (Barras) y {label_precio} (Línea)'
+    ax1.set_title(
+        titulo_final,
+        fontsize=11,
+        fontweight='bold',
+        color='#1D4290',
+        pad=15,
+    )
+
+    fig.tight_layout()
+    plt.show()
+    return fig, (ax1, ax2)
