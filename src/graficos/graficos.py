@@ -142,6 +142,130 @@ def _aplicar_estilo_ejecutivo(
     ax.spines[spine].set_visible(False)
 
 
+
+def _aplicar_estilo_ejecutivo(
+    ax, titulo, ylabel, color_titulo='#1D4290', rotacion_x=0
+):
+  ax.set_title(
+      titulo, fontsize=11, fontweight='bold', color=color_titulo, pad=15
+  )
+  ax.set_xlabel('')
+  ax.set_ylabel(ylabel, fontsize=9, fontweight='bold', color=color_titulo)
+  ax.tick_params(axis='x', rotation=rotacion_x, labelsize=8, labelcolor='black')
+  ax.tick_params(axis='y', labelsize=8, labelcolor='black')
+  ax.grid(True, axis='y', linestyle='--', alpha=0.3, color='gray')
+
+  for spine in ['top', 'right', 'bottom', 'left']:
+    ax.spines[spine].set_visible(False)
+
+
+def _formatear_periodo_str(periodo_val):
+  """Convierte un periodo YYYYMM (numérico o string) a formato 'Ene '25'."""
+  p_str = str(int(periodo_val)) if pd.notnull(periodo_val) else ''
+  if len(p_str) == 6:
+    anio = p_str[2:4]
+    mes_num = int(p_str[4:6])
+    meses_es = {
+        1: 'Ene',
+        2: 'Feb',
+        3: 'Mar',
+        4: 'Abr',
+        5: 'May',
+        6: 'Jun',
+        7: 'Jul',
+        8: 'Ago',
+        9: 'Sep',
+        10: 'Oct',
+        11: 'Nov',
+        12: 'Dic',
+    }
+    mes_str = meses_es.get(mes_num, p_str[4:6])
+    return f"{mes_str} '{anio}"
+  return p_str
+
+
+def _formatear_etiqueta_valor(valor, es_monto=True):
+  """Formatea el valor de la barra: si es monto y supera el millón, usa escala MM.
+
+  Ej: 3,400,000 -> 3.4 MM. Si es un número (N) o valor menor, usa formato
+  estándar con comas.
+  """
+  if es_monto and abs(valor) >= 1_000_000:
+    return f'{valor / 1_000_000:.1f} MM'
+  elif abs(valor) >= 1_000:
+    return f'{valor:,.0f}'.replace(',', ' ')
+  else:
+    return f'{valor:,.1f}' if isinstance(valor, float) else f'{valor:,}'
+
+def plot_materialidad_por_mes(
+    df,
+    col_periodo='periodo',
+    col_valor='valor',
+    titulo='Evolución Mensual',
+    ylabel='Valor',
+    color_barras='#1D4290',  # Azul ejecutivo por defecto
+    color_titulo='#1D4290',
+    rotacion_x=0,  # Horizontal por defecto para meses cortos
+    es_monto=True,  # True para escalar a MM si supera el millón
+):
+  # Copia para no alterar el DataFrame original
+  df_plot = df.copy()
+
+  # Ordenar cronológicamente por periodo
+  df_sorted = df_plot.sort_values(by=col_periodo, ascending=True)
+
+  # Generar etiquetas de meses (ej: 202401 -> "Ene '24")
+  etiquetas_x = [_formatear_periodo_str(p) for p in df_sorted[col_periodo]]
+
+  fig, ax = plt.subplots(figsize=(9, 4))
+
+  barras = ax.bar(
+      np.arange(len(df_sorted)),
+      df_sorted[col_valor].values,
+      width=0.55,
+      color=color_barras,
+      edgecolor='black',
+      linewidth=0.6,
+      alpha=0.9,
+  )
+
+  ax.set_xticks(np.arange(len(df_sorted)))
+  ax.set_xticklabels(etiquetas_x)
+
+  # Margen superior dinámico para las etiquetas
+  ax.set_ylim(0, df_sorted[col_valor].max() * 1.18)
+
+  # Añadir etiquetas dinámicas sobre cada barra
+  for barra, valor in zip(barras, df_sorted[col_valor]):
+    texto_etiqueta = _formatear_etiqueta_valor(valor, es_monto=es_monto)
+
+    ax.annotate(
+        texto_etiqueta,
+        (barra.get_x() + barra.get_width() / 2, valor),
+        xytext=(0, 6),
+        textcoords='offset points',
+        ha='center',
+        va='bottom',
+        fontsize=7.5,
+        color='black',
+        bbox=dict(
+            boxstyle='round,pad=0.22', fc='#F4F6F7', ec='none', alpha=0.9
+        ),
+    )
+
+  # Aplicar la línea estética ejecutiva
+  _aplicar_estilo_ejecutivo(
+      ax,
+      titulo,
+      ylabel,
+      color_titulo=color_titulo,
+      rotacion_x=rotacion_x,
+  )
+
+  plt.tight_layout()
+  plt.show()
+
+
 def plot_participacion_segmento_mensual_grid(
     df_panel,
     col_periodo='periodo',

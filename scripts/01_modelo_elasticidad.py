@@ -196,15 +196,61 @@ data_panel_sensibilidad = (
     .reset_index()
 )
 
-#~~~~ 6.2) Descriptivos ----
-
 data_panel_sensibilidad.periodo.value_counts()
 data_panel_sensibilidad.cluster_modelar.value_counts()
 
-data_panel_sensibilidad.groupby('cluster_modelar')[['efectividad']].describe().T
-data_panel_sensibilidad.groupby('cluster_modelar')[['tasa_ofertada']].describe().T
+#~~~~ 6.2) Descriptivos ----
+
+#---- 6.2.1) Materialidad y Mix ----
+
+aux_materialidad_mensual=(
+    data_panel_sensibilidad
+    .groupby('periodo')
+    .agg(desembolsos_ibk=('desembolsos_ibk','sum'),
+         monto_desembolsado_ibk=('monto_desembolsado_ibk','sum'))
+    .reset_index()
+)
+
+graficos.plot_materialidad_por_mes(
+      df=aux_materialidad_mensual,
+      col_periodo='periodo',
+      col_valor='desembolsos_ibk',
+      titulo='Evolución de Desembolsos',
+      ylabel='Desembolsos',
+      color_barras='#1D4290',
+      es_monto=False
+  )
+
+graficos.plot_materialidad_por_mes(
+      df=aux_materialidad_mensual,
+      col_periodo='periodo',
+      col_valor='monto_desembolsado_ibk',
+      titulo='Evolución de Monto Desembolsado',
+      ylabel='Monto Desmbolsado (MM)',
+      color_barras='#1D4290',
+      es_monto=True
+  )
+
+graficos.plot_participacion_panel(
+    df=data_panel_sensibilidad,
+    columna_periodo='periodo',
+    columna_grupo='cluster_modelar',
+    metrica_materialidad='desembolsos_ibk',
+    titulo='Mix de Monto Desembolsado por Macroperfil'
+)
+
+graficos.plot_participacion_panel(
+    df=data_panel_sensibilidad,
+    columna_periodo='periodo',
+    columna_grupo='cluster_modelar',
+    metrica_materialidad='monto_desembolsado_ibk',
+    titulo='Mix de Monto Desembolsado por Macroperfil'
+)
 
 #---- 6.2.1) Evolutivo: Tasa Ofertada vs Efectividad ----
+
+data_panel_sensibilidad.groupby('cluster_modelar')[['efectividad']].describe().T
+data_panel_sensibilidad.groupby('cluster_modelar')[['tasa_ofertada']].describe().T
 
 for bucket in data_panel_sensibilidad['cluster_modelar'].unique():
 
@@ -399,7 +445,6 @@ for periodo in [202512, 202601, 202602, 202603,202604]:
         continue
 
 #____________________ 8) Validaciones ----
-
 
 resultados_globales_rolling
 
