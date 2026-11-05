@@ -41,7 +41,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V03/data_sensibilidad_set26.csv',sep=',')
+datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
 data_panel_sensibilidad_macroperfil=pd.read_csv(dir_b+r'/processed/V04/data_panel_sensibilidad_macroperfil.csv', sep='|')
 elasticidades_macroperfil=pd.read_csv(dir_b+r'/processed/V04/elasticidad_macroperfil.csv', sep='|')
 
@@ -474,7 +474,7 @@ def simular_escenarios_tarifarios_if(
 
 df_escenarios=simular_escenarios_tarifarios_if(
     datos_escenarios_consolidado,
-    rango_deltas_pb=(-0.025, 0.0251, 0.005),
+    rango_deltas_pb=(-0.030, 0.0301, 0.001),
     col_grupo="grupo",
     col_tasa_as_is="tasa_as_is",
     col_tea_max="tea_max",

@@ -43,7 +43,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V04/data_actualizada_mar25_set26.csv',sep=',')
+datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
 
 #____________________ 4) Procesamiento ----
 
@@ -550,6 +550,6 @@ df_resultados_control = pd.concat(
 
 #____________________ 9) Exportación: Resultados ----
 
-data_panel_sensibilidad.to_csv(dir_b+r'/processed/V04/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
-resultados_globales_rolling.to_csv(dir_b+r'/processed/V04/elasticidad_macroperfil.csv',index=False, sep='|')
-df_resultados_control.to_csv(dir_b+r'/processed/V04/monitoreo_elasticidad_macroperfil.csv',index=False, sep='|')
+data_panel_sensibilidad.to_csv(dir_b+r'/processed/V05/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
+resultados_globales_rolling.to_csv(dir_b+r'/processed/V05/elasticidad_macroperfil.csv',index=False, sep='|')
+df_resultados_control.to_csv(dir_b+r'/processed/V05/monitoreo_elasticidad_macroperfil.csv',index=False, sep='|')
