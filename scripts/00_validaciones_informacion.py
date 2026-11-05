@@ -30,7 +30,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V02/data_fin_no_clientes.csv',sep=',')
+datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
 
 datos.head().T
 datos.info()
@@ -105,7 +105,6 @@ datos_casos_no_validados=pd.merge(
     on='llave_interna' 
 )
 
-datos_casos_no_validados.FLG_CLIENTE.value_counts(dropna=False)
 datos_casos_no_validados.flg_exito_4.value_counts(dropna=False)
 datos_casos_no_validados.cluster.value_counts(dropna=False)
 datos_casos_no_validados.cod_instit_financiera.value_counts(dropna=False)
@@ -158,14 +157,13 @@ validacion_duplicidad=(
         cod_instit_financiera=('cod_instit_financiera', 'nunique'),
         flg_exito_4=('flg_exito_4', 'nunique'),
         tasa_2022=('tasa_2022','nunique'),
-        monto_desembolsado=('monto_desembolsado','nunique'),
-        FLG_CLIENTE=('FLG_CLIENTE','nunique'))
+        monto_desembolsado=('monto_desembolsado','nunique'))
 
 )
 
 validacion_duplicidad
 
-validacion_duplicidad.query('tasa_min>1 or monto_min>1 or cluster>1 or tasa_2022>1 or monto_desembolsado>1 or FLG_CLIENTE>1')
+validacion_duplicidad.query('tasa_min>1 or monto_min>1 or cluster>1 or tasa_2022>1 or monto_desembolsado>1 ')
 
 validacion_duplicidad.query('cod_instit_financiera>1 or flg_exito_4>1')
 
