@@ -42,8 +42,8 @@ dir_s = os.path.join(dir_p, "scripts")
 #____________________ 3) Lectura de archivos ----
 
 datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
-data_panel_sensibilidad_macroperfil=pd.read_csv(dir_b+r'/processed/V04/data_panel_sensibilidad_macroperfil.csv', sep='|')
-elasticidades_macroperfil=pd.read_csv(dir_b+r'/processed/V04/elasticidad_macroperfil.csv', sep='|')
+data_panel_sensibilidad_macroperfil=pd.read_csv(dir_b+r'/processed/V05/data_panel_sensibilidad_macroperfil.csv', sep='|')
+elasticidades_macroperfil=pd.read_csv(dir_b+r'/processed/V05/elasticidad_macroperfil.csv', sep='|')
 
 #____________________ 4) Procesamiento ----
 
@@ -575,3 +575,8 @@ for g in df_escenarios["grupo"].unique():
             "ingreso_financiero"
         ],
     )
+
+#~~~~ 7.4) Exportación ----
+
+df_escenarios.to_csv(dir_b+r'/processed/V05/all_escenarios_por_apertura.csv',index=False, sep='|')
+escenarios_optimos.to_csv(dir_b+r'/processed/V05/escenarios_optimos_por_apertura.csv',index=False, sep='|')
