@@ -2852,3 +2852,428 @@ def plot_evolutivo_demanda_precio_barras(
     fig.tight_layout()
     plt.show()
     return fig, (ax1, ax2)
+
+
+
+
+
+def graficar_tendencia(data, cluster, variable='elasticidad'):
+
+    COLOR_AZUL = '#1D4290'
+    COLOR_ROJO = '#E63946'
+
+    data = data.sort_values('periodo').copy()
+
+    x = np.arange(len(data))
+
+    etiquetas = (
+        pd.to_datetime(
+            data['periodo'].astype('Int64').astype(str),
+            format='%Y%m'
+        )
+        .dt.strftime('%b-%y')
+        .values
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(
+        x, data[variable],
+        color=COLOR_AZUL,
+        marker='o',
+        markersize=5,
+        linewidth=1.8,
+        label='Elasticidad estimada',
+        zorder=3
+    )
+
+    ax.axhline(
+        data['LC_I'].iloc[0],
+        color='#555555',
+        linewidth=1.2,
+        label=f'LC ({data["LC_I"].iloc[0]:.3f})'
+    )
+
+    for limite, nombre in [('LSC_I', 'LSC'), ('LIC_I', 'LIC')]:
+        ax.axhline(
+            data[limite].iloc[0],
+            color=COLOR_ROJO,
+            linestyle='--',
+            linewidth=1.2,
+            label=f'{nombre} ({data[limite].iloc[0]:.3f})'
+        )
+
+    # Alertas
+    mask = data['alerta_I'].to_numpy()
+
+    if mask.any():
+        ax.scatter(
+            x[mask],
+            data.loc[mask, variable],
+            color=COLOR_ROJO,
+            marker='X',
+            s=90,
+            zorder=4,
+            label='Fuera de control'
+        )
+
+    # Etiquetas
+    for xi, val, alerta in zip(
+        x, data[variable], data['alerta_I']
+    ):
+        ax.annotate(
+            f'{val:.3f}',
+            (xi, val),
+            xytext=(0, 8),
+            textcoords='offset points',
+            ha='center',
+            fontsize=7,
+            color='black',
+            bbox=dict(
+                boxstyle='round,pad=0.2',
+                fc='#FADBD8' if alerta else '#E8F1F5',
+                ec=COLOR_ROJO if alerta else COLOR_AZUL,
+                lw=0.8,
+                alpha=0.9
+            )
+        )
+
+    ax.spines[['top', 'right', 'left']].set_visible(False)
+    ax.spines['bottom'].set_color('#CCCCCC')
+    ax.grid(True, axis='y', linestyle='--', alpha=0.3)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(etiquetas, fontsize=8)
+    ax.tick_params(axis='y', labelsize=8)
+
+    ax.set_title(
+        f'Monitoreo de Estabilidad de Elasticidad | {cluster}',
+        fontsize=11,
+        fontweight='bold',
+        color=COLOR_AZUL,
+        pad=15
+    )
+
+    ax.legend(
+        loc='lower left',
+        frameon=True,
+        facecolor='white',
+        edgecolor='lightgray',
+        fontsize=7.5
+    )
+
+    plt.tight_layout()
+    plt.show()
+
+
+def graficar_volatilidad(data, cluster):
+
+    COLOR_AZUL = '#1D4290'
+    COLOR_ROJO = '#E63946'
+
+    data = data.sort_values('periodo').copy()
+    data = data.dropna(subset=['MR']).copy()
+
+    x = np.arange(1, len(data) + 1)
+
+    etiquetas = (
+        pd.to_datetime(
+            data['periodo'].astype('Int64').astype(str),
+            format='%Y%m'
+        )
+        .dt.strftime('%b-%y')
+        .values
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    ax.plot(
+        x, data['MR'],
+        color=COLOR_AZUL,
+        marker='o',
+        markersize=5,
+        linewidth=1.8,
+        label='Variación absoluta entre ventanas',
+        zorder=3
+    )
+
+    ax.axhline(
+        data['LC_MR'].iloc[0],
+        color='#555555',
+        linewidth=1.2,
+        label=f'LC ({data["LC_MR"].iloc[0]:.3f})'
+    )
+
+    ax.axhline(
+        data['LSC_MR'].iloc[0],
+        color=COLOR_ROJO,
+        linestyle='--',
+        linewidth=1.2,
+        label=f'LSC ({data["LSC_MR"].iloc[0]:.3f})'
+    )
+
+    ax.axhline(
+        data['LIC_MR'].iloc[0],
+        color='#555555',
+        linestyle=':',
+        linewidth=1
+    )
+
+    # Alertas
+    mask = data['alerta_MR'].to_numpy()
+
+    if mask.any():
+        ax.scatter(
+            x[mask],
+            data.loc[mask, 'MR'],
+            color=COLOR_ROJO,
+            marker='X',
+            s=90,
+            zorder=4,
+            label='Alerta por volatilidad'
+        )
+
+    # Etiquetas
+    for xi, val, alerta in zip(
+        x, data['MR'], data['alerta_MR']
+    ):
+        ax.annotate(
+            f'{val:.3f}',
+            (xi, val),
+            xytext=(0, 8),
+            textcoords='offset points',
+            ha='center',
+            fontsize=7,
+            color='black',
+            bbox=dict(
+                boxstyle='round,pad=0.2',
+                fc='#FADBD8' if alerta else '#E8F1F5',
+                ec=COLOR_ROJO if alerta else COLOR_AZUL,
+                lw=0.8,
+                alpha=0.9
+            )
+        )
+
+    ax.spines[['top', 'right', 'left']].set_visible(False)
+    ax.spines['bottom'].set_color('#CCCCCC')
+    ax.grid(True, axis='y', linestyle='--', alpha=0.3)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(etiquetas, fontsize=8)
+    ax.tick_params(axis='y', labelsize=8)
+
+    ax.set_title(
+        f'Monitoreo de Volatilidad y Cambios (MR) | {cluster}',
+        fontsize=11,
+        fontweight='bold',
+        color=COLOR_AZUL,
+        pad=15
+    )
+
+    ax.legend(
+        loc='lower left',
+        frameon=True,
+        facecolor='white',
+        edgecolor='lightgray',
+        fontsize=7.5
+    )
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+
+def plot_curva_optimizacion_bucket(
+    df_grupo,
+    columna_x="ajuste_pb",
+    columna_y="delta_ingreso_financiero",
+    label_x=None,
+    label_y=None,
+    titulo=None,
+    flg_destacar_optimo=True,
+    color_linea="#1D4290",
+    color_optimo="#27D75A",
+    parametros_as_is=[
+        "tasa",
+        "efectividad",
+        "monto_ofertado",
+    ],
+):
+    """Genera el gráfico individual con subtítulo dinámico, etiqueta hacia abajo
+    y manejo inteligente del eje Y (delta vs. variable absoluta).
+    """
+    if df_grupo.empty:
+        print("El DataFrame del grupo está vacío para graficar.")
+        return None, None
+
+    sub_df = df_grupo.copy()
+    sub_df = sub_df.sort_values(columna_x).reset_index(drop=True)
+
+    grupo_nombre = sub_df["grupo"].iloc[0]
+
+    # Extracción previa para evitar anidamiento complejo de comillas en f-strings
+    val_tasa = sub_df["tasa_as_is"].iloc[0]
+    str_tasa = f"Tasa: {val_tasa * 100:.2f}%" if val_tasa <= 1.0 else f"Tasa: {val_tasa:.2f}%"
+
+    val_efect = sub_df["efectividad_as_is"].iloc[0]
+    str_efect = f"Efectividad: {val_efect * 100:.2f}%" if val_efect <= 1.0 else f"Efectividad: {val_efect:.2f}%"
+
+    val_monto_of = sub_df["monto_ofertado_as_is"].iloc[0] / 1e6
+    val_monto_des = sub_df["monto_desembolsado_as_is"].iloc[0] / 1e6
+    val_ingreso = sub_df["ingreso_financiero_as_is"].iloc[0] / 1e6
+
+    as_is_dict = {
+        "tasa": str_tasa,
+        "efectividad": str_efect,
+        "monto_ofertado": f"Monto Ofertado: S/. {val_monto_of:.2f}M",
+        "monto_desembolsado": f"Monto Desembolsado: S/. {val_monto_des:.2f}M",
+        "ingreso_financiero": f"Ingreso Financiero: S/. {val_ingreso:.2f}M",
+    }
+
+    elementos_subt = [
+        as_is_dict[p] for p in parametros_as_is if p in as_is_dict
+    ]
+    subtitulo = "Base As-Is — " + " | ".join(elementos_subt)
+
+    label_x = label_x or columna_x.replace("_", " ").capitalize()
+    label_y = label_y or columna_y.replace("_", " ").capitalize()
+
+    def _escalar_serie(serie):
+        s_clean = serie.dropna()
+        if s_clean.empty:
+            return serie, ""
+        if any(
+            m in columna_y for m in ["ingreso", "monto", "desembolsado"]
+        ) and s_clean.abs().max() > 1000:
+            return serie / 1e6, " (MM)"
+        if (
+            any(m in columna_y for m in ["efectividad", "tasa", "beta"])
+            and s_clean.max() <= 1.0
+            and s_clean.min() >= -1.0
+            and s_clean.max() != 0
+        ):
+            return serie * 100, " (%)"
+        return serie, ""
+
+    y_raw, sufijo_y = _escalar_serie(sub_df[columna_y])
+    y_valores = y_raw.fillna(0)
+
+    es_delta = "delta" in columna_y.lower() or "Δ" in label_y
+
+    fig, ax = plt.subplots(figsize=(9, 4.5), dpi=120)
+    ax.set_facecolor("#FAFAFA")
+    fig.patch.set_facecolor("#FFFFFF")
+
+    x_valores = sub_df[columna_x]
+
+    ax.plot(
+        x_valores,
+        y_valores,
+        color=color_linea,
+        linestyle="-",
+        marker="o",
+        markersize=5.5,
+        linewidth=2,
+        zorder=3,
+        label=label_y,
+    )
+
+    if es_delta:
+        ax.axhline(0, color="#6E6E6E", linestyle="--", linewidth=1, alpha=0.6, zorder=2)
+        
+    ax.axvline(0, color="#6E6E6E", linestyle=":", linewidth=1, alpha=0.5, zorder=2)
+
+    if flg_destacar_optimo:
+        idx_optimo = y_valores.idxmax()
+        optimo_x = sub_df.loc[idx_optimo, columna_x]
+        optimo_y = y_valores.loc[idx_optimo]
+
+        ax.scatter(
+            [optimo_x],
+            [optimo_y],
+            color=color_optimo,
+            s=130,
+            zorder=5,
+            edgecolors=color_linea,
+            linewidth=1.5,
+            marker="o",
+            label=f"Óptimo ({optimo_x:+g} bps)",
+        )
+
+        texto_anotacion = (
+            f"Max: {optimo_y:+.2f}{sufijo_y}\n({optimo_x:+g} bps)"
+            if es_delta
+            else f"Max: {optimo_y:.2f}{sufijo_y}\n({optimo_x:+g} bps)"
+        )
+
+        ax.annotate(
+            texto_anotacion,
+            xy=(optimo_x, optimo_y),
+            xytext=(0, -30),
+            textcoords="offset points",
+            ha="center",
+            va="top",
+            fontsize=8,
+            fontweight="bold",
+            color="#1A1A1A",
+            bbox=dict(
+                boxstyle="round,pad=0.3",
+                fc="#E8F5E9",
+                ec=color_optimo,
+                lw=1,
+                alpha=0.95,
+            ),
+            arrowprops=dict(
+                arrowstyle="->", color=color_linea, lw=1, connectionstyle="arc3,rad=0"
+            ),
+            zorder=6,
+        )
+    
+    ax.set_xlabel(label_x, fontsize=9, fontweight="bold", labelpad=8)
+    ax.set_ylabel(
+        f"{label_y}{sufijo_y}", fontsize=9, fontweight="bold", color=color_linea
+    )
+    ax.tick_params(axis="both", labelsize=8, labelcolor="black")
+
+    if columna_x == "ajuste_pb":
+        ticks_x = x_valores.unique()
+        ax.set_xticks(ticks_x)
+        ax.set_xticklabels([f"{int(x):+g} bps" for x in ticks_x], rotation=0)
+
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_color("#CCCCCC")
+    ax.spines["bottom"].set_color("#CCCCCC")
+
+    ax.grid(True, axis="y", linestyle="--", alpha=0.3, color="gray")
+
+    ax.legend(
+        loc="lower left",
+        frameon=True,
+        facecolor="white",
+        edgecolor="lightgray",
+        fontsize=8,
+    )
+
+    titulo_final = (
+        titulo
+        or f"Bucket: {grupo_nombre} — Análisis de {label_y} vs {label_x}"
+    )
+
+    ax.set_title(
+        titulo_final, fontsize=11, fontweight="bold", color="#1D4290", pad=22
+    )
+    ax.text(
+        0.5,
+        1.03,
+        subtitulo,
+        transform=ax.transAxes,
+        ha="center",
+        fontsize=8.5,
+        color="#555555",
+    )
+
+    fig.tight_layout()
+    plt.show()
+    return fig, ax

@@ -43,7 +43,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_csv(dir_b+r'/raw/V02/data_fin_no_clientes.csv',sep=',')
+datos=pd.read_csv(dir_b+r'/raw/V04/data_actualizada_mar25_set26.csv',sep=',')
 
 #____________________ 4) Procesamiento ----
 
@@ -55,8 +55,8 @@ mapeo_clusters = {
      'cluster_1_sow_no_nulo': 'Cliente Ancla',
      'cluster_2_sow_no_nulo': 'Socio en Crecimiento',
      'cluster_3_sow_no_nulo': 'Cuenta Estratégica',
-     'cluster_4_sow_no_nulo': 'Gran Cuenta por Conquistar',
-     'cluster_5_sow_no_nulo': 'Maduro Multibanco',
+     'cluster_4_sow_no_nulo': 'Maduro Multibanco',
+     'cluster_5_sow_no_nulo': 'Gran Cuenta por Conquistar',
      'cluster_6_sow_no_nulo': 'Cliente por Reactivar',     
      'cluster_1_nulo': 'Emprendedor Izipay',
      'cluster_2_nulo': 'Nuevo en Expansión',
@@ -66,24 +66,14 @@ mapeo_clusters = {
 datos['cluster_comercial'] = datos['cluster'].map(mapeo_clusters).fillna(datos['cluster'])
 datos[['cluster_comercial','cluster']].value_counts().reset_index()
 
-#---- 4.1.2) Tipo Cliente ----
-
-mapeo_tipo_cliente={
-   1: 'Cliente',
-   0: 'No Cliente'
-}
-
-datos['tipo_cliente'] = datos['FLG_CLIENTE'].map(mapeo_tipo_cliente).fillna(datos['FLG_CLIENTE'])
-datos[['tipo_cliente','FLG_CLIENTE']].value_counts().reset_index()
-
-#---- 4.1.3) Macroperfil ----
+#---- 4.1.2) Macroperfil ----
 
 CLUSTER_MODELAMIENTO={
      'cluster_1_sow_no_nulo': 'Fidelizados',
      'cluster_2_sow_no_nulo': 'Fidelizados',
      'cluster_3_sow_no_nulo': 'Grandes por fidelizar',
-     'cluster_4_sow_no_nulo': 'Grandes por fidelizar',
-     'cluster_5_sow_no_nulo': 'Medianos por fidelizar',
+     'cluster_4_sow_no_nulo': 'Medianos por fidelizar',
+     'cluster_5_sow_no_nulo': 'Grandes por fidelizar',
      'cluster_6_sow_no_nulo': 'Medianos por fidelizar',     
      'cluster_1_nulo': 'Sin historial crediticio',
      'cluster_2_nulo': 'Sin historial crediticio',
@@ -132,11 +122,11 @@ datos.query('monto_desembolsado.isna()').flg_exito_4.value_counts(dropna=False)
 #____________________ 5) Funnel Poblacional ----
 
 PERIODO_INICIO=202504
-PERIODO_FIN=202604
+PERIODO_FIN=202609
 
 funnel_oferta_relevante=['exito_desembolso_ibk_ct','fracaso_desembolso_no_ibk_monto_similar_con_gestion']
 
-datos_oferta_relevante = datos.query(f"flg_exito_4 in {funnel_oferta_relevante} and FLG_CLIENTE==1 and periodo>={PERIODO_INICIO} and periodo<={PERIODO_FIN}").copy()
+datos_oferta_relevante = datos.query(f"flg_exito_4 in {funnel_oferta_relevante} and periodo>={PERIODO_INICIO} and periodo<={PERIODO_FIN}").copy()
 
 datos_oferta_relevante = (
     datos_oferta_relevante
@@ -152,7 +142,7 @@ datos_oferta_relevante = (
 
 datos_oferta_relevante.query('tasa_desembolsada.notna() or monto_desembolsado.notna()').value_counts('indicador_exito',dropna=False)
 datos_oferta_relevante.indicador_exito.sum()
-datos.query(f"flg_exito_4 in ['exito_desembolso_ibk_ct'] and FLG_CLIENTE==1 and periodo>={PERIODO_INICIO} and periodo<={PERIODO_FIN}").shape
+datos.query(f"flg_exito_4 in ['exito_desembolso_ibk_ct'] and periodo>={PERIODO_INICIO} and periodo<={PERIODO_FIN}").shape
 
 #____________________ 6) Data Panel de Sensibilidad ----
 
@@ -247,7 +237,7 @@ graficos.plot_participacion_panel(
     titulo='Mix de Monto Desembolsado por Macroperfil'
 )
 
-#---- 6.2.1) Evolutivo: Tasa Ofertada vs Efectividad ----
+#---- 6.2.2) Evolutivo: Tasa Ofertada vs Efectividad ----
 
 data_panel_sensibilidad.groupby('cluster_modelar')[['efectividad']].describe().T
 data_panel_sensibilidad.groupby('cluster_modelar')[['tasa_ofertada']].describe().T
@@ -265,7 +255,7 @@ for bucket in data_panel_sensibilidad['cluster_modelar'].unique():
         flg_etiqueta_precio=True
     )
 
-#---- 6.2.2) Bubble Plots: Tasa vs Efectividad ----
+#---- 6.2.3) Bubble Plots: Tasa vs Efectividad ----
 
 meses = {
     1: 'Ene',
@@ -306,7 +296,7 @@ for periodo in sorted(data_panel_sensibilidad.query('periodo>=202602')['periodo'
 
 resultados_globales_rolling = pd.DataFrame()
 
-for periodo in [202512, 202601, 202602, 202603,202604]:
+for periodo in [202512, 202601, 202602, 202603,202604, 202605,202606,202607,202608,202609]:
 
     #~~~~ 7.1) Información para modelamiento ----
 
@@ -383,7 +373,7 @@ for periodo in [202512, 202601, 202602, 202603,202604]:
         print('=' * 70)
         print(resultado_panel.summary)
 
-        intervalos = resultado_panel.conf_int()
+        intervalos = resultado_panel.conf_int(level=0.95)
         resultados_elasticidad = []
 
         for bucket, nombre_columna in nombres_interaccion.items():
@@ -446,7 +436,7 @@ for periodo in [202512, 202601, 202602, 202603,202604]:
 
 #____________________ 8) Validaciones ----
 
-resultados_globales_rolling
+# resultados_globales_rolling.query("periodo==202604").to_csv('resultados_elasticidad.csv',sep='|', index=False)
 
 resultados_globales_rolling['flg_significativo']=(resultados_globales_rolling['significativo_10pct'])*1
 
@@ -523,230 +513,6 @@ def calcular_limites_imr(data, variable='elasticidad'):
 
     return data
 
-def graficar_tendencia(data, cluster, variable='elasticidad'):
-
-    COLOR_AZUL = '#1D4290'
-    COLOR_ROJO = '#E63946'
-
-    data = data.sort_values('periodo').copy()
-
-    x = np.arange(len(data))
-
-    etiquetas = (
-        pd.to_datetime(
-            data['periodo'].astype('Int64').astype(str),
-            format='%Y%m'
-        )
-        .dt.strftime('%b-%y')
-        .values
-    )
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-
-    ax.plot(
-        x, data[variable],
-        color=COLOR_AZUL,
-        marker='o',
-        markersize=5,
-        linewidth=1.8,
-        label='Elasticidad estimada',
-        zorder=3
-    )
-
-    ax.axhline(
-        data['LC_I'].iloc[0],
-        color='#555555',
-        linewidth=1.2,
-        label=f'LC ({data["LC_I"].iloc[0]:.3f})'
-    )
-
-    for limite, nombre in [('LSC_I', 'LSC'), ('LIC_I', 'LIC')]:
-        ax.axhline(
-            data[limite].iloc[0],
-            color=COLOR_ROJO,
-            linestyle='--',
-            linewidth=1.2,
-            label=f'{nombre} ({data[limite].iloc[0]:.3f})'
-        )
-
-    # Alertas
-    mask = data['alerta_I'].to_numpy()
-
-    if mask.any():
-        ax.scatter(
-            x[mask],
-            data.loc[mask, variable],
-            color=COLOR_ROJO,
-            marker='X',
-            s=90,
-            zorder=4,
-            label='Fuera de control'
-        )
-
-    # Etiquetas
-    for xi, val, alerta in zip(
-        x, data[variable], data['alerta_I']
-    ):
-        ax.annotate(
-            f'{val:.3f}',
-            (xi, val),
-            xytext=(0, 8),
-            textcoords='offset points',
-            ha='center',
-            fontsize=7,
-            color='black',
-            bbox=dict(
-                boxstyle='round,pad=0.2',
-                fc='#FADBD8' if alerta else '#E8F1F5',
-                ec=COLOR_ROJO if alerta else COLOR_AZUL,
-                lw=0.8,
-                alpha=0.9
-            )
-        )
-
-    ax.spines[['top', 'right', 'left']].set_visible(False)
-    ax.spines['bottom'].set_color('#CCCCCC')
-    ax.grid(True, axis='y', linestyle='--', alpha=0.3)
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(etiquetas, fontsize=8)
-    ax.tick_params(axis='y', labelsize=8)
-
-    ax.set_title(
-        f'Monitoreo de Estabilidad de Elasticidad | {cluster}',
-        fontsize=11,
-        fontweight='bold',
-        color=COLOR_AZUL,
-        pad=15
-    )
-
-    ax.legend(
-        loc='lower left',
-        frameon=True,
-        facecolor='white',
-        edgecolor='lightgray',
-        fontsize=7.5
-    )
-
-    plt.tight_layout()
-    plt.show()
-
-
-def graficar_volatilidad(data, cluster):
-
-    COLOR_AZUL = '#1D4290'
-    COLOR_ROJO = '#E63946'
-
-    data = data.sort_values('periodo').copy()
-    data = data.dropna(subset=['MR']).copy()
-
-    x = np.arange(1, len(data) + 1)
-
-    etiquetas = (
-        pd.to_datetime(
-            data['periodo'].astype('Int64').astype(str),
-            format='%Y%m'
-        )
-        .dt.strftime('%b-%y')
-        .values
-    )
-
-    fig, ax = plt.subplots(figsize=(10, 5))
-
-    ax.plot(
-        x, data['MR'],
-        color=COLOR_AZUL,
-        marker='o',
-        markersize=5,
-        linewidth=1.8,
-        label='Variación absoluta entre ventanas',
-        zorder=3
-    )
-
-    ax.axhline(
-        data['LC_MR'].iloc[0],
-        color='#555555',
-        linewidth=1.2,
-        label=f'LC ({data["LC_MR"].iloc[0]:.3f})'
-    )
-
-    ax.axhline(
-        data['LSC_MR'].iloc[0],
-        color=COLOR_ROJO,
-        linestyle='--',
-        linewidth=1.2,
-        label=f'LSC ({data["LSC_MR"].iloc[0]:.3f})'
-    )
-
-    ax.axhline(
-        data['LIC_MR'].iloc[0],
-        color='#555555',
-        linestyle=':',
-        linewidth=1
-    )
-
-    # Alertas
-    mask = data['alerta_MR'].to_numpy()
-
-    if mask.any():
-        ax.scatter(
-            x[mask],
-            data.loc[mask, 'MR'],
-            color=COLOR_ROJO,
-            marker='X',
-            s=90,
-            zorder=4,
-            label='Alerta por volatilidad'
-        )
-
-    # Etiquetas
-    for xi, val, alerta in zip(
-        x, data['MR'], data['alerta_MR']
-    ):
-        ax.annotate(
-            f'{val:.3f}',
-            (xi, val),
-            xytext=(0, 8),
-            textcoords='offset points',
-            ha='center',
-            fontsize=7,
-            color='black',
-            bbox=dict(
-                boxstyle='round,pad=0.2',
-                fc='#FADBD8' if alerta else '#E8F1F5',
-                ec=COLOR_ROJO if alerta else COLOR_AZUL,
-                lw=0.8,
-                alpha=0.9
-            )
-        )
-
-    ax.spines[['top', 'right', 'left']].set_visible(False)
-    ax.spines['bottom'].set_color('#CCCCCC')
-    ax.grid(True, axis='y', linestyle='--', alpha=0.3)
-
-    ax.set_xticks(x)
-    ax.set_xticklabels(etiquetas, fontsize=8)
-    ax.tick_params(axis='y', labelsize=8)
-
-    ax.set_title(
-        f'Monitoreo de Volatilidad y Cambios (MR) | {cluster}',
-        fontsize=11,
-        fontweight='bold',
-        color=COLOR_AZUL,
-        pad=15
-    )
-
-    ax.legend(
-        loc='lower left',
-        frameon=True,
-        facecolor='white',
-        edgecolor='lightgray',
-        fontsize=7.5
-    )
-
-    plt.tight_layout()
-    plt.show()
-
 #---- 8.3.2) Monitoreo ----
 
 df_control = resultados_globales_rolling.copy()
@@ -773,6 +539,17 @@ for cluster, data in df_control.groupby('cluster'):
 
     resultados_control.append(data_control)
 
-    graficar_tendencia(data_control, cluster)
+    graficos.graficar_tendencia(data_control, cluster)
 
-    graficar_volatilidad(data_control, cluster)
+    graficos.graficar_volatilidad(data_control, cluster)
+
+df_resultados_control = pd.concat(
+    resultados_control,
+    ignore_index=True
+)
+
+#____________________ 9) Exportación: Resultados ----
+
+data_panel_sensibilidad.to_csv(dir_b+r'/processed/V04/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
+resultados_globales_rolling.to_csv(dir_b+r'/processed/V04/elasticidad_macroperfil.csv',index=False, sep='|')
+df_resultados_control.to_csv(dir_b+r'/processed/V04/monitoreo_elasticidad_macroperfil.csv',index=False, sep='|')
