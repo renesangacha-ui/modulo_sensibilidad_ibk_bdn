@@ -41,9 +41,9 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
-data_panel_sensibilidad_macroperfil=pd.read_csv(dir_b+r'/processed/V05/data_panel_sensibilidad_macroperfil.csv', sep='|')
-elasticidades_macroperfil=pd.read_csv(dir_b+r'/processed/V05/elasticidad_macroperfil.csv', sep='|')
+datos=pd.read_csv(dir_b+r'/raw/V07/SoS_actualizado_inferencias_all_aperturas.csv', engine='pyarrow')
+data_panel_sensibilidad_macroperfil=pd.read_csv(dir_b+r'/processed/V07/data_panel_sensibilidad_macroperfil.csv', sep='|')
+elasticidades_macroperfil=pd.read_csv(dir_b+r'/processed/V07/elasticidad_macroperfil.csv', sep='|')
 
 #____________________ 4) Procesamiento ----
 
@@ -82,9 +82,53 @@ CLUSTER_MODELAMIENTO={
 
 datos['cluster_modelar']=datos['cluster'].map(CLUSTER_MODELAMIENTO)
 
+datos['macroperfil']=datos['cluster'].map(CLUSTER_MODELAMIENTO)
+
 datos.value_counts(['cluster_modelar','cluster']).reset_index()
 
-#---- 4.1.3) Bloque Cluster ----
+#---- 4.1.3) Departamento ----
+
+datos.value_counts('departamento',dropna=True)
+
+datos['flg_departamento'] = np.where(
+    datos['departamento'].eq('LIMA'),
+    'LIMA',
+    'PROVINCIA'
+)
+
+datos.value_counts('flg_departamento',dropna=True)
+datos.value_counts(['departamento','flg_departamento'],dropna=True).reset_index()
+
+#---- 4.1.4) Sector Empresarial ----
+
+datos.value_counts('sei_mcdo',dropna=True)
+
+datos['sei_mcdo_agrupado'] = np.where(
+    datos['sei_mcdo'].eq('COMERCIO'),
+    'COMERCIO',
+    'OTROS'
+)
+
+datos.value_counts('sei_mcdo_agrupado',dropna=True)
+datos.value_counts(['sei_mcdo','sei_mcdo_agrupado'],dropna=True).reset_index()
+
+datos['cluster_modelar']=np.where(datos['cluster_modelar']=="Sin historial crediticio",
+         datos['cluster_modelar']+ ' & ' + datos['flg_departamento'],
+         np.where(datos['cluster_modelar']=="Medianos por fidelizar",
+                  datos['cluster_modelar']+ ' & ' + datos['sei_mcdo_agrupado'],
+                  datos['cluster_modelar']))
+
+datos['apertura_org']=datos['apertura'].copy()
+
+datos['apertura']=np.where(datos['macroperfil']=="Sin historial crediticio",
+         datos['apertura']+ ' · ' + datos['flg_departamento'],
+         np.where(datos['macroperfil']=="Medianos por fidelizar",
+                  datos['apertura']+ ' · ' + datos['sei_mcdo_agrupado'],
+                  datos['apertura']))
+
+datos.value_counts(['apertura','macroperfil']).reset_index()
+
+#---- 4.1.5) Bloque Cluster ----
 
 datos['bloque_cluster']=datos['cluster_comercial'].isin(['Emprendedor Izipay','Nuevo en Expansión','Próximo Recurrente']).map({True:'Sin Deuda', False:'Con Deuda'})
 datos.value_counts(['bloque_cluster','cluster_comercial']).reset_index()
@@ -156,7 +200,7 @@ def promedio_ponderado(valores, pesos):
 
 data_panel_sensibilidad_optimizacion = (
     datos_oferta_relevante
-    .groupby(["cluster_modelar","cluster_comercial","apertura", "periodo"], observed=True)
+    .groupby(["cluster_modelar","cluster_comercial","apertura", "apertura_org", "periodo"], observed=True)
     .agg(
         leads=("llave_interna", "size"),
         monto_desembolsado_ibk=("monto_desembolsado", "sum"),
@@ -505,11 +549,37 @@ escenarios_optimos=escenarios_optimos.query('delta_ingreso_financiero>0')
 escenarios_optimos.ajuste_pb.describe()
 escenarios_optimos.ajuste_pb.value_counts()
 
-escenarios_optimos
+escenarios_optimos.query("~grupo.str.contains('Fuera de apertura', na=False)")
+
+(
+  escenarios_optimos.query("~grupo.str.contains('Fuera de apertura', na=False)").delta_ingreso_financiero.sum()/
+  escenarios_optimos.query("~grupo.str.contains('Fuera de apertura', na=False)").ingreso_financiero_as_is.sum()
+)
+
+(
+   escenarios_optimos
+   .query("~grupo.str.contains('Fuera de apertura', na=False)")
+   .ajuste_pb
+   .value_counts()
+)
+
+
+(
+   escenarios_optimos
+   .query("~grupo.str.contains('Fuera de apertura', na=False) and delta_ingreso_financiero>100_000")
+   .ajuste_pb
+   .value_counts()
+)
+
+(
+   escenarios_optimos
+   .query("~grupo.str.contains('Fuera de apertura', na=False)")
+   .assign(participacion_delta_if= lambda x: x['delta_ingreso_financiero']/x['delta_ingreso_financiero'].sum())
+)
 
 #---- 7.3.3) Visualizaciones ----
 
-for g in df_escenarios["grupo"].unique():
+for g in df_escenarios.query("~grupo.str.contains('Fuera de apertura', na=False)")["grupo"].unique():
 
     df_g = df_escenarios[df_escenarios["grupo"] == g]
 
@@ -536,7 +606,7 @@ for g in df_escenarios["grupo"].unique():
         columna_x="ajuste_pb",
         columna_y="efectividad_to_be",
         label_x="Ajuste de Tasa (Puntos Base / bps)",
-        label_y="Efectividad(%)",
+        label_y="Efectividad",
         titulo=f"Escenarios de Efectividad\n{g}",
         flg_destacar_optimo=False,
         parametros_as_is=[
@@ -545,36 +615,36 @@ for g in df_escenarios["grupo"].unique():
         ],
     )
 
-    # Delta de tasa vs delta de monto desembolsado
-    graficos.plot_curva_optimizacion_bucket(
-        df_grupo=df_g,
-        columna_x="ajuste_pb",
-        columna_y="monto_desembolsado_to_be",
-        label_x="Ajuste de Tasa (Puntos Base / bps)",
-        label_y="Monto Desembolsado",
-        titulo=f"Escenarios del Monto Desembolsado\n{g}",
-        flg_destacar_optimo=False,
-        parametros_as_is=[
-            "tasa",
-            "monto_desembolsado",
-        ],
-    )
+    # # Delta de tasa vs delta de monto desembolsado
+    # graficos.plot_curva_optimizacion_bucket(
+    #     df_grupo=df_g,
+    #     columna_x="ajuste_pb",
+    #     columna_y="monto_desembolsado_to_be",
+    #     label_x="Ajuste de Tasa (Puntos Base / bps)",
+    #     label_y="Monto Desembolsado",
+    #     titulo=f"Escenarios del Monto Desembolsado\n{g}",
+    #     flg_destacar_optimo=False,
+    #     parametros_as_is=[
+    #         "tasa",
+    #         "monto_desembolsado",
+    #     ],
+    # )
 
-    # Delta de tasa vs delta de monto desembolsado
-    graficos.plot_curva_optimizacion_bucket(
-        df_grupo=df_g,
-        columna_x="ajuste_pb",
-        columna_y="ingreso_financiero_to_be",
-        label_x="Ajuste de Tasa (Puntos Base / bps)",
-        label_y="Ingreso Financiero",
-        titulo=f"Escenarios de Ingreso Financiero\n{g}",
-        flg_destacar_optimo=False,
-        parametros_as_is=[
-            "tasa",
-            "monto_desembolsado",
-            "ingreso_financiero"
-        ],
-    )
+    # # Delta de tasa vs delta de monto desembolsado
+    # graficos.plot_curva_optimizacion_bucket(
+    #     df_grupo=df_g,
+    #     columna_x="ajuste_pb",
+    #     columna_y="ingreso_financiero_to_be",
+    #     label_x="Ajuste de Tasa (Puntos Base / bps)",
+    #     label_y="Ingreso Financiero",
+    #     titulo=f"Escenarios de Ingreso Financiero\n{g}",
+    #     flg_destacar_optimo=False,
+    #     parametros_as_is=[
+    #         "tasa",
+    #         "monto_desembolsado",
+    #         "ingreso_financiero"
+    #     ],
+    # )
 
 #~~~~ 7.4) Exportación ----
 

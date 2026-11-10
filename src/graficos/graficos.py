@@ -553,6 +553,7 @@ def plot_evolutivo_precio_demanda(
     flg_etiqueta_precio=False,
     color_demanda='#27D75A',
     color_precio='#1D4290',
+    flg_leyenda=True
 ):
   if df.empty:
     print('El DataFrame no contiene registros para graficar')
@@ -698,7 +699,7 @@ def plot_evolutivo_precio_demanda(
       label_demanda, fontsize=9, fontweight='bold', color=color_demanda
   )
   ax1.tick_params(axis='both', labelsize=8, labelcolor='black')
-  ax1.tick_params(axis='x', rotation=0)
+  ax1.tick_params(axis='x', rotation=90)
 
   # Serie Precio
   ax2 = ax1.twinx()
@@ -776,29 +777,34 @@ def plot_evolutivo_precio_demanda(
   ax1.grid(True, axis='y', linestyle='--', alpha=0.3, color='gray')
   ax2.grid(False)
 
-  lineas = linea1 + linea2
-  etiquetas = [linea.get_label() for linea in lineas]
 
-  ax1.legend(
-      lineas,
-      etiquetas,
-      loc='upper left',
-      frameon=True,
-      facecolor='white',
-      edgecolor='lightgray',
-      fontsize=8,
-  )
+  if titulo:       
+    titulo = (
+        titulo or f'Evolución de {label_demanda.lower()} y {label_precio.lower()}'
+    )
+    ax1.set_title(
+        titulo,
+        fontsize=11,
+        fontweight='bold',
+        color=color_precio,
+        pad=15,
+    )
+    
+  if flg_leyenda:
+    lineas = linea1 + linea2
+    etiquetas = [linea.get_label() for linea in lineas]
 
-  titulo = (
-      titulo or f'Evolución de {label_demanda.lower()} y {label_precio.lower()}'
-  )
-  ax1.set_title(
-      titulo,
-      fontsize=11,
-      fontweight='bold',
-      color=color_precio,
-      pad=15,
-  )
+    ax1.legend(
+        lineas,
+        etiquetas,
+        loc='upper left',
+        frameon=True,
+        facecolor='white',
+        edgecolor='lightgray',
+        fontsize=8,
+    )
+
+
 
   fig.tight_layout()
   plt.show()
@@ -3239,7 +3245,7 @@ def plot_curva_optimizacion_bucket(
     if columna_x == "ajuste_pb":
         ticks_x = x_valores.unique()
         ax.set_xticks(ticks_x)
-        ax.set_xticklabels([f"{int(x):+g} bps" for x in ticks_x], rotation=0)
+        ax.set_xticklabels([f"{int(x):+g} bps" for x in ticks_x], rotation=90)
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -3277,3 +3283,294 @@ def plot_curva_optimizacion_bucket(
     fig.tight_layout()
     plt.show()
     return fig, ax
+
+
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+import pandas as pd
+
+def plot_evolutivo_multiserie_panel_elasticidad(
+    df,
+    columna_periodo='periodo',
+    columna_modelo='modelo',
+    columna_apertura='apertura',
+    metrica='efectividad',
+    label_metrica='Efectividad (%)',
+    titulo=None,
+    multiplicar_100=True,
+    # Identificación de categorías base
+    valor_modelo_base=None,
+    valor_apertura_base=None,
+    # Configuración visual
+    colores_modelo=None,
+    estilos_linea=None,
+    grosor_base=2.5,
+    grosor_otros=1.5,
+    markersize=3.5,
+):
+
+    if df.empty:
+        print('El DataFrame no contiene registros para graficar')
+        return
+
+    # =====================================================
+    # 1) CONFIGURACIÓN VISUAL
+    # =====================================================
+    paleta = [
+            '#0284C7',  # Celeste / Azul claro vibrante
+            '#D97706',  # Ámbar / Dorado oscuro
+            '#059669',  # Esmeralda / Verde institucional
+            '#DC2626',  # Rojo carmesí
+            '#7C3AED',  # Violeta profundo
+            '#0D9488',  # Turquesa oscuro
+            '#475569',  # Gris pizarra
+            '#9333EA',  # Morado brillante
+        ]
+
+    if estilos_linea is None:
+        estilos_linea = ['-', '--']
+
+    if len(estilos_linea) < 2:
+        raise ValueError('Se requieren al menos dos estilos de línea.')
+
+    # =====================================================
+    # 2) PREPARACIÓN DE INFORMACIÓN
+    # =====================================================
+
+    sub_df = _formatear_periodos_panel(df.copy(), columna_periodo)
+
+    # Orden de aparición de los modelos
+    modelos = sub_df[columna_modelo].drop_duplicates().tolist()
+
+    if valor_modelo_base is None:
+        raise ValueError('Debes especificar valor_modelo_base.')
+
+    if valor_modelo_base not in modelos:
+        raise ValueError(f'El modelo base "{valor_modelo_base}" no existe.')
+
+    if valor_apertura_base is None:
+        raise ValueError('Debes especificar valor_apertura_base.')
+
+    # Identificar aperturas por modelo
+    aperturas_por_modelo = {}
+
+    for modelo in modelos:
+        aperturas = (
+            sub_df.loc[sub_df[columna_modelo] == modelo, columna_apertura]
+            .drop_duplicates()
+            .tolist()
+        )
+
+        n_esperado = 1 if modelo == valor_modelo_base else 2
+
+        if len(aperturas) != n_esperado:
+            raise ValueError(
+                f'El modelo "{modelo}" tiene {len(aperturas)} aperturas. Se esperan {n_esperado}.'
+            )
+
+        aperturas_por_modelo[modelo] = aperturas
+
+    # Validar apertura del modelo base
+    if valor_apertura_base not in aperturas_por_modelo[valor_modelo_base]:
+        raise ValueError('La apertura base no pertenece al modelo base.')
+
+    # Índices temporales
+    periodos_unicos = sorted(sub_df[columna_periodo].unique())
+
+    mapa_x = {periodo: i for i, periodo in enumerate(periodos_unicos)}
+
+    sub_df['x_idx'] = sub_df[columna_periodo].map(mapa_x)
+
+    # =====================================================
+    # 3) ASIGNACIÓN DE COLORES
+    # =====================================================
+
+    if colores_modelo is None:
+        if len(modelos) > len(paleta):
+            raise ValueError('Hay más modelos que colores disponibles.')
+
+        colores_modelo = {modelo: paleta[i] for i, modelo in enumerate(modelos)}
+    else:
+        faltantes = [
+            modelo for modelo in modelos if modelo not in colores_modelo
+        ]
+        if faltantes:
+            raise ValueError(f'Faltan colores para los modelos: {faltantes}')
+
+    # =====================================================
+    # 4) CONSTRUCCIÓN DEL GRÁFICO
+    # =====================================================
+
+    fig, ax = plt.subplots(figsize=(10, 5.2))
+
+    handles_por_modelo = {}
+
+    for modelo in modelos:
+        color = colores_modelo[modelo]
+        aperturas = aperturas_por_modelo[modelo]
+        handles_por_modelo[modelo] = []
+
+        for i, apertura in enumerate(aperturas):
+            linestyle = estilos_linea[i]
+
+            es_base = (
+                modelo == valor_modelo_base and apertura == valor_apertura_base
+            )
+            linewidth = grosor_base if es_base else grosor_otros
+
+            df_grupo = sub_df[
+                (sub_df[columna_modelo] == modelo)
+                & (sub_df[columna_apertura] == apertura)
+            ].sort_values(columna_periodo)
+
+            y_vals = (
+                df_grupo[metrica] * 100
+                if multiplicar_100
+                else df_grupo[metrica]
+            )
+
+            df_temp = (
+                pd.DataFrame({
+                    'x': df_grupo['x_idx'].values,
+                    'y': y_vals.values,
+                })
+                .dropna(subset=['y'])
+                .reset_index(drop=True)
+            )
+
+            if df_temp.empty:
+                continue
+
+            # Detectar discontinuidades temporales
+            df_temp['salto'] = df_temp['x'].diff().fillna(1).gt(1)
+            grupo_tramo = df_temp['salto'].cumsum()
+
+            # Dibujar tramos continuos
+            for _, tramo in df_temp.groupby(grupo_tramo):
+                ax.plot(
+                    tramo['x'],
+                    tramo['y'],
+                    color=color,
+                    linestyle=linestyle,
+                    marker='o',
+                    markersize=markersize,
+                    linewidth=linewidth,
+                    zorder=3,
+                )
+
+            # Dibujar puentes entre vacíos temporales
+            indices_saltos = df_temp.index[df_temp['salto']].tolist()
+
+            for idx in indices_saltos:
+                x_prev = df_temp.loc[idx - 1, 'x']
+                y_prev = df_temp.loc[idx - 1, 'y']
+                x_curr = df_temp.loc[idx, 'x']
+                y_curr = df_temp.loc[idx, 'y']
+
+                ax.plot(
+                    [x_prev, x_curr],
+                    [y_prev, y_curr],
+                    color=color,
+                    linestyle=':',
+                    linewidth=1.2,
+                    alpha=0.7,
+                    zorder=2,
+                )
+
+            # Guardar elemento para la leyenda (incluyendo el linestyle correcto)
+            label = str(apertura)
+            if es_base:
+                label += ' (Base)'
+
+            handle = Line2D(
+                [],
+                [],
+                color=color,
+                linestyle=linestyle,  # <--- Estilo corregido reflejado en leyenda
+                marker='o',
+                markersize=markersize,
+                linewidth=linewidth,
+                label=label,
+            )
+
+            handles_por_modelo[modelo].append(handle)
+
+    # =====================================================
+    # 5) CONFIGURACIÓN DE EJES
+    # =====================================================
+
+    df_labels = sub_df.drop_duplicates(columna_periodo).sort_values(
+        columna_periodo
+    )
+
+    ax.set_xticks(df_labels['x_idx'])
+    ax.set_xticklabels(df_labels['periodo_label'])
+
+    # Si deseas omitir el nombre del eje X, puedes comentar o borrar esta línea:
+    # ax.set_xlabel('Periodo', fontsize=9, fontweight='bold', color='#1D4290')
+
+    ax.set_ylabel(
+        label_metrica, fontsize=9, fontweight='bold', color='#1D4290'
+    )
+
+    ax.tick_params(axis='both', labelsize=8, labelcolor='black')
+    ax.tick_params(axis='x', rotation=90)
+
+    if multiplicar_100:
+        ax.yaxis.set_major_formatter(
+            plt.FuncFormatter(lambda val, _: f'{val:.1f}%')
+        )
+
+    # =====================================================
+    # 6) LEYENDA AGRUPADA POR MODELO
+    # =====================================================
+
+    handles_final = []
+    labels_final = []
+
+    for modelo in modelos:
+        handles_final.append(
+            Line2D([], [], color='none', linestyle='none', marker=None)
+        )
+        labels_final.append(str(modelo))
+
+        for handle in handles_por_modelo[modelo]:
+            handles_final.append(handle)
+            labels_final.append(handle.get_label())
+
+    ax.legend(
+        handles=handles_final,
+        labels=labels_final,
+        loc='upper center',
+        bbox_to_anchor=(0.5, -0.22),
+        ncol=len(modelos),
+        frameon=True,
+        facecolor='white',
+        edgecolor='lightgray',
+        fontsize=8,
+        handlelength=4.0,
+        columnspacing=2.5,
+        labelspacing=0.8,
+        handletextpad=0.6,
+        alignment='left',
+    )
+
+    # =====================================================
+    # 7) ESTÉTICA FINAL
+    # =====================================================
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    ax.grid(True, axis='y', linestyle='--', alpha=0.3, color='gray')
+
+    titulo = titulo or f"Evolución de {metrica.replace('_', ' ').capitalize()}"
+
+    # ax.set_title(
+    #     titulo, fontsize=11, fontweight='bold', color='#1D4290', pad=15
+    # )
+
+    fig.subplots_adjust(bottom=0.32)
+
+    plt.show()
+

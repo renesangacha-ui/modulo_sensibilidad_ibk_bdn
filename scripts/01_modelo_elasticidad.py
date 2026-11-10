@@ -43,7 +43,7 @@ dir_s = os.path.join(dir_p, "scripts")
 
 #____________________ 3) Lectura de archivos ----
 
-datos=pd.read_excel(dir_b+r'/raw/V05/df_fin_con_tramo.xlsx')
+datos=pd.read_csv(dir_b+r'/raw/V07/SoS_actualizado_inferencias_all_aperturas.csv', engine='pyarrow')
 
 #____________________ 4) Procesamiento ----
 
@@ -84,7 +84,41 @@ datos['cluster_modelar']=datos['cluster'].map(CLUSTER_MODELAMIENTO)
 
 datos.value_counts(['cluster_modelar','cluster']).reset_index()
 
-#---- 4.1.4) Bloque Cluster ----
+#---- 4.1.3) Departamento ----
+
+datos.value_counts('departamento',dropna=True)
+
+datos['flg_departamento'] = np.where(
+    datos['departamento'].eq('LIMA'),
+    'LIMA',
+    'PROVINCIA'
+)
+
+datos.value_counts('flg_departamento',dropna=True)
+datos.value_counts(['departamento','flg_departamento'],dropna=True).reset_index()
+
+#---- 4.1.4) Sector Empresarial ----
+
+datos.value_counts('sei_mcdo',dropna=True)
+
+datos['sei_mcdo_agrupado'] = np.where(
+    datos['sei_mcdo'].eq('COMERCIO'),
+    'COMERCIO',
+    'OTROS'
+)
+
+datos.value_counts('sei_mcdo_agrupado',dropna=True)
+datos.value_counts(['sei_mcdo','sei_mcdo_agrupado'],dropna=True).reset_index()
+
+datos['cluster_modelar']=np.where(datos['cluster_modelar']=="Sin historial crediticio",
+         datos['cluster_modelar']+ ' & ' + datos['flg_departamento'],
+         np.where(datos['cluster_modelar']=="Medianos por fidelizar",
+                  datos['cluster_modelar']+ ' & ' + datos['sei_mcdo_agrupado'],
+                  datos['cluster_modelar']))
+
+datos.value_counts(['cluster_modelar','cluster']).reset_index()
+
+#---- 4.1.5) Bloque Cluster ----
 
 datos['bloque_cluster']=datos['cluster_comercial'].isin(['Emprendedor Izipay','Nuevo en Expansión','Próximo Recurrente']).map({True:'Sin Deuda', False:'Con Deuda'})
 datos.value_counts(['bloque_cluster','cluster_comercial']).reset_index()
@@ -237,6 +271,43 @@ graficos.plot_participacion_panel(
     titulo='Mix de Monto Desembolsado por Macroperfil'
 )
 
+participacion_mensual = (
+    data_panel_sensibilidad
+    .groupby(['periodo', 'cluster_modelar'], as_index=False)
+    .agg(
+        monto=('monto_desembolsado_ibk', 'sum'),
+        n=('desembolsos_ibk', 'sum')
+    )
+    .assign(
+        participacion_monto=lambda x: (
+            x['monto'] / x.groupby('periodo')['monto'].transform('sum') * 100
+        ),
+        participacion_n=lambda x: (
+            x['n'] / x.groupby('periodo')['n'].transform('sum') * 100
+        )
+    )
+    .sort_values(['periodo', 'cluster_modelar'])
+)
+
+participacion_mensual['flg_materialidad_monto']=np.where(participacion_mensual['participacion_monto']>=3,1,0)
+participacion_mensual['flg_materialidad_n']=np.where(participacion_mensual['participacion_n']>=3,1,0)
+
+graficos.plot_heatmap_cumplimiento(
+    df_panel=participacion_mensual,
+    col_cluster='cluster_modelar',
+    col_periodo='periodo',
+    col_flag='flg_materialidad_monto',
+    titulo='Cumplimiento de Materialidad (Monto)', 
+    subtitulo=f'Umbral mínimo de materialidad: >= {0.03:.0%}')
+
+graficos.plot_heatmap_cumplimiento(
+    df_panel=participacion_mensual,
+    col_cluster='cluster_modelar',
+    col_periodo='periodo',
+    col_flag='flg_materialidad_n',
+    titulo='Cumplimiento de Materialidad (N)', 
+    subtitulo=f'Umbral mínimo de materialidad: >= {0.03:.0%}')
+
 #---- 6.2.2) Evolutivo: Tasa Ofertada vs Efectividad ----
 
 data_panel_sensibilidad.groupby('cluster_modelar')[['efectividad']].describe().T
@@ -246,13 +317,13 @@ for bucket in data_panel_sensibilidad['cluster_modelar'].unique():
 
     df_filtrado = data_panel_sensibilidad.query("cluster_modelar==@bucket")
 
-    graficos.plot_evolutivo_demanda_precio_barras(
+    graficos.plot_evolutivo_precio_demanda(
         df=df_filtrado,
         columna_demanda='efectividad',
         columna_precio='tasa_ofertada',
         titulo=f"Evolución de Tasa Ofertada y Efectividad\n{bucket}",
-        flg_etiqueta_demanda=True,
-        flg_etiqueta_precio=True
+        flg_etiqueta_demanda=False,
+        flg_etiqueta_precio=False
     )
 
 #---- 6.2.3) Bubble Plots: Tasa vs Efectividad ----
@@ -292,11 +363,11 @@ for periodo in sorted(data_panel_sensibilidad.query('periodo>=202602')['periodo'
 #____________________ 7) Modelamiento Rolling Window: Tasa Ofertada vs Efectividad ----
 
 # Se estiman elasticidades por bucket mediante un modelo de panel con efectos fijos de entidad y tiempo,
-# utilizando ventanas acumulativas hasta cada periodo de corte (dic-25 a abr-26)
+# utilizando ventanas acumulativas hasta cada periodo de corte (may-26 a sep-26)
 
 resultados_globales_rolling = pd.DataFrame()
 
-for periodo in [202512, 202601, 202602, 202603,202604, 202605,202606,202607,202608,202609]:
+for periodo in [202605,202606,202607,202608,202609]:
 
     #~~~~ 7.1) Información para modelamiento ----
 
@@ -436,8 +507,6 @@ for periodo in [202512, 202601, 202602, 202603,202604, 202605,202606,202607,2026
 
 #____________________ 8) Validaciones ----
 
-# resultados_globales_rolling.query("periodo==202604").to_csv('resultados_elasticidad.csv',sep='|', index=False)
-
 resultados_globales_rolling['flg_significativo']=(resultados_globales_rolling['significativo_10pct'])*1
 
 #~~~~ 8.1) Significancia estadística de las elasticidades ----
@@ -548,8 +617,42 @@ df_resultados_control = pd.concat(
     ignore_index=True
 )
 
+#---- 8.4) Visualización: Series Ajustadas ----
+
+df_panel_graficas=(
+    pd.merge(
+        df_panel.reset_index(),
+        resultado_panel.estimated_effects.reset_index(),
+        how='left',
+        on=['bucket', 'mes']
+    )
+    .assign(
+        periodo=lambda x: x['mes'].dt.year * 100 + x['mes'].dt.month,
+        log_efectividad_dm=lambda x: (
+            x['log_efectividad'] - x['estimated_effects']
+        )
+    )
+)
+
+for bucket in df_panel_graficas['bucket'].unique():
+    df_filtrado = df_panel_graficas.query("bucket==@bucket")        
+    graficos.plot_evolutivo_precio_demanda(
+        df_filtrado,
+        columna_demanda='log_efectividad_dm',
+        columna_precio='log_tasa',
+        label_demanda='Log Efectividad Ajustada',
+        label_precio='Log Tasa Ofertada',
+        titulo=f"Evolución de Efectividad y Tasa Ofertada\nAjustada por Nivel Base y Estacionalidad\n{bucket}",
+        flg_materialidad=False,
+        flg_etiqueta_demanda=False,
+        flg_etiqueta_precio=False,
+        color_demanda='#27D75A',
+        color_precio='#1D4290',
+        flg_leyenda=False
+    )
+
 #____________________ 9) Exportación: Resultados ----
 
-data_panel_sensibilidad.to_csv(dir_b+r'/processed/V05/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
-resultados_globales_rolling.to_csv(dir_b+r'/processed/V05/elasticidad_macroperfil.csv',index=False, sep='|')
-df_resultados_control.to_csv(dir_b+r'/processed/V05/monitoreo_elasticidad_macroperfil.csv',index=False, sep='|')
+data_panel_sensibilidad.to_csv(dir_b+r'/processed/V07/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
+resultados_globales_rolling.to_csv(dir_b+r'/processed/V07/elasticidad_macroperfil.csv',index=False, sep='|')
+df_resultados_control.to_csv(dir_b+r'/processed/V07/monitoreo_elasticidad_macroperfil.csv',index=False, sep='|')
