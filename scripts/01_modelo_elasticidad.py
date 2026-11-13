@@ -651,6 +651,36 @@ for bucket in df_panel_graficas['bucket'].unique():
         flg_leyenda=False
     )
 
+(
+    data_panel_sensibilidad
+    .query('202504 <= periodo <= 202609')
+    .groupby('cluster_modelar')
+    .agg(
+        desembolsos_ibk=('desembolsos_ibk', 'sum'),
+        monto_desembolsado=('monto_desembolsado_ibk', 'sum')
+    )
+    .assign(
+        rel_desembolsos=lambda x: (100 * x['desembolsos_ibk'] / x['desembolsos_ibk'].sum()).round(0),
+        rel_monto=lambda x: (100 * x['monto_desembolsado'] / x['monto_desembolsado'].sum()).round(0)
+    )
+    .reset_index()
+)
+
+(
+    datos_oferta_relevante
+    .query('202504 <= periodo <= 202609')
+    .groupby('macroperfil')
+    .agg(
+        desembolsos_ibk=('indicador_exito', 'sum'),
+        monto_desembolsado=('monto_desembolsado', 'sum')
+    )
+    .assign(
+        rel_desembolsos=lambda x: (100 * x['desembolsos_ibk'] / x['desembolsos_ibk'].sum()).round(0),
+        rel_monto=lambda x: (100 * x['monto_desembolsado'] / x['monto_desembolsado'].sum()).round(0)
+    )
+    .reset_index()
+)
+
 #____________________ 9) Exportación: Resultados ----
 
 data_panel_sensibilidad.to_csv(dir_b+r'/processed/V07/data_panel_sensibilidad_macroperfil.csv',index=False, sep='|')
